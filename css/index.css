@@ -10,6 +10,12 @@
 }
 body{ 
     padding-top: 0px;
+    font-size:18px;
+
+ }
+.footer{
+    padding-bottom: 400px;
+    font-size: 14px;
  }
 #Home{
     font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -47,9 +53,10 @@ body{
     font-size: 32px;
 }
 .wrapper{
-    /*background-color: #29506D;
-    color: #718EA4;*/
-    padding-top:50px;
+    background-color: #29506D;
+    color: White;
+    padding-top:75px;
+    padding-bottom:100px;
 
 }
 #homepic{
@@ -58,9 +65,7 @@ body{
     z-index: -200;
     height: 100vh;
 }
-#About{
-	font-size:18px;
-}
+
 @media screen and (max-width:767.5px){
     #headertext{
     font-size: 5em;
