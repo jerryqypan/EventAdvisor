@@ -37,14 +37,14 @@
 
     <TextView
         android:id="@+id/textViewDescription"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
-        android:text="Some Description"
-        android:textAlignment="textStart"
+        android:text="EventAdvisor is an app that streamlines the proccess of organizing and finding events. Its two key features are: Letting users with accounts to create events with ease through facebook events integration  Allows all app users to browse events in a location and see published event details  For someone that wants to find something fun to do near them, EvendAdvisor is the perfect resource to use!"
+        android:textAlignment="viewStart"
         app:layout_constraintBottom_toTopOf="@+id/buttonStart"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
