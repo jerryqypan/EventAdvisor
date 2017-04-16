@@ -12,6 +12,7 @@ public class Event {
     public String startTime;
     public String endTime;
     public String description;
+    //public double[] coordinates;
     public double longitude;
     public double latitude;
 
