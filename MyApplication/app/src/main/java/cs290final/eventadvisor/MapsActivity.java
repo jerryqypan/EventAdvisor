@@ -11,11 +11,16 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -50,6 +55,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .addApi(LocationServices.API)
                     .build();
         }
+        setupSearchBar();
         String testEvents = "{ \"events\":[{\"title\":\"Test1Chapel\",\"date\":\"4-31-2017\",\"startTime\":\"12:00\",\"endTime\":\"16:00\",\"description\":\"This is a test event\",\"longitude\":-78.940278,\"latitude\":36.001901},{\"title\":\"Test2WU\",\"date\":\"4-31-2017\",\"startTime\":\"12:00\",\"endTime\":\"16:00\",\"description\":\"This is a test event\",\"longitude\":-78.939011,\"latitude\":36.000798}]}";
         eventsList = JSONToEventGenerator.unmarshallJSONString(testEvents);
     }
@@ -167,5 +173,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         markerOptions.snippet(event.getDescription());
         Marker eventMarker = mMap.addMarker(markerOptions);
         eventMarker.setTag(event);
+    }
+
+    private void setupSearchBar() {
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                System.out.println("place selected");
+                Marker searchedPlace = mMap.addMarker(new MarkerOptions().title((String) place.getName()).position(place.getLatLng()));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 13));
+                searchedPlace.showInfoWindow();
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                System.out.println("searchbar error");
+            }
+        });
     }
 }
