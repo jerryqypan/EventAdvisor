@@ -29,6 +29,7 @@ import java.util.List;
 
 import cs290final.eventadvisor.backend.Event;
 import cs290final.eventadvisor.backend.JSONToEventGenerator;
+import cs290final.eventadvisor.backend.RetrieveEventsActivity;
 
 // API Key: AIzaSyCJm1es7DqRc1zqyW7AKQFQpeXcD1kNFm0
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
@@ -185,6 +186,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 // TODO: Get info about the selected place.
                 System.out.println("place selected");
                 Marker searchedPlace = mMap.addMarker(new MarkerOptions().title((String) place.getName()).position(place.getLatLng()));
+                System.out.println(place.getLatLng().longitude);
+                System.out.println(place.getLatLng().latitude);
+                new RetrieveEventsActivity().execute(place.getLatLng().latitude,place.getLatLng().longitude);
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 13));
                 searchedPlace.showInfoWindow();
             }
