@@ -7,6 +7,7 @@
   } catch(PDOException $e) {
       die('Could not connect to the database:<br/>' . $e);
   }
+
   $longitude = floatval($_POST['longitude']);
   $latitude = floatval($_POST['latitude']);
   $sthandler = $db->prepare("SELECT * FROM Event where sqrt(pow('$longitude'-Event.longitude,2)+pow('$latitude'-Event.latitude,2))<.01");
