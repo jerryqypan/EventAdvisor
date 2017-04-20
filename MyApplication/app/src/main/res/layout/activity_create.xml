@@ -25,20 +25,33 @@
         android:inputType="text" />
 
     <EditText
-        android:id="@+id/editStartDate"
+        android:id="@+id/editStartTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
-        android:hint="Start Date and Time"
-        android:inputType="datetime" />
+        android:hint="Start Time"
+        android:onClick="showStartTimePickerDialog"
+        android:focusable="false"
+        />
 
     <EditText
-        android:id="@+id/editEndDate"
+        android:id="@+id/editEndTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
-        android:hint="End Date and Time"
-        android:inputType="datetime" />
+        android:hint="End Time"
+        android:onClick="showEndTimePickerDialog"
+        android:focusable="false"
+        />
+    <EditText
+        android:id="@+id/editDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:hint="Date"
+        android:onClick="showDatePickerDialog"
+        android:focusable="false"
+        />
 
     <EditText
         android:id="@+id/editLocation"
