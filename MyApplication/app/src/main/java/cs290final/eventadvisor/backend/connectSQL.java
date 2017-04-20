@@ -11,7 +11,8 @@ public class connectSQL {
     private void writeMsg(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("message");
-
         myRef.setValue("Hello, World!");
     }
+
+
 }

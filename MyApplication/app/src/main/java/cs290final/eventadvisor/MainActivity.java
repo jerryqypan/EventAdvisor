@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import cs290final.eventadvisor.backend.CreateEventActivity;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -16,5 +18,6 @@ public class MainActivity extends AppCompatActivity {
     public void startButtonAction(View view) {
         System.out.println("Starting Map Activity");
         startActivity(new Intent(this, MapsActivity.class));
+        //CreateEventActivity.class
     }
 }

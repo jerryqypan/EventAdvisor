@@ -11,12 +11,26 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.List;
+
+import cs290final.eventadvisor.backend.Event;
+import cs290final.eventadvisor.backend.JSONToEventGenerator;
+import cs290final.eventadvisor.backend.RetrieveEventsActivity;
+
 // API Key: AIzaSyCJm1es7DqRc1zqyW7AKQFQpeXcD1kNFm0
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMyLocationButtonClickListener {
@@ -25,6 +39,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleApiClient mGoogleApiClient;
 
     private Location mLastLocation;
+    private List<Event> eventsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +56,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .addApi(LocationServices.API)
                     .build();
         }
+        setupSearchBar();
+        String testEvents = "{ \"events\":[{\"title\":\"Test1Chapel\",\"date\":\"4-31-2017\",\"startTime\":\"12:00\",\"endTime\":\"16:00\",\"description\":\"This is a test event\",\"longitude\":-78.940278,\"latitude\":36.001901},{\"title\":\"Test2WU\",\"date\":\"4-31-2017\",\"startTime\":\"12:00\",\"endTime\":\"16:00\",\"description\":\"This is a test event\",\"longitude\":-78.939011,\"latitude\":36.000798}]}";
+        eventsList = JSONToEventGenerator.unmarshallJSONString(testEvents);
     }
 
     /**
@@ -72,7 +90,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
         mMap.setMyLocationEnabled(true);
-        centerOnLocation();
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Event event = (Event) marker.getTag();
+                Toast.makeText(MapsActivity.this, event.getTitle(), Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+        addEventsToMap();
+
     }
 
     protected void onStart() {
@@ -131,7 +158,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Toast.makeText(this, "Centered LOCATION", Toast.LENGTH_LONG).show();
         if (mLastLocation != null) {  //default action does this
             mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
-//            mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         }
+    }
+
+    private void addEventsToMap() {
+        for (Event event : eventsList) {
+            addEventToMap(event);
+        }
+    }
+
+    private void addEventToMap(Event event) {
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.title(event.getTitle());
+        markerOptions.position(new LatLng(event.getLatitude(), event.getLongitude()));
+        markerOptions.snippet(event.getDescription());
+        Marker eventMarker = mMap.addMarker(markerOptions);
+        eventMarker.setTag(event);
+    }
+
+    private void setupSearchBar() {
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                System.out.println("place selected");
+                Marker searchedPlace = mMap.addMarker(new MarkerOptions().title((String) place.getName()).position(place.getLatLng()));
+                System.out.println(place.getLatLng().longitude);
+                System.out.println(place.getLatLng().latitude);
+                new RetrieveEventsActivity().execute(place.getLatLng().latitude,place.getLatLng().longitude);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 13));
+                searchedPlace.showInfoWindow();
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                System.out.println("searchbar error");
+            }
+        });
     }
 }

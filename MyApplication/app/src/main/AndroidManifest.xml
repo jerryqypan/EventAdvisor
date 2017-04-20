@@ -39,6 +39,9 @@
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"></activity>
         <activity
+            android:name=".backend.CreateEventActivity"
+            android:label="CreateEventActivity"></activity>
+        <activity
             android:name=".SignupActivity"
             android:label="Signup"></activity>
     </application>
