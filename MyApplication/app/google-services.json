@@ -15,11 +15,63 @@
       },
       "oauth_client": [
         {
+          "client_id": "15978694989-4o7umbo2lkl1lpjqolt1ha7dg4ik8qrs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cs290final.eventoadvisor",
+            "certificate_hash": "1a17b250d2966be7d323f466db9a177a017f0ce9"
+          }
+        },
+        {
           "client_id": "15978694989-aotc6421b8tmlckk0blra04ob480hm9m.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "cs290final.eventoadvisor",
             "certificate_hash": "98993c9ca1be02a900bdeb8dfe92e920a11a7b9d"
+          }
+        },
+        {
+          "client_id": "15978694989-4o1201jgu3f8p3hpi5bh99b42oti1e1r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBt2JuwNwN94O_tR_KdItmkQuLwo1cJ8gE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "15978694989-4o1201jgu3f8p3hpi5bh99b42oti1e1r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:15978694989:android:bbf3da75f8f033cb",
+        "android_client_info": {
+          "package_name": "cs290final.spot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "15978694989-cv8kf2qtqh75qphq1idipjo7jpuml76f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cs290final.spot",
+            "certificate_hash": "1a17b250d2966be7d323f466db9a177a017f0ce9"
           }
         },
         {
