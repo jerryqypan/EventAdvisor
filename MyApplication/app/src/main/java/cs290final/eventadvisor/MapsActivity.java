@@ -25,6 +25,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.Currency;
 import java.util.List;
 
 import cs290final.eventadvisor.backend.Event;
@@ -40,6 +41,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private Location mLastLocation;
     private List<Event> eventsList;
+    private String eventsJSON;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +60,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         setupSearchBar();
         String testEvents = "{ \"events\":[{\"title\":\"Test1Chapel\",\"date\":\"4-31-2017\",\"startTime\":\"12:00\",\"endTime\":\"16:00\",\"description\":\"This is a test event\",\"longitude\":-78.940278,\"latitude\":36.001901},{\"title\":\"Test2WU\",\"date\":\"4-31-2017\",\"startTime\":\"12:00\",\"endTime\":\"16:00\",\"description\":\"This is a test event\",\"longitude\":-78.939011,\"latitude\":36.000798}]}";
-        eventsList = JSONToEventGenerator.unmarshallJSONString(testEvents);
+//        eventsList = JSONToEventGenerator.unmarshallJSONString(testEvents);
+        System.out.println("is ui" + Thread.currentThread());
     }
 
     /**
@@ -94,11 +97,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public boolean onMarkerClick(Marker marker) {
                 Event event = (Event) marker.getTag();
+                if (event == null) {
+                    return false;
+                }
                 Toast.makeText(MapsActivity.this, event.getTitle(), Toast.LENGTH_SHORT).show();
                 return false;
             }
         });
-        addEventsToMap();
+//        addEventsToMap();
 
     }
 
@@ -189,7 +195,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Marker searchedPlace = mMap.addMarker(new MarkerOptions().title((String) place.getName()).position(place.getLatLng()));
                 System.out.println(place.getLatLng().longitude);
                 System.out.println(place.getLatLng().latitude);
-                new RetrieveEventsActivity().execute(place.getLatLng().latitude,place.getLatLng().longitude);
+                new RetrieveEventsActivity(MapsActivity.this).execute(place.getLatLng().latitude,place.getLatLng().longitude);
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 13));
                 searchedPlace.showInfoWindow();
             }
@@ -200,5 +206,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 System.out.println("searchbar error");
             }
         });
+
+
+    }
+
+    public void retrieveJSON(String json) {
+        System.out.println("maps" + Thread.currentThread());
+        eventsJSON = json;
+        eventsList = JSONToEventGenerator.unmarshallJSONString(eventsJSON);
+        addEventsToMap();
     }
 }

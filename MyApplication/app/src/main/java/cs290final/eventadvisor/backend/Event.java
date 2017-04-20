@@ -18,6 +18,16 @@ public class Event {
     private double latitude;
     private double longitude;
 
+    public int getIdEvent() {
+        return idEvent;
+    }
+
+    public void setIdEvent(int idEvent) {
+        this.idEvent = idEvent;
+    }
+
+    private int idEvent;
+
     public Event() {
     }
 

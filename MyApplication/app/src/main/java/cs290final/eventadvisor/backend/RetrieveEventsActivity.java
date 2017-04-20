@@ -12,20 +12,24 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import cs290final.eventadvisor.MapsActivity;
+
 /**
  * Created by Jerry on 4/16/2017.
  */
 
 public class RetrieveEventsActivity extends AsyncTask<Double,Integer,String> {
+    private Context context;
 
-    public RetrieveEventsActivity() {
-
+    public RetrieveEventsActivity(Context context) {
+        this.context = context;
     }
 
     protected void onPreExecute(){
     }
     @Override
     protected String doInBackground(Double... arg0){
+        System.out.println("doinbackgrougn" + Thread.currentThread());
         try{
             System.out.println("testing");
             Double lat=arg0[0];
@@ -63,5 +67,10 @@ public class RetrieveEventsActivity extends AsyncTask<Double,Integer,String> {
     protected void onPostExecute(String result){
 //        this.statusField.setText("Login Successful");
 //        this.roleField.setText(result);
+        if (context instanceof MapsActivity) {
+            MapsActivity mapsActivity = (MapsActivity) context;
+            mapsActivity.retrieveJSON(result);
+            System.out.println("onpostexecute" + Thread.currentThread());
+        }
     }
 }
