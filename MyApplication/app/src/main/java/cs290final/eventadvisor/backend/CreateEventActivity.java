@@ -18,7 +18,8 @@ public class CreateEventActivity extends Activity{
 
     }
     public static void loginPost(View view){
-        new RetrieveEventsActivity().execute("Sending to Server 2");
+
+        //new RetrieveEventsActivity().execute("Sending to Server");
     }
     public static void main(String args[]){
 //        SendQuery();

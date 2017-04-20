@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void startButtonAction(View view) {
         System.out.println("Starting Map Activity");
-        startActivity(new Intent(this, CreateEventActivity.class));
+        startActivity(new Intent(this, MapsActivity.class));
+        //CreateEventActivity.class
     }
 }

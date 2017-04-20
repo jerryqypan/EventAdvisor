@@ -19,6 +19,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+    }
 }
 
 dependencies {
@@ -32,4 +35,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.0'
     testCompile 'junit:junit:4.12'
     compile 'com.google.android.gms:play-services:10.2.1'
+    compile files('jackson-annotations-2.8.0.jar')
+    compile files('jackson-core-2.8.1.jar')
+    compile files('jackson-databind-2.8.1.jar')
 }
