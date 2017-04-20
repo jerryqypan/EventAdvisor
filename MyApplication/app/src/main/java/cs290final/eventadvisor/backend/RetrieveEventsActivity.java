@@ -30,7 +30,7 @@ public class RetrieveEventsActivity extends AsyncTask<Double,Integer,String> {
             System.out.println("testing");
             Double lat=arg0[0];
             Double lon=arg0[1];
-            String link="https://users.cs.duke.edu/~qp7/index.php";
+            String link="https://users.cs.duke.edu/~qp7/retrieveEvents.php";
             String data  = URLEncoder.encode("latitude", "UTF-8") + "=" +
                     URLEncoder.encode(lat.toString(), "UTF-8");
             data+="&" + URLEncoder.encode("longitude", "UTF-8") + "=" +
