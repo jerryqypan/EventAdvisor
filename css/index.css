@@ -14,9 +14,9 @@ body{
 
  }
 .footer{
-    padding-bottom: 400px;
     font-size: 14px;
  }
+
 #Home{
     font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
     position:relative;
@@ -46,7 +46,6 @@ body{
 }
 #headertext{
     font-size: 6em;
-    color: #0D3D56;
 
 }
 #introtext{

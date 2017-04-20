@@ -99,6 +99,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
         addEventsToMap();
+
     }
 
     protected void onStart() {
