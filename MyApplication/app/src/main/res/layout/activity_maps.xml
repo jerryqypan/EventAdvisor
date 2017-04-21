@@ -4,6 +4,7 @@
     android:id="@+id/drawer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:context="cs290final.eventadvisor.MapsActivity"
     android:fitsSystemWindows="true">
 
     <android.support.design.widget.CoordinatorLayout
@@ -59,3 +60,14 @@
 
         app:menu="@menu/menu_navigation" />
 </android.support.v4.widget.DrawerLayout>
+
+
+
+    <fragment
+        android:id="@+id/place_autocomplete_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+        />
+
+
