@@ -1,0 +1,75 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/colorPrimary"
+    android:orientation="vertical"
+    android:layout_marginTop="5dp"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/user_profile_picture"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="16dp"
+            android:contentDescription="@string/profile_picture_content_desc"
+            android:src="@drawable/anon_user_48dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical"
+
+            android:padding="3dp">
+
+            <TextView
+                android:id="@+id/user_display_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="ABC USER"
+                android:textColor="#FFFFFF"
+                android:textIsSelectable="true"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/user_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="abc@gmail.com"
+                android:textColor="#FFFFFF"
+                android:textIsSelectable="true" />
+
+            <Button
+                android:id="@+id/sign_out_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:onClick="onSignOutClick"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="@color/material_green_700"
+                android:text="Sign Out" />
+
+            <Button
+                android:id="@+id/delete_account_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:theme="@style/WarnButton"
+                android:onClick="onDeleteAccountClick"
+                android:backgroundTint="@color/material_deep_purple_500"
+                android:textColor="#FFFFFF"
+                android:text="Delete Account" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

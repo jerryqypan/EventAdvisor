@@ -1,53 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_view"
+    android:background="@color/colorPrimary"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="cs290final.eventadvisor.MainActivity">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/textViewTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        android:text="EventAdvisor"
-        android:textAlignment="textStart"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/buttonStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Get Started!"
-        android:onClick="startButtonAction"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginRight="8dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        android:layout_marginBottom="8dp" />
-
-    <TextView
-        android:id="@+id/textViewDescription"
+    <RelativeLayout
+        android:id="@+id/init_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        android:text="EventAdvisor is an app that streamlines the proccess of organizing and finding events. Its two key features are: Letting users with accounts to create events with ease through facebook events integration  Allows all app users to browse events in a location and see published event details  For someone that wants to find something fun to do near them, EvendAdvisor is the perfect resource to use!"
-        android:textAlignment="viewStart"
-        app:layout_constraintBottom_toTopOf="@+id/buttonStart"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />
+        android:layout_height="match_parent"
+        android:visibility="invisible">
 
-</android.support.constraint.ConstraintLayout>
+        <ImageView
+            android:id="@+id/main_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            android:src="@drawable/launch_logo" />
+
+        <Button
+            android:id="@+id/get_started_button"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/main_logo"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:onClick="onStartClick"
+            android:text="Get Started"
+            android:textColor="#ffffff"
+            android:textSize="30sp"
+            android:theme="@style/CustomButton" />
+    </RelativeLayout>
+
+
+    <!--<Button-->
+        <!--android:id="@+id/buttonStart"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Get Started!"-->
+        <!--android:onClick="startButtonAction"-->
+        <!--android:layout_marginLeft="8dp"-->
+        <!--app:layout_constraintLeft_toLeftOf="parent"-->
+        <!--android:layout_marginRight="8dp"-->
+        <!--app:layout_constraintRight_toRightOf="parent"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintHorizontal_bias="0.502"-->
+        <!--android:layout_marginBottom="8dp" />-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/textViewDescription"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginBottom="8dp"-->
+        <!--android:layout_marginLeft="8dp"-->
+        <!--android:layout_marginRight="8dp"-->
+        <!--android:layout_marginTop="8dp"-->
+        <!--android:text="EventAdvisor is an app that streamlines the proccess of organizing and finding events. Its two key features are: Letting users with accounts to create events with ease through facebook events integration  Allows all app users to browse events in a location and see published event details  For someone that wants to find something fun to do near them, EvendAdvisor is the perfect resource to use!"-->
+        <!--android:textAlignment="viewStart"-->
+        <!--app:layout_constraintBottom_toTopOf="@+id/buttonStart"-->
+        <!--app:layout_constraintLeft_toLeftOf="parent"-->
+        <!--app:layout_constraintRight_toRightOf="parent"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />-->
+
+</android.support.design.widget.CoordinatorLayout>

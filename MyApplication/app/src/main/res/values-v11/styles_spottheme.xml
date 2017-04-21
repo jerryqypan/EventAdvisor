@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Generated with http://android-holo-colors.com -->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <style name="AutoCompleteTextViewSpotTheme" parent="android:Widget.Holo.Light.AutoCompleteTextView">
+      <item name="android:dropDownSelector">@drawable/spottheme_list_selector_holo_light</item>
+	    <item name="android:background">@drawable/spottheme_edit_text_holo_light</item>
+  </style>
+
+  <style name="ButtonSpotTheme" parent="android:Widget.Holo.Light.Button">
+	  <item name="android:background">@drawable/spottheme_btn_default_holo_light</item>
+  </style>
+
+  <style name="ImageButtonSpotTheme" parent="android:Widget.Holo.Light.ImageButton">
+	  <item name="android:background">@drawable/spottheme_btn_default_holo_light</item>
+  </style>
+
+  <style name="SpinnerSpotTheme" parent="android:Widget.Holo.Light.Spinner">
+      <item name="android:background">@drawable/spottheme_spinner_background_holo_light</item>
+      <item name="android:dropDownSelector">@drawable/spottheme_list_selector_holo_light</item>
+  </style>
+
+  <style name="ProgressBarSpotTheme" parent="android:Widget.Holo.Light.ProgressBar.Horizontal">
+      <item name="android:progressDrawable">@drawable/spottheme_progress_horizontal_holo_light</item>
+      <item name="android:indeterminateDrawable">@drawable/spottheme_progress_indeterminate_horizontal_holo_light</item>
+  </style>
+
+  <style name="SeekBarSpotTheme" parent="android:Widget.Holo.Light.SeekBar">
+      <item name="android:progressDrawable">@drawable/spottheme_scrubber_progress_horizontal_holo_light</item>
+      <item name="android:indeterminateDrawable">@drawable/spottheme_scrubber_progress_horizontal_holo_light</item>
+      <item name="android:thumb">@drawable/spottheme_scrubber_control_selector_holo_light</item>
+  </style>
+
+  <style name="RatingBarSpotTheme" parent="android:Widget.Holo.Light.RatingBar">
+      <item name="android:progressDrawable">@drawable/spottheme_ratingbar_full_holo_light</item>
+      <item name="android:indeterminateDrawable">@drawable/spottheme_ratingbar_full_holo_light</item>
+  </style>
+
+  <style name="RatingBarBigSpotTheme" parent="android:Widget.Holo.Light.RatingBar.Indicator">
+      <item name="android:progressDrawable">@drawable/spottheme_ratingbar_holo_light</item>
+      <item name="android:indeterminateDrawable">@drawable/spottheme_ratingbar_holo_light</item>
+  </style>
+
+  <style name="RatingBarSmallSpotTheme" parent="android:Widget.Holo.Light.RatingBar.Small">
+      <item name="android:progressDrawable">@drawable/spottheme_ratingbar_small_holo_light</item>
+      <item name="android:indeterminateDrawable">@drawable/spottheme_ratingbar_small_holo_light</item>
+  </style>
+
+  <style name="ToggleSpotTheme" parent="android:Widget.Holo.Light.Button.Toggle">
+      <item name="android:background">@drawable/spottheme_btn_toggle_holo_light</item>
+  </style>
+
+</resources>

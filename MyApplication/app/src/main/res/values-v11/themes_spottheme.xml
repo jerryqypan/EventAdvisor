@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Generated with http://android-holo-colors.com -->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <style name="SpotTheme" parent="@style/_SpotTheme"/>
+
+  <style name="_SpotTheme" parent="Theme.AppCompat.Light">
+
+    <item name="android:editTextBackground">@drawable/spottheme_edit_text_holo_light</item>
+
+    <item name="android:textColorHighlight">#99d31515</item>
+    <item name="android:textSelectHandleLeft">@drawable/spottheme_text_select_handle_left</item>
+    <item name="android:textSelectHandleRight">@drawable/spottheme_text_select_handle_right</item>
+    <item name="android:textSelectHandle">@drawable/spottheme_text_select_handle_middle</item>
+
+    <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewSpotTheme</item>
+
+    <item name="android:listChoiceIndicatorMultiple">@drawable/spottheme_btn_check_holo_light</item>
+
+    <item name="android:listChoiceIndicatorSingle">@drawable/spottheme_btn_radio_holo_light</item>
+
+    <item name="android:buttonStyle">@style/ButtonSpotTheme</item>
+
+    <item name="android:imageButtonStyle">@style/ImageButtonSpotTheme</item>
+
+    <item name="android:dropDownSpinnerStyle">@style/SpinnerSpotTheme</item>
+
+    <item name="android:progressBarStyleHorizontal">@style/ProgressBarSpotTheme</item>
+
+    <item name="android:seekBarStyle">@style/SeekBarSpotTheme</item>
+
+    <item name="android:ratingBarStyle">@style/RatingBarSpotTheme</item>
+
+    <item name="android:ratingBarStyleIndicator">@style/RatingBarBigSpotTheme</item>
+
+    <item name="android:ratingBarStyleSmall">@style/RatingBarSmallSpotTheme</item>
+
+    <item name="android:buttonStyleToggle">@style/ToggleSpotTheme</item>
+
+    <item name="android:listChoiceBackgroundIndicator">@drawable/spottheme_list_selector_holo_light</item>
+
+    <item name="android:activatedBackgroundIndicator">@drawable/spottheme_activated_background_holo_light</item>
+
+    <item name="android:fastScrollThumbDrawable">@drawable/spottheme_fastscroll_thumb_holo</item>
+
+  </style>
+
+</resources>
