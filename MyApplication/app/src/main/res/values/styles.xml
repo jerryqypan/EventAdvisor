@@ -1,11 +1,70 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/launchBackground</item>
+        <item name="android:editTextStyle">@style/EditTextSpotTheme</item>
+
+        <item name="android:textColorHighlight">#99d31515</item>
+
+        <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewSpotTheme</item>
+
+        <item name="android:checkboxStyle">@style/CheckBoxSpotTheme</item>
+
+        <item name="android:radioButtonStyle">@style/RadioButtonSpotTheme</item>
+
+        <item name="android:buttonStyle">@style/ButtonSpotTheme</item>
+
+        <item name="android:imageButtonStyle">@style/ImageButtonSpotTheme</item>
+
+        <item name="android:spinnerStyle">@style/SpinnerSpotTheme</item>
+
+        <item name="android:spinnerDropDownItemStyle">@style/SpinnerDropDownItemSpotTheme</item>
+
+        <item name="android:progressBarStyleHorizontal">@style/ProgressBarSpotTheme</item>
+
+        <item name="android:seekBarStyle">@style/SeekBarSpotTheme</item>
+
+        <item name="android:ratingBarStyle">@style/RatingBarSpotTheme</item>
+
+        <item name="android:ratingBarStyleIndicator">@style/RatingBarBigSpotTheme</item>
+
+        <item name="android:ratingBarStyleSmall">@style/RatingBarSmallSpotTheme</item>
+
+        <item name="android:buttonStyleToggle">@style/ToggleSpotTheme</item>
+
+        <item name="android:listViewStyle">@style/ListViewSpotTheme</item>
+
+        <item name="android:listViewWhiteStyle">@style/ListViewSpotTheme.White</item>
+
+        <item name="android:spinnerItemStyle">@style/SpinnerItemSpotTheme</item>
+    </style>
+
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/launch_screen</item>
+    </style>
+
+    <style name="CustomButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlHighlight">@color/material_deep_purple_500</item>
+    </style>
+
+    <style name="GreenTheme" parent="FirebaseUI">
+        <item name="colorPrimary">@color/material_green_500</item>
+        <item name="colorPrimaryDark">@color/material_green_700</item>
+        <item name="colorAccent">@color/material_purple_a700</item>
+        <item name="colorControlNormal">@color/material_green_500</item>
+        <item name="colorControlActivated">@color/material_lime_a700</item>
+        <item name="colorControlHighlight">@color/material_green_a200</item>
+        <item name="android:windowBackground">@color/material_green_50</item>
+    </style>
+
+    <style name="WarnButton" parent="Widget.AppCompat.Button.Colored">
+        <item name="colorButtonNormal">@color/material_deep_purple_500</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
 </resources>
