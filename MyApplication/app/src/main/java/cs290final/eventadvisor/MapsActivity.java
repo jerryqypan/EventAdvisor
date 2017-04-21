@@ -103,7 +103,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             supportActionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        // Set behavior of Navigation drawer
         mNavigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     // This method will trigger on item Click of navigation menu
@@ -156,10 +155,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setOnMyLocationButtonClickListener(this);
-        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -349,6 +344,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent in = IdpResponse.getIntent(idpResponse);
         in.setClass(context, MapsActivity.class);
         return in;
+    }
     private void addEventToMap(Event event) {
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.title(event.getTitle());
