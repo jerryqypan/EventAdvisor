@@ -137,8 +137,5 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
     }
-    public void createEventAction(View view){
-        System.out.println("Create Event Activity");
-        startActivity(new Intent(this, CreateEventActivity.class));
-    }
+
 }

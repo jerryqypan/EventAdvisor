@@ -29,10 +29,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
-        android:hint="Start Time"
-        android:onClick="showStartTimePickerDialog"
         android:focusable="false"
-        />
+        android:hint="Start Time"
+        android:onClick="showStartTimePickerDialog" />
 
     <EditText
         android:id="@+id/editEndTime"
@@ -52,14 +51,15 @@
         android:onClick="showDatePickerDialog"
         android:focusable="false"
         />
-
     <EditText
         android:id="@+id/editLocation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:hint="Location"
-        android:inputType="textPostalAddress" />
+        android:onClick="showLocationSearch"
+        android:focusable="false"
+        />
 
     <EditText
         android:id="@+id/editDescription"
@@ -74,5 +74,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
+        android:onClick="createEventAction"
         android:text="create spot" />
 </LinearLayout>

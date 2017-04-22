@@ -14,7 +14,14 @@
   $description = $_POST['description'];
   $longitude = floatval($_POST['longitude']);
   $latitude = floatval($_POST['latitude']);
-  $sthandler = $db->prepare("INSERT INTO Event(title,date,starttime,endtime,description,longitude,latitude) values('$title','$date','$startTime','$endTime','$description','$longitude','$latitude')";
+  // $title = "Wannamaker";
+  // $date = "2017-4-17";
+  // $startTime = "14:00";
+  // $endTime = "16:00";
+  // $description = "Test wannamaker";
+  // $longitude = 35.9990892;
+  // $latitude = -78.9391148;
+  $sthandler = $db->prepare("INSERT INTO Event(title,date,starttime,endtime,description,longitude,latitude) values('$title','$date','$startTime','$endTime','$description','$longitude','$latitude')");
   #$sthandler = $db->prepare("SELECT * FROM Event");
   $sthandler->execute();
 

@@ -1,6 +1,9 @@
 package cs290final.eventadvisor.backend;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -16,19 +19,39 @@ import cs290final.eventadvisor.MapsActivity;
  */
 
 public class CreateEvents extends AsyncTask<String, String, String > {
+    private Context context;
+
+    public CreateEvents(Context context){
+        this.context=context;
+
+    }
     protected void onPreExecute(){
     }
     @Override
     protected String doInBackground(String... arg0){
         try{
-            System.out.println("testing");
-            String lat=arg0[0];
-            String lon=arg0[1];
-            String link="https://users.cs.duke.edu/~qp7/createEvents.php";
-            String data  = URLEncoder.encode("latitude", "UTF-8") + "=" +
-                    URLEncoder.encode(lat.toString(), "UTF-8");
+            String title=arg0[0];
+            String date=arg0[1];
+            String startTime=arg0[2];
+            String endTime=arg0[3];
+            String description=arg0[4];
+            String lat=arg0[5];
+            String lon=arg0[6];
+            String link="https://users.cs.duke.edu/~qp7/createEvent.php";
+            String data ="&" + URLEncoder.encode("title", "UTF-8") + "=" +
+                    URLEncoder.encode(title, "UTF-8");
+            data+="&" + URLEncoder.encode("date", "UTF-8") + "=" +
+                    URLEncoder.encode(date, "UTF-8");
+            data+="&" + URLEncoder.encode("startTime", "UTF-8") + "=" +
+                    URLEncoder.encode(startTime, "UTF-8");
+            data+="&" + URLEncoder.encode("endTime", "UTF-8") + "=" +
+                    URLEncoder.encode(endTime, "UTF-8");
+            data+="&" + URLEncoder.encode("description", "UTF-8") + "=" +
+                    URLEncoder.encode(description, "UTF-8");
             data+="&" + URLEncoder.encode("longitude", "UTF-8") + "=" +
-                    URLEncoder.encode(lon.toString(), "UTF-8");
+                    URLEncoder.encode(lon, "UTF-8");
+            data+="&" + URLEncoder.encode("latitude", "UTF-8") + "=" +
+                    URLEncoder.encode(lat, "UTF-8");
             URL url = new URL(link);
             URLConnection conn = url.openConnection();
             conn.setDoOutput(true);
@@ -55,6 +78,8 @@ public class CreateEvents extends AsyncTask<String, String, String > {
     }
     @Override
     protected void onPostExecute(String result){
+        Toast.makeText(context, "Success", Toast.LENGTH_LONG).show();
+        context.startActivity(new Intent(context,MapsActivity.class));
 
     }
 }
