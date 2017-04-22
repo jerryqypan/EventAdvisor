@@ -1,5 +1,6 @@
 package cs290final.eventadvisor;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -32,10 +34,13 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -72,7 +77,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
 
-    View mRootView;
+    private static final int REQUEST_SELECT_PLACE = 1234;
+
+    View mRootView;         //can these be private? -Chirag
     ImageView mUserProfilePicture;
     TextView mUserEmail;
     TextView mUserDisplayName;
@@ -136,7 +143,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .addApi(LocationServices.API)
                     .build();
         }
-        setupSearchBar();
+//        setupSearchBar();
         String testEvents = "{ \"events\":[{\"title\":\"Test1Chapel\",\"date\":\"4-31-2017\",\"startTime\":\"12:00\",\"endTime\":\"16:00\",\"description\":\"This is a test event\",\"longitude\":-78.940278,\"latitude\":36.001901},{\"title\":\"Test2WU\",\"date\":\"4-31-2017\",\"startTime\":\"12:00\",\"endTime\":\"16:00\",\"description\":\"This is a test event\",\"longitude\":-78.939011,\"latitude\":36.000798}]}";
 //        eventsList = JSONToEventGenerator.unmarshallJSONString(testEvents);
         System.out.println("is ui" + Thread.currentThread());
@@ -176,6 +183,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
                 Toast.makeText(MapsActivity.this, event.getTitle(), Toast.LENGTH_SHORT).show();
                 return false;
+            }
+        });
+
+        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                System.out.println("camera idle");
+                clearEventsFromMap();
+                CameraPosition place = mMap.getCameraPosition();
+                new RetrieveEvents(MapsActivity.this).execute(place.target.latitude, place.target.longitude);
             }
         });
 //        addEventsToMap();
@@ -252,8 +269,25 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+//        final SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+//
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                System.out.println("Searched: " + query);
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                return false;
+//            }
+//        });
+
         return true;
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -263,11 +297,35 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
+            try {       //opens google api search bar
+                Intent intent = new PlaceAutocomplete.IntentBuilder
+                        (PlaceAutocomplete.MODE_OVERLAY).build(MapsActivity.this);
+                startActivityForResult(intent, REQUEST_SELECT_PLACE);
+            } catch (GooglePlayServicesRepairableException |
+                    GooglePlayServicesNotAvailableException e) {
+                e.printStackTrace();
+            }
             return true;
         } else if (id == android.R.id.home) {
             mDrawerLayout.openDrawer(GravityCompat.START);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_SELECT_PLACE) {  //search bar place result
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(this, data);
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+                Toast.makeText(this, place.getName(), Toast.LENGTH_SHORT).show();
+                new RetrieveEvents(MapsActivity.this).execute(place.getLatLng().latitude,place.getLatLng().longitude);
+            }
+            else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(this, data);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public void onDeleteAccountClick(View v) {
@@ -354,37 +412,38 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         eventMarker.setTag(event);
     }
 
-    private void setupSearchBar() {
-        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
-                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
-
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                // TODO: Get info about the selected place.
-                System.out.println("place selected");
-                Marker searchedPlace = mMap.addMarker(new MarkerOptions().title((String) place.getName()).position(place.getLatLng()));
-                System.out.println(place.getLatLng().longitude);
-                System.out.println(place.getLatLng().latitude);
-                new RetrieveEvents(MapsActivity.this).execute(place.getLatLng().latitude,place.getLatLng().longitude);
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 13));
-                searchedPlace.showInfoWindow();
-            }
-
-            @Override
-            public void onError(Status status) {
-                // TODO: Handle the error.
-                System.out.println("searchbar error");
-            }
-        });
-
-
-    }
+//    private void setupSearchBar() {
+//        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+//                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+//        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+//            @Override
+//            public void onPlaceSelected(Place place) {
+//                // TODO: Get info about the selected place.
+//                System.out.println("place selected");
+//                Marker searchedPlace = mMap.addMarker(new MarkerOptions().title((String) place.getName()).position(place.getLatLng()));
+//                System.out.println(place.getLatLng().longitude);
+//                System.out.println(place.getLatLng().latitude);
+//                new RetrieveEvents(MapsActivity.this).execute(place.getLatLng().latitude,place.getLatLng().longitude);
+//                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 13));
+//                searchedPlace.showInfoWindow();
+//            }
+//
+//            @Override
+//            public void onError(Status status) {
+//                // TODO: Handle the error.
+//                System.out.println("searchbar error");
+//            }
+//        });
+//    }
 
     public void retrieveJSON(String json) {
         System.out.println("maps" + Thread.currentThread());
         eventsJSON = json;
         eventsList = JSONToEventGenerator.unmarshallJSONString(eventsJSON);
         addEventsToMap();
+    }
+
+    private void clearEventsFromMap() {
+        mMap.clear();
     }
 }
