@@ -1,6 +1,5 @@
 package cs290final.eventadvisor;
 
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,7 +11,6 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -23,7 +21,6 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -41,8 +38,6 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
-import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -56,7 +51,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.Currency;
 import java.util.List;
 
 import cs290final.eventadvisor.backend.Event;
@@ -78,6 +72,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private NavigationView mNavigationView;
 
     private static final int REQUEST_SELECT_PLACE = 1234;
+    private SearchView searchView;
+    private MenuItem searchBarMenuItem;
 
     View mRootView;         //can these be private? -Chirag
     ImageView mUserProfilePicture;
@@ -112,13 +108,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mNavigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
-                    // This method will trigger on item Click of navigation menu
+                    // This method will trigger on searchBarMenuItem Click of navigation menu
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
-                        // Set item in checked state
+                        // Set searchBarMenuItem in checked state
                         menuItem.setChecked(true);
                         // TODO: handle navigation
-                        // Closing drawer on item click
+                        // Closing drawer on searchBarMenuItem click
                         mDrawerLayout.closeDrawers();
                         return true;
                     }
@@ -269,7 +265,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-//        final SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
 //
 //        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 //            @Override
@@ -291,20 +287,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
+        // Handle action bar searchBarMenuItem clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
+            this.searchBarMenuItem = item;
             try {       //opens google api search bar
                 Intent intent = new PlaceAutocomplete.IntentBuilder
                         (PlaceAutocomplete.MODE_OVERLAY).build(MapsActivity.this);
                 startActivityForResult(intent, REQUEST_SELECT_PLACE);
+
             } catch (GooglePlayServicesRepairableException |
                     GooglePlayServicesNotAvailableException e) {
                 e.printStackTrace();
             }
+
             return true;
         } else if (id == android.R.id.home) {
             mDrawerLayout.openDrawer(GravityCompat.START);
@@ -320,10 +319,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
                 Toast.makeText(this, place.getName(), Toast.LENGTH_SHORT).show();
                 new RetrieveEvents(MapsActivity.this).execute(place.getLatLng().latitude,place.getLatLng().longitude);
+
             }
             else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
             }
+            searchBarMenuItem.collapseActionView(); //closes view so that things can be re-searched
+            searchView.setIconified(true);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
