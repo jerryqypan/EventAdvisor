@@ -108,13 +108,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         mNavigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
-                    // This method will trigger on searchBarMenuItem Click of navigation menu
+                    // This method will trigger on item Click of navigation menu
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
-                        // Set searchBarMenuItem in checked state
+                        // Set item in checked state
                         menuItem.setChecked(true);
                         // TODO: handle navigation
-                        // Closing drawer on searchBarMenuItem click
+                        // Closing drawer on item click
                         mDrawerLayout.closeDrawers();
                         return true;
                     }
@@ -287,7 +287,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar searchBarMenuItem clicks here. The action bar will
+        // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
