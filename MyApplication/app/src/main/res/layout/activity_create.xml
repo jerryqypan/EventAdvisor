@@ -51,16 +51,15 @@
         android:onClick="showDatePickerDialog"
         android:focusable="false"
         />
-
-
-    <fragment
-        android:id="@+id/place_autocomplete_fragment"
-        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+    <EditText
+        android:id="@+id/editLocation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="15dp"
         android:hint="Location"
-        tools:layout="@layout/place_autocomplete_fragment" />
-
+        android:onClick="showLocationSearch"
+        android:focusable="false"
+        />
 
     <EditText
         android:id="@+id/editDescription"

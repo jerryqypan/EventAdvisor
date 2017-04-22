@@ -15,15 +15,21 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.CameraUpdateFactory;
 
 import java.util.Locale;
 
 import cs290final.eventadvisor.backend.CreateEvents;
+import cs290final.eventadvisor.backend.RetrieveEvents;
 
 /**
  * Created by emilymeng on 4/16/17.
@@ -33,6 +39,10 @@ public class CreateEventActivity extends AppCompatActivity {
     static EditText mStartTime;
     static EditText mEndTime;
     static EditText mDate;
+    static EditText mTitle;
+    static EditText mDescription;
+    static EditText mLocation;
+    private static final int REQUEST_SELECT_PLACE = 1234;
     static Calendar myCalendar = Calendar.getInstance();
     private static final String TAG = "CreateEventActivity";
 
@@ -93,7 +103,7 @@ public class CreateEventActivity extends AppCompatActivity {
             myCalendar.set(Calendar.YEAR,year);
             myCalendar.set(Calendar.MONTH,month);
             myCalendar.set(Calendar.DAY_OF_MONTH,day);
-            String myFormat = "MM/dd/yy"; //In which you need put here
+            String myFormat = "yyyy/MM/dd"; //In which you need put here
             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
             mDate.setText(sdf.format(myCalendar.getTime()));
@@ -108,6 +118,9 @@ public class CreateEventActivity extends AppCompatActivity {
         mDate=(EditText) findViewById(R.id.editDate);
         mStartTime=(EditText) findViewById(R.id.editStartTime);
         mEndTime=(EditText) findViewById(R.id.editEndTime);
+        mTitle=(EditText) findViewById(R.id.editEventName);
+        mDescription= (EditText) findViewById(R.id.editDescription);
+        mLocation= (EditText) findViewById(R.id.editLocation);
 
     }
         private void setupSearchBar() {
@@ -117,7 +130,7 @@ public class CreateEventActivity extends AppCompatActivity {
             @Override
             public void onPlaceSelected(Place place) {
                 // TODO: Get info about the selected place.
-                place.getLatLng().longitude;
+                //place.getLatLng().longitude;
 
             }
 
@@ -148,9 +161,40 @@ public class CreateEventActivity extends AppCompatActivity {
     }
     public void createEventAction(View view){
         System.out.println("Create Event Activity");
-        new CreateEvents().execute();
+        String date = mDate.getText().toString();
+        String title = mTitle.getText().toString();
+        String description = mDescription.getText().toString();
+        String startTime = mStartTime.getText().toString();
+        String endTime = mEndTime.getText().toString();
+        String location = mLocation.getText().toString();
+        String lat = location.split(",")[0];
+        String lon = location.split(",")[1];
+        new CreateEvents(CreateEventActivity.this).execute(date,title,description,startTime,endTime,lat,lon);
     }
-
+    public void showLocationSearch(View view){
+        try {       //opens google api search bar
+            Intent intent = new PlaceAutocomplete.IntentBuilder
+                    (PlaceAutocomplete.MODE_OVERLAY).build(CreateEventActivity.this);
+            startActivityForResult(intent, REQUEST_SELECT_PLACE);
+        } catch (GooglePlayServicesRepairableException |
+                GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_SELECT_PLACE) {  //search bar place result
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(this, data);
+                String coordinates = ""+place.getLatLng().latitude+","+place.getLatLng().longitude;
+                mLocation.setText(coordinates);
+            }
+            else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(this, data);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
 
 }

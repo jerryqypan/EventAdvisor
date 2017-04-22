@@ -52,7 +52,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="right|bottom"
                     android:onClick="createActivityAction"
-                    android:text="Create Activity" />
+                    android:text="Create Event" />
 
                 <!--<fragment-->
                 <!--android:id="@+id/place_autocomplete_fragment"-->
