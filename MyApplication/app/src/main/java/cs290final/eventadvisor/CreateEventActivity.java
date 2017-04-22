@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Bundle;
@@ -15,7 +16,14 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+
 import java.util.Locale;
+
+import cs290final.eventadvisor.backend.CreateEvents;
 
 /**
  * Created by emilymeng on 4/16/17.
@@ -100,6 +108,25 @@ public class CreateEventActivity extends AppCompatActivity {
         mDate=(EditText) findViewById(R.id.editDate);
         mStartTime=(EditText) findViewById(R.id.editStartTime);
         mEndTime=(EditText) findViewById(R.id.editEndTime);
+
+    }
+        private void setupSearchBar() {
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                place.getLatLng().longitude;
+
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                System.out.println("searchbar error");
+            }
+        });
     }
     public void showDatePickerDialog(View v) {
         DialogFragment newFragment = new DatePickerFragment();
@@ -118,6 +145,10 @@ public class CreateEventActivity extends AppCompatActivity {
         DialogFragment newFragment = new TimePickerFragment();
         newFragment.setArguments(args);
         newFragment.show(getFragmentManager(), "timePicker");
+    }
+    public void createEventAction(View view){
+        System.out.println("Create Event Activity");
+        new CreateEvents().execute();
     }
 
 

@@ -39,22 +39,30 @@
 
             </android.support.design.widget.AppBarLayout>
 
-            <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:map="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
+            <fragment
                 android:id="@+id/map"
                 android:name="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context="cs290final.eventadvisor.MapsActivity" >
+                tools:context="cs290final.eventadvisor.MapsActivity">
 
-            <!--<fragment-->
+                <Button
+                    android:id="@+id/button2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|bottom"
+                    android:onClick="createActivityAction"
+                    android:text="Create Activity" />
+
+                <!--<fragment-->
                 <!--android:id="@+id/place_autocomplete_fragment"-->
                 <!--android:layout_width="wrap_content"-->
                 <!--android:layout_height="wrap_content"-->
                 <!--android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"-->
                 <!--tools:layout="@layout/place_autocomplete_fragment" />-->
             </fragment>
+
+
 
         </LinearLayout>
 

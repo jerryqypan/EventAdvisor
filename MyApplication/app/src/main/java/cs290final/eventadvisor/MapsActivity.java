@@ -209,6 +209,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onStop();
     }
 
+
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
@@ -263,6 +264,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         for (Event event : eventsList) {
             addEventToMap(event);
         }
+    }
+    public void createActivityAction(View v){
+        Intent intent = new Intent(this,CreateEventActivity.class);
+        startActivity(intent);
     }
 
     @Override
