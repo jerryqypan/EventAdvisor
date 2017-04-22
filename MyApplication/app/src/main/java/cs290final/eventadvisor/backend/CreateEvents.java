@@ -1,6 +1,7 @@
 package cs290final.eventadvisor.backend;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -78,7 +79,7 @@ public class CreateEvents extends AsyncTask<String, String, String > {
     @Override
     protected void onPostExecute(String result){
         Toast.makeText(context, "Success", Toast.LENGTH_LONG).show();
-
+        context.startActivity(new Intent(context,MapsActivity.class));
 
     }
 }

@@ -17,7 +17,7 @@
     $json.=json_encode($result); //need to echo multiple results
     $json.=',';
   }
-  $json = substr_replace($json, "", -1);
+  $json = rtrim($json,',');
   $json.=']}';
   print_r($json);
     //mysqli_close($con);
