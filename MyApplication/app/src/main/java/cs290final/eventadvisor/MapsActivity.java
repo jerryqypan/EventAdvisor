@@ -175,10 +175,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             public boolean onMarkerClick(Marker marker) {
                 Event event = (Event) marker.getTag();
                 if (event == null) {
-                    return false;
+                    return true;
                 }
+                marker.showInfoWindow();
                 Toast.makeText(MapsActivity.this, event.getTitle(), Toast.LENGTH_SHORT).show();
-                return false;
+                return true;
             }
         });
 
