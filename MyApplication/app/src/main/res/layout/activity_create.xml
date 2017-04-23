@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
@@ -8,6 +8,7 @@
     tools:context="cs290final.eventadvisor.CreateEventActivity">
 
     <TextView
+        android:id="@+id/textview"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_marginTop="15dp"
@@ -22,7 +23,21 @@
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:hint="Event name"
-        android:inputType="text" />
+        android:inputType="text"
+        android:layout_below="@id/textview"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/cameraButton"
+        />
+
+    <Button
+        android:id="@+id/cameraButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/textview"
+        android:layout_margin="15dp"
+        android:onClick="startCameraButtonAction"
+        android:text="Camera" />
 
     <EditText
         android:id="@+id/editStartTime"
@@ -31,7 +46,8 @@
         android:layout_margin="15dp"
         android:focusable="false"
         android:hint="Start Time"
-        android:onClick="showStartTimePickerDialog" />
+        android:onClick="showStartTimePickerDialog"
+        android:layout_below="@id/editEventName"/>
 
     <EditText
         android:id="@+id/editEndTime"
@@ -41,6 +57,7 @@
         android:hint="End Time"
         android:onClick="showEndTimePickerDialog"
         android:focusable="false"
+        android:layout_below="@id/editStartTime"
         />
     <EditText
         android:id="@+id/editDate"
@@ -50,6 +67,7 @@
         android:hint="Date"
         android:onClick="showDatePickerDialog"
         android:focusable="false"
+        android:layout_below="@id/editEndTime"
         />
     <EditText
         android:id="@+id/editLocation"
@@ -59,6 +77,7 @@
         android:hint="Location"
         android:onClick="showLocationSearch"
         android:focusable="false"
+        android:layout_below="@id/editDate"
         />
 
     <EditText
@@ -67,7 +86,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:hint="Description (optional)"
-        android:inputType="textMultiLine" />
+        android:inputType="textMultiLine"
+        android:layout_below="@id/editLocation"/>
 
     <Button
         android:id="@+id/createEvent"
@@ -75,5 +95,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:onClick="createEventAction"
-        android:text="create spot" />
-</LinearLayout>
+        android:text="create spot"
+        android:layout_below="@id/editDescription"/>
+</RelativeLayout>
