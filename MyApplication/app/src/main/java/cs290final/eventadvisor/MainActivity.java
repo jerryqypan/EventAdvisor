@@ -22,6 +22,8 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 
+import cs290final.eventadvisor.backend.CheckUser;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
@@ -53,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
         mRootView = (View) findViewById(android.R.id.content);
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
+            new CheckUser().execute(currentUser.getUid(),currentUser.getDisplayName(),currentUser.getEmail());
+            //inefficiently check user in currentDB and add them into mysql if they don't exists
             // User is already signed in, take them to the map activity directly
             startActivity(new Intent(this, MapsActivity.class));
         } else {

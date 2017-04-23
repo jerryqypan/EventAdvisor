@@ -142,7 +142,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        setupSearchBar();
         String testEvents = "{ \"events\":[{\"title\":\"Test1Chapel\",\"date\":\"4-31-2017\",\"startTime\":\"12:00\",\"endTime\":\"16:00\",\"description\":\"This is a test event\",\"longitude\":-78.940278,\"latitude\":36.001901},{\"title\":\"Test2WU\",\"date\":\"4-31-2017\",\"startTime\":\"12:00\",\"endTime\":\"16:00\",\"description\":\"This is a test event\",\"longitude\":-78.939011,\"latitude\":36.000798}]}";
 //        eventsList = JSONToEventGenerator.unmarshallJSONString(testEvents);
-        System.out.println("is ui" + Thread.currentThread());
+        //System.out.println("is ui" + Thread.currentThread());
+//Chirag pls help me fix this - Jerry
+//        Intent i = this.getIntent();
+//        if(i.getExtras() != null) {
+//            Double latitude = Double.parseDouble(i.getExtras().getString("latitude", "0.0"));
+//            Double longitude =  Double.parseDouble(i.getExtras().getString("longitude", "0.0"));
+//            mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(longitude,latitude)));
+//        }
     }
 
     /**
@@ -264,6 +271,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
     public void createActivityAction(View v){
         Intent intent = new Intent(this,CreateEventActivity.class);
+        intent.putExtra("latitude", Double.toString(mMap.getCameraPosition().target.latitude));
+        intent.putExtra("longitude",Double.toString(mMap.getCameraPosition().target.longitude));
         startActivity(intent);
     }
 
