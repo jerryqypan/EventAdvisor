@@ -2,7 +2,6 @@ package cs290final.eventadvisor.backend;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -10,7 +9,6 @@ import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 
 import cs290final.eventadvisor.MapsActivity;
 
@@ -69,7 +67,7 @@ public class RetrieveEvents extends AsyncTask<Double,Integer,String> {
 //        this.roleField.setText(result);
         if (context instanceof MapsActivity) {
             MapsActivity mapsActivity = (MapsActivity) context;
-            mapsActivity.retrieveJSON(result);
+            mapsActivity.retrieveAndParseJSON(result);
             System.out.println("onpostexecute" + Thread.currentThread());
         }
     }

@@ -1,5 +1,11 @@
 package cs290final.eventadvisor;
 
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.app.ListFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,10 +26,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,7 +64,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cs290final.eventadvisor.backend.Event;
 import cs290final.eventadvisor.backend.JSONToEventGenerator;
@@ -65,7 +83,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleApiClient mGoogleApiClient;
 
     private Location mLastLocation;
-    private List<Event> eventsList;
+//    private List<Event> eventsList;
+    private Map<String, List<Event>> eventsMap = new HashMap<String,List<Event>>();
+    private Map<String, Marker> markersMap = new HashMap<String, Marker>();
     private String eventsJSON;
 
     private DrawerLayout mDrawerLayout;
@@ -172,13 +192,69 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setMyLocationEnabled(true);
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
-            public boolean onMarkerClick(Marker marker) {
-                Event event = (Event) marker.getTag();
-                if (event == null) {
+            public boolean onMarkerClick(final Marker marker) {
+                List<Event> events = (List<Event>) marker.getTag();
+//                Event event = (Event) marker.getTag();
+                if (events == null || events.size() == 0) {
                     return true;
                 }
-                marker.showInfoWindow();
-                Toast.makeText(MapsActivity.this, event.getTitle(), Toast.LENGTH_SHORT).show();
+                if (events.size() == 1) {
+                    marker.setTitle(events.get(0).getTitle());
+                    marker.setSnippet(events.get(0).getDescription());
+                    marker.showInfoWindow();
+                    return true;
+                }
+//                marker.showInfoWindow();
+//                Toast.makeText(MapsActivity.this, event.getTitle(), Toast.LENGTH_SHORT).show();
+
+//                Fragment newFragment = new EventsFragment();
+//                getFragmentManager().beginTransaction().add(R.id.map, newFragment).commit();
+//                PopupWindow popupWindow = new PopupWindow(MapsActivity.this);
+//                popupWindow.showAtLocation(findViewById(R.id.map), Gravity.BOTTOM, 10, 10);
+                AlertDialog.Builder popup = new AlertDialog.Builder(MapsActivity.this);
+//                popup.setIcon(R.drawable.com_facebook_button_icon);
+                popup.setTitle("Events at this location:");
+
+                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MapsActivity.this, android.R.layout.select_dialog_item);
+                final EventsAdapter eventsAdapter = new EventsAdapter(events, MapsActivity.this);
+//                for (Event event : events) {
+//                    arrayAdapter.add(event.getTitle() + " " + event.getDate());
+//                }
+//                arrayAdapter.add("Hardik");
+//                arrayAdapter.add("Archit");
+//                arrayAdapter.add("Jignesh");
+//                arrayAdapter.add("Umang");
+//                arrayAdapter.add("Gatti");
+
+
+                popup.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                popup.setAdapter(eventsAdapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Event event = (Event) eventsAdapter.getItem(which);
+                        marker.setTitle(event.getTitle() + " " + which);
+                        marker.setSnippet(event.getDescription());
+                        marker.showInfoWindow();
+                        String strName = event.getTitle() + " " + event.getDescription();
+                        AlertDialog.Builder builderInner = new AlertDialog.Builder(MapsActivity.this);
+                        builderInner.setMessage(strName);
+                        builderInner.setTitle(event.getTitle() + " " + event.getStartTime()+ " - " + event.getEndTime());
+                        builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog,int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        builderInner.show();
+                    }
+                });
+                popup.show();
                 return true;
             }
         });
@@ -187,12 +263,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onCameraIdle() {
                 System.out.println("camera idle");
-                clearEventsFromMap();
+//                clearEventsFromMap();
                 CameraPosition place = mMap.getCameraPosition();
                 new RetrieveEvents(MapsActivity.this).execute(place.target.latitude, place.target.longitude);
             }
         });
-//        addEventsToMap();
+//        addEventsToGoogleMap();
 
     }
 
@@ -257,11 +333,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void addEventsToMap() {
-        for (Event event : eventsList) {
-            addEventToMap(event);
-        }
-    }
     public void createActivityAction(View v){
         Intent intent = new Intent(this,CreateEventActivity.class);
         startActivity(intent);
@@ -411,14 +482,28 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         in.setClass(context, MapsActivity.class);
         return in;
     }
-    private void addEventToMap(Event event) {
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.title(event.getTitle());
-        markerOptions.position(new LatLng(event.getLatitude(), event.getLongitude()));
-        markerOptions.snippet(event.getDescription());
-        Marker eventMarker = mMap.addMarker(markerOptions);
-        eventMarker.setTag(event);
+
+    private void addEventsToGoogleMap() {
+        for (String key : eventsMap.keySet()) {
+            addEventToGoogleMap(key, eventsMap.get(key));
+        }
     }
+
+    private void addEventToGoogleMap(String key, List<Event> events) {
+        if (events.size() > 0) {
+            MarkerOptions markerOptions = new MarkerOptions();
+//            markerOptions.title(event.getTitle());
+            String latitude = key.split(" ")[0];
+            String longitude = key.split(" ")[1];
+            markerOptions.position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
+//            markerOptions.snippet(event.getDescription());
+            Marker eventMarker = mMap.addMarker(markerOptions);
+            eventMarker.setTag(events);
+
+        }
+
+    }
+
 
 //    private void setupSearchBar() {
 //        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
@@ -444,14 +529,73 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 //        });
 //    }
 
-    public void retrieveJSON(String json) {
+    public void retrieveAndParseJSON(String json) {
         System.out.println("maps" + Thread.currentThread());
         eventsJSON = json;
-        eventsList = JSONToEventGenerator.unmarshallJSONString(eventsJSON);
-        addEventsToMap();
+        eventsMap = new HashMap<>();
+        List<Event> events = JSONToEventGenerator.unmarshallJSONString(eventsJSON);
+        for (Event event : events) {
+            String mapKey = normalizeKeyForMap(event);
+            if (!eventsMap.containsKey(mapKey)) {
+                eventsMap.put(mapKey, new ArrayList<Event>());
+            }
+            eventsMap.get(mapKey).add(event);
+        }
+        addEventsToGoogleMap();
+    }
+
+    private String normalizeKeyForMap(Event event) {
+        DecimalFormat decimalFormat = new DecimalFormat("##.####");	//four decimal places corresponds to 11.1 meters
+        decimalFormat.setRoundingMode(RoundingMode.UP);
+        return decimalFormat.format(event.getLatitude()) + " " + decimalFormat.format(event.getLongitude());
     }
 
     private void clearEventsFromMap() {
         mMap.clear();
     }
+
+//    public static class EventsFragment extends DialogFragment {
+//        @Override
+//        public Dialog onCreateDialog(Bundle savedInstanceState) {
+//            // Use the current date as the default date in the picker
+//
+//            return new DatePickerDialog(getActivity(), this, year, month, day);
+//        }
+//    }
+
+    public static class EventsAdapter extends BaseAdapter {
+        private List<Event> eventsList;
+        private Context context;
+
+        public EventsAdapter(List<Event> eventsList, Context context) {
+            this.eventsList = eventsList;
+            this.context = context;
+        }
+
+        @Override
+        public int getCount() {
+            return eventsList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return eventsList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return eventsList.get(position).getIdEvent();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+//            TextView textView = new TextView(context);
+            Event event = eventsList.get(position);
+//            textView.setText(event.getTitle() + " " + event.getDate());
+            View v = LayoutInflater.from(context).inflate(android.R.layout.simple_list_item_1, null);
+            ((TextView) v).setText(event.getTitle() + " " + event.getDate());
+            return v;
+        }
+    }
 }
+
