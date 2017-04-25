@@ -49,9 +49,6 @@
         <activity
             android:name=".CreateEventActivity"
             android:label="CreateEvent"></activity>
-        <activity
-            android:name=".SignupActivity"
-            android:label="Signup"></activity>
     </application>
 
 </manifest>

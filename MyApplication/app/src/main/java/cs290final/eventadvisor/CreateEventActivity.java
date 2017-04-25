@@ -42,6 +42,13 @@ public class CreateEventActivity extends AppCompatActivity {
     static EditText mTitle;
     static EditText mDescription;
     static EditText mLocation;
+    private String mUser;
+
+    public String getCoordinates() {
+        return mCoordinates;
+    }
+
+    private String mCoordinates;
     private static final int REQUEST_SELECT_PLACE = 1234;
     static Calendar myCalendar = Calendar.getInstance();
     private static final String TAG = "CreateEventActivity";
@@ -73,10 +80,10 @@ public class CreateEventActivity extends AppCompatActivity {
                 fMinute=Integer.toString(minute);
             }
             if(startOrEnd.equals("start")){
-                mStartTime.setText("Start Time :"+hourOfDay+":"+fMinute+":00");
+                mStartTime.setText(""+hourOfDay+":"+fMinute+":00");
             }
             if(startOrEnd.equals("end")){
-                mEndTime.setText("End Time: "+hourOfDay+":"+fMinute+":00");
+                mEndTime.setText(""+hourOfDay+":"+fMinute+":00");
             }else{
                 Log.d(TAG,startOrEnd);
             }
@@ -114,6 +121,7 @@ public class CreateEventActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent i = getIntent();
         setContentView(R.layout.activity_create);
         mDate=(EditText) findViewById(R.id.editDate);
         mStartTime=(EditText) findViewById(R.id.editStartTime);
@@ -121,6 +129,9 @@ public class CreateEventActivity extends AppCompatActivity {
         mTitle=(EditText) findViewById(R.id.editEventName);
         mDescription= (EditText) findViewById(R.id.editDescription);
         mLocation= (EditText) findViewById(R.id.editLocation);
+        mCoordinates = i.getExtras().getString("latitude")+","+i.getExtras().getString("longitude");
+        mUser = i.getExtras().getString("uid");
+        mLocation.setText(mCoordinates);
 
     }
         private void setupSearchBar() {
@@ -169,7 +180,7 @@ public class CreateEventActivity extends AppCompatActivity {
         String location = mLocation.getText().toString();
         String lat = location.split(",")[0];
         String lon = location.split(",")[1];
-        new CreateEvents(CreateEventActivity.this).execute(date,title,description,startTime,endTime,lat,lon);
+        new CreateEvents(CreateEventActivity.this).execute(title,date,description,startTime,endTime,lat,lon,mUser);
     }
     public void showLocationSearch(View view){
         try {       //opens google api search bar
