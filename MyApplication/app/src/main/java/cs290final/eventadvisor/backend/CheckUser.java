@@ -2,6 +2,8 @@ package cs290final.eventadvisor.backend;
 
 import android.os.AsyncTask;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
@@ -12,13 +14,13 @@ import java.net.URLEncoder;
  * Created by Jerry on 4/23/2017.
  */
 
-public class CheckUser extends AsyncTask<String,String,Void> {
+public class CheckUser extends AsyncTask<String,String,String> {
 
     protected void onPreExecute(){
 
     }
     @Override
-    protected Void doInBackground(String... arg0){
+    protected String doInBackground(String... arg0){
         try {
             String uid = arg0[0];
             String name = arg0[1];
@@ -36,15 +38,27 @@ public class CheckUser extends AsyncTask<String,String,Void> {
             OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
             wr.write( data );
             wr.flush();
+            BufferedReader reader = new BufferedReader(new
+                    InputStreamReader(conn.getInputStream()));
+
+            StringBuilder sb = new StringBuilder();
+            String line = null;
+
+            // Read Server Response
+            while((line = reader.readLine()) != null) {
+                sb.append(line);
+                break;
+            }
+            System.out.println(sb.toString());
+            return sb.toString();
         }
         catch(Exception e){
-
+            return "";
         }
-    return null;
     }
     @Override
-    protected void onPostExecute(Void v){
-
+    protected void onPostExecute(String r){
+        System.out.println("RETURNED"+r);
 
     }
 

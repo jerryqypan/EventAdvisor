@@ -55,6 +55,10 @@ public class MainActivity extends AppCompatActivity {
         mRootView = (View) findViewById(android.R.id.content);
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
+            System.out.println("Uid"+currentUser.getUid());
+            System.out.println("Name"+currentUser.getDisplayName());
+            System.out.println("Email"+currentUser.getEmail());
+
             new CheckUser().execute(currentUser.getUid(),currentUser.getDisplayName(),currentUser.getEmail());
             //inefficiently check user in currentDB and add them into mysql if they don't exists
             // User is already signed in, take them to the map activity directly
