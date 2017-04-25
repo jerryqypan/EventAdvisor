@@ -273,6 +273,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent intent = new Intent(this,CreateEventActivity.class);
         intent.putExtra("latitude", Double.toString(mMap.getCameraPosition().target.latitude));
         intent.putExtra("longitude",Double.toString(mMap.getCameraPosition().target.longitude));
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        intent.putExtra("uid",currentUser.getUid());
         startActivity(intent);
     }
 

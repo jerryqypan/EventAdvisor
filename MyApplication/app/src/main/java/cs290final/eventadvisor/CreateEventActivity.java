@@ -42,6 +42,7 @@ public class CreateEventActivity extends AppCompatActivity {
     static EditText mTitle;
     static EditText mDescription;
     static EditText mLocation;
+    private String mUser;
 
     public String getCoordinates() {
         return mCoordinates;
@@ -129,6 +130,7 @@ public class CreateEventActivity extends AppCompatActivity {
         mDescription= (EditText) findViewById(R.id.editDescription);
         mLocation= (EditText) findViewById(R.id.editLocation);
         mCoordinates = i.getExtras().getString("latitude")+","+i.getExtras().getString("longitude");
+        mUser = i.getExtras().getString("uid");
         mLocation.setText(mCoordinates);
 
     }
@@ -178,7 +180,7 @@ public class CreateEventActivity extends AppCompatActivity {
         String location = mLocation.getText().toString();
         String lat = location.split(",")[0];
         String lon = location.split(",")[1];
-        new CreateEvents(CreateEventActivity.this).execute(title,date,description,startTime,endTime,lat,lon);
+        new CreateEvents(CreateEventActivity.this).execute(title,date,description,startTime,endTime,lat,lon,mUser);
     }
     public void showLocationSearch(View view){
         try {       //opens google api search bar

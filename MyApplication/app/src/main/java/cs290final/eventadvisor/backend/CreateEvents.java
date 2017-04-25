@@ -38,6 +38,7 @@ public class CreateEvents extends AsyncTask<String, String, String > {
             String description=arg0[4];
             String lat=arg0[5];
             String lon=arg0[6];
+            String uid=arg0[7];
             String link="https://users.cs.duke.edu/~qp7/createEvent.php";
             String data =URLEncoder.encode("title", "UTF-8") + "=" +
                     URLEncoder.encode(title, "UTF-8");
@@ -53,6 +54,8 @@ public class CreateEvents extends AsyncTask<String, String, String > {
                     URLEncoder.encode(lon, "UTF-8");
             data+="&" + URLEncoder.encode("latitude", "UTF-8") + "=" +
                     URLEncoder.encode(lat, "UTF-8");
+            data+="&" + URLEncoder.encode("uid", "UTF-8") + "=" +
+                    URLEncoder.encode(uid, "UTF-8");
             URL url = new URL(link);
             URLConnection conn = url.openConnection();
             conn.setDoOutput(true);
