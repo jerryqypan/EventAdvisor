@@ -328,8 +328,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         Toast.makeText(this, "Centered LOCATION", Toast.LENGTH_LONG).show();
         if (mLastLocation != null) {  //default action does this
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 15));
+//            mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         }
     }
 
