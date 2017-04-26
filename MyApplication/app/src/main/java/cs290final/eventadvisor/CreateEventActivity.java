@@ -68,7 +68,7 @@ public class CreateEventActivity extends AppCompatActivity {
             System.out.println("STARTOREND"+startOrEnd);
             System.out.println("TEST"+ getArguments().getString("startorEnd"));
             // Create a new instance of TimePickerDialog and return it
-            return new TimePickerDialog(getActivity(), this, hour, minute,
+            return new TimePickerDialog(getActivity(),android.R.style.Theme_DeviceDefault_Dialog_NoActionBar, this, hour, minute,
                     DateFormat.is24HourFormat(getActivity()));
         }
 
@@ -102,7 +102,7 @@ public class CreateEventActivity extends AppCompatActivity {
             int day = c.get(Calendar.DAY_OF_MONTH);
 
             // Create a new instance of DatePickerDialog and return it
-            return new DatePickerDialog(getActivity(), this, year, month, day);
+            return new DatePickerDialog(getActivity(),android.R.style.Theme_DeviceDefault_Dialog_NoActionBar, this, year, month, day);
         }
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
