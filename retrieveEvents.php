@@ -10,11 +10,15 @@
   $json = '{"events":[';
   $longitude = floatval($_POST['longitude']);
   $latitude = floatval($_POST['latitude']);
-  $sthandler = $db->prepare("SELECT * FROM Event where sqrt(pow(:longitude-Event.longitude,2)+pow(:latitude-Event.latitude,2))<.01"); //this prevents sql injections by parameterizing the inputs
+  #$longitude = -78.940294;
+  #$latitude = 36.001769;
+  $date = date("Y/m/d");
+  $sthandler = $db->prepare("SELECT * FROM Event where (sqrt(pow(:longitude-Event.longitude,2)+pow(:latitude-Event.latitude,2))<.01) and (Event.date>=:date)"); //this prevents sql injections by parameterizing the inputs
   #$sthandler = $db->prepare("SELECT * FROM Event");
   $sthandler->execute(array(
     ':longitude' => $longitude,
-    ':latitude' => $latitude
+    ':latitude' => $latitude,
+    ':date' => $date
     ));
   while($result = $sthandler->fetch(PDO::FETCH_ASSOC)){
     $json.=json_encode($result); //need to echo multiple results
