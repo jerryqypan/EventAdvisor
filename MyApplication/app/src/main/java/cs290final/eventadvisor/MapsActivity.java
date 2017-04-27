@@ -499,7 +499,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 //            markerOptions.snippet(event.getDescription());
             Marker eventMarker = mMap.addMarker(markerOptions);
             eventMarker.setTag(events);
-
+            markersMap.put(key, eventMarker);
         }
 
     }

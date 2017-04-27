@@ -17,6 +17,22 @@ public class Event {
     private String description;
     private double latitude;
     private double longitude;
+    private int idEvent;
+    private String uid;
+
+    public Event() {
+    }
+
+    public Event(String title, String date, String startTime, String endTime, String description, double longitude, double latitude, String uid){
+        this.title=title;
+        this.date=date;
+        this.startTime=startTime;
+        this.endTime=endTime;
+        this.description=description;
+        this.latitude=latitude;
+        this.longitude=longitude;
+        this.uid = uid;
+    }
 
     public int getIdEvent() {
         return idEvent;
@@ -26,21 +42,13 @@ public class Event {
         this.idEvent = idEvent;
     }
 
-    private int idEvent;
-
-    public Event() {
+    public String getUid() {
+        return uid;
     }
 
-    public Event(String title, String date, String startTime, String endTime, String description, double longitude, double latitude){
-        this.title=title;
-        this.date=date;
-        this.startTime=startTime;
-        this.endTime=endTime;
-        this.description=description;
-        this.latitude=latitude;
-        this.longitude=longitude;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
-
     public String getTitle() {
         return title;
     }
