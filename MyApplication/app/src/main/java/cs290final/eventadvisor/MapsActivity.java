@@ -68,6 +68,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -487,21 +488,36 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         for (String key : eventsMap.keySet()) {
             addEventToGoogleMap(key, eventsMap.get(key));
         }
+        removeUnusedMarkersFromGoogleMap();
     }
 
     private void addEventToGoogleMap(String key, List<Event> events) {
-        if (events.size() > 0) {
-            MarkerOptions markerOptions = new MarkerOptions();
+        if (markersMap.containsKey(key)) {
+            markersMap.get(key).setTag(events);
+        } else {
+            if (events.size() > 0) {
+                MarkerOptions markerOptions = new MarkerOptions();
 //            markerOptions.title(event.getTitle());
-            String latitude = key.split(" ")[0];
-            String longitude = key.split(" ")[1];
-            markerOptions.position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
+                String latitude = key.split(" ")[0];
+                String longitude = key.split(" ")[1];
+                markerOptions.position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
 //            markerOptions.snippet(event.getDescription());
-            Marker eventMarker = mMap.addMarker(markerOptions);
-            eventMarker.setTag(events);
-            markersMap.put(key, eventMarker);
+                Marker eventMarker = mMap.addMarker(markerOptions);
+                eventMarker.setTag(events);
+                markersMap.put(key, eventMarker);
+            }
         }
+    }
 
+    private void removeUnusedMarkersFromGoogleMap() {
+        Iterator iterator = markersMap.keySet().iterator();
+        while (iterator.hasNext()) {
+            String key = (String) iterator.next();
+            if (!eventsMap.containsKey(key)) {
+                markersMap.get(key).remove();
+                iterator.remove();
+            }
+        }
     }
 
 
