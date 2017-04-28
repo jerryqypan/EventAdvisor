@@ -152,10 +152,31 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .addApi(LocationServices.API)
                     .build();
         }
-//        setupSearchBar();
-        String testEvents = "{ \"events\":[{\"title\":\"Test1Chapel\",\"date\":\"4-31-2017\",\"startTime\":\"12:00\",\"endTime\":\"16:00\",\"description\":\"This is a test event\",\"longitude\":-78.940278,\"latitude\":36.001901},{\"title\":\"Test2WU\",\"date\":\"4-31-2017\",\"startTime\":\"12:00\",\"endTime\":\"16:00\",\"description\":\"This is a test event\",\"longitude\":-78.939011,\"latitude\":36.000798}]}";
-//        eventsList = JSONToEventGenerator.unmarshallJSONString(testEvents);
-        System.out.println("is ui" + Thread.currentThread());
+    }
+
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        centerOnLocation();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 
     /**
@@ -172,13 +193,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap = googleMap;
         mMap.setOnMyLocationButtonClickListener(this);
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             return;
         }
@@ -264,43 +278,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 new RetrieveEvents(MapsActivity.this).execute(place.target.latitude, place.target.longitude);
             }
         });
-//        addEventsToGoogleMap();
-
-    }
-
-    protected void onStart() {
-        mGoogleApiClient.connect();
-        super.onStart();
-    }
-
-    protected void onStop() {
-        mGoogleApiClient.disconnect();
-        super.onStop();
-    }
-
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-//        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-        centerOnLocation();
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        mMap.setMyLocationEnabled(true);
     }
 
     @Override
@@ -311,13 +288,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void centerOnLocation() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             return;
         }
@@ -325,8 +295,98 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Toast.makeText(this, "Centered LOCATION", Toast.LENGTH_LONG).show();
         if (mLastLocation != null) {  //default action does this
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 15));
-//            mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         }
+    }
+
+    private float calculateMaxMapDistanceOnScreen() {
+        VisibleRegion visibleRegion = mMap.getProjection().getVisibleRegion();
+        Location northEastCorner = new Location("");
+        northEastCorner.setLatitude(visibleRegion.latLngBounds.northeast.latitude);
+        northEastCorner.setLongitude(visibleRegion.latLngBounds.northeast.longitude);
+        Location southWestCorner = new Location("");
+        southWestCorner.setLatitude(visibleRegion.latLngBounds.southwest.latitude);
+        southWestCorner.setLongitude(visibleRegion.latLngBounds.southwest.longitude);
+        return southWestCorner.distanceTo(northEastCorner);     //distance in meters
+    }
+
+    private void clearEventsFromMap() {
+        mMap.clear();
+    }
+
+    public void retrieveAndParseJSON(String json) {
+        eventsJSON = json;
+        eventsMap = new HashMap<>();
+        List<Event> events = JSONToEventGenerator.unmarshallJSONString(eventsJSON);
+        for (Event event : events) {
+            String mapKey = normalizeKeyForMap(event);
+            if (!eventsMap.containsKey(mapKey)) {
+                eventsMap.put(mapKey, new ArrayList<Event>());
+            }
+            eventsMap.get(mapKey).add(event);
+        }
+        addEventsToGoogleMap();
+    }
+
+    private void addEventsToGoogleMap() {
+        for (String key : eventsMap.keySet()) {
+            addEventToGoogleMap(key, eventsMap.get(key));
+        }
+        removeUnusedMarkersFromGoogleMap();
+    }
+
+    private void addEventToGoogleMap(String key, List<Event> events) {
+        if (markersMap.containsKey(key)) {
+            markersMap.get(key).setTag(events);
+        } else {
+            if (events.size() > 0) {
+                MarkerOptions markerOptions = new MarkerOptions();
+//            markerOptions.title(event.getTitle());
+                String latitude = key.split(" ")[0];
+                String longitude = key.split(" ")[1];
+                markerOptions.position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
+//            markerOptions.snippet(event.getDescription());
+                Marker eventMarker = mMap.addMarker(markerOptions);
+                eventMarker.setTag(events);
+                markersMap.put(key, eventMarker);
+            }
+        }
+    }
+
+    private void removeUnusedMarkersFromGoogleMap() {
+        Iterator iterator = markersMap.keySet().iterator();
+        while (iterator.hasNext()) {
+            String key = (String) iterator.next();
+            if (!eventsMap.containsKey(key)) {
+                markersMap.get(key).remove();
+                iterator.remove();
+            }
+        }
+    }
+
+    private String normalizeKeyForMap(Event event) {
+        DecimalFormat decimalFormat = new DecimalFormat("##.####");	//four decimal places corresponds to 11.1 meters
+        decimalFormat.setRoundingMode(RoundingMode.UP);
+        return decimalFormat.format(event.getLatitude()) + " " + decimalFormat.format(event.getLongitude());
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_SELECT_PLACE) {  //search bar place result
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(this, data);
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+                Toast.makeText(this, place.getName(), Toast.LENGTH_SHORT).show();
+                //don't need this as it will be taken care of in the camera idle listener
+//                new RetrieveEvents(MapsActivity.this).execute(place.getLatLng().latitude,place.getLatLng().longitude);
+
+            }
+            else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(this, data);
+            }
+            searchBarMenuItem.collapseActionView(); //closes view so that things can be re-searched
+            searchView.setIconified(true);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public void createActivityAction(View v){
@@ -339,24 +399,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-//
-//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String query) {
-//                System.out.println("Searched: " + query);
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String newText) {
-//                return false;
-//            }
-//        });
-
         return true;
     }
-
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -376,31 +420,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     GooglePlayServicesNotAvailableException e) {
                 e.printStackTrace();
             }
-
             return true;
         } else if (id == android.R.id.home) {
             mDrawerLayout.openDrawer(GravityCompat.START);
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_SELECT_PLACE) {  //search bar place result
-            if (resultCode == RESULT_OK) {
-                Place place = PlaceAutocomplete.getPlace(this, data);
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-                Toast.makeText(this, place.getName(), Toast.LENGTH_SHORT).show();
-//                new RetrieveEvents(MapsActivity.this).execute(place.getLatLng().latitude,place.getLatLng().longitude);
-
-            }
-            else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                Status status = PlaceAutocomplete.getStatus(this, data);
-            }
-            searchBarMenuItem.collapseActionView(); //closes view so that things can be re-searched
-            searchView.setIconified(true);
-        }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public void onDeleteAccountClick(View v) {
@@ -479,113 +503,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return in;
     }
 
-    private void addEventsToGoogleMap() {
-        for (String key : eventsMap.keySet()) {
-            addEventToGoogleMap(key, eventsMap.get(key));
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
         }
-        removeUnusedMarkersFromGoogleMap();
+        mMap.setMyLocationEnabled(true);
     }
 
-    private void addEventToGoogleMap(String key, List<Event> events) {
-        if (markersMap.containsKey(key)) {
-            markersMap.get(key).setTag(events);
-        } else {
-            if (events.size() > 0) {
-                MarkerOptions markerOptions = new MarkerOptions();
-//            markerOptions.title(event.getTitle());
-                String latitude = key.split(" ")[0];
-                String longitude = key.split(" ")[1];
-                markerOptions.position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
-//            markerOptions.snippet(event.getDescription());
-                Marker eventMarker = mMap.addMarker(markerOptions);
-                eventMarker.setTag(events);
-                markersMap.put(key, eventMarker);
-            }
-        }
-    }
-
-    private void removeUnusedMarkersFromGoogleMap() {
-        Iterator iterator = markersMap.keySet().iterator();
-        while (iterator.hasNext()) {
-            String key = (String) iterator.next();
-            if (!eventsMap.containsKey(key)) {
-                markersMap.get(key).remove();
-                iterator.remove();
-            }
-        }
-    }
-
-
-//    private void setupSearchBar() {
-//        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
-//                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
-//        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-//            @Override
-//            public void onPlaceSelected(Place place) {
-//                // TODO: Get info about the selected place.
-//                System.out.println("place selected");
-//                Marker searchedPlace = mMap.addMarker(new MarkerOptions().title((String) place.getName()).position(place.getLatLng()));
-//                System.out.println(place.getLatLng().longitude);
-//                System.out.println(place.getLatLng().latitude);
-//                new RetrieveEvents(MapsActivity.this).execute(place.getLatLng().latitude,place.getLatLng().longitude);
-//                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 13));
-//                searchedPlace.showInfoWindow();
-//            }
-//
-//            @Override
-//            public void onError(Status status) {
-//                // TODO: Handle the error.
-//                System.out.println("searchbar error");
-//            }
-//        });
-//    }
-
-    public void retrieveAndParseJSON(String json) {
-        System.out.println("maps" + Thread.currentThread());
-        eventsJSON = json;
-        eventsMap = new HashMap<>();
-        List<Event> events = JSONToEventGenerator.unmarshallJSONString(eventsJSON);
-        for (Event event : events) {
-            String mapKey = normalizeKeyForMap(event);
-            if (!eventsMap.containsKey(mapKey)) {
-                eventsMap.put(mapKey, new ArrayList<Event>());
-            }
-            eventsMap.get(mapKey).add(event);
-        }
-        addEventsToGoogleMap();
-    }
-
-    private String normalizeKeyForMap(Event event) {
-        DecimalFormat decimalFormat = new DecimalFormat("##.####");	//four decimal places corresponds to 11.1 meters
-        decimalFormat.setRoundingMode(RoundingMode.UP);
-        return decimalFormat.format(event.getLatitude()) + " " + decimalFormat.format(event.getLongitude());
-    }
-
-    private float calculateMaxMapDistanceOnScreen() {
-        VisibleRegion visibleRegion = mMap.getProjection().getVisibleRegion();
-        Location northEastCorner = new Location("");
-        northEastCorner.setLatitude(visibleRegion.latLngBounds.northeast.latitude);
-        northEastCorner.setLongitude(visibleRegion.latLngBounds.northeast.longitude);
-        Location southWestCorner = new Location("");
-        southWestCorner.setLatitude(visibleRegion.latLngBounds.southwest.latitude);
-        southWestCorner.setLongitude(visibleRegion.latLngBounds.southwest.longitude);
-        return southWestCorner.distanceTo(northEastCorner);     //distance in meters
-    }
-
-    private void clearEventsFromMap() {
-        mMap.clear();
-    }
-
-//    public static class EventsFragment extends DialogFragment {
-//        @Override
-//        public Dialog onCreateDialog(Bundle savedInstanceState) {
-//            // Use the current date as the default date in the picker
-//
-//            return new DatePickerDialog(getActivity(), this, year, month, day);
-//        }
-//    }
-
-    public static class EventsAdapter extends BaseAdapter {
+    private static class EventsAdapter extends BaseAdapter {
         private List<Event> eventsList;
         private Context context;
 
