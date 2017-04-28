@@ -33,6 +33,8 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,6 +73,7 @@ public class CreateEventActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent i = getIntent();
         setContentView(R.layout.activity_create);
         mDate=(EditText) findViewById(R.id.editDate);
         mStartTime=(EditText) findViewById(R.id.editStartTime);
@@ -79,6 +82,9 @@ public class CreateEventActivity extends AppCompatActivity {
         mDescription= (EditText) findViewById(R.id.editDescription);
         mLocation= (EditText) findViewById(R.id.editLocation);
         cameraButton = (Button) findViewById(R.id.cameraButton);
+        mCoordinates = i.getExtras().getString("latitude")+","+i.getExtras().getString("longitude");
+        mUser = i.getExtras().getString("uid");
+        mLocation.setText(mCoordinates);
         checkIfCameraSupported();
         checkIfWriteToStoreAllowed();
     }
@@ -220,32 +226,6 @@ public class CreateEventActivity extends AppCompatActivity {
         }
     }
 
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Intent i = getIntent();
-        setContentView(R.layout.activity_create);
-        mDate=(EditText) findViewById(R.id.editDate);
-        mStartTime=(EditText) findViewById(R.id.editStartTime);
-        mEndTime=(EditText) findViewById(R.id.editEndTime);
-        mTitle=(EditText) findViewById(R.id.editEventName);
-        mDescription= (EditText) findViewById(R.id.editDescription);
-        mLocation= (EditText) findViewById(R.id.editLocation);
-        mCoordinates = i.getExtras().getString("latitude")+","+i.getExtras().getString("longitude");
-        mUser = i.getExtras().getString("uid");
-        mLocation.setText(mCoordinates);
-
-    }
-        private void setupSearchBar() {
-        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
-                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                // TODO: Get info about the selected place.
-                //place.getLatLng().longitude;
 
 
 //        private void setupSearchBar() {
