@@ -1,11 +1,5 @@
 package cs290final.eventadvisor;
 
-import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.app.ListFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,7 +20,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,8 +28,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +48,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -264,8 +256,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onCameraIdle() {
                 System.out.println("camera idle");
+                Toast.makeText(MapsActivity.this, "Camera Idle", Toast.LENGTH_SHORT).show();
 //                clearEventsFromMap();
                 CameraPosition place = mMap.getCameraPosition();
+                float distanceInMeters = calculateMaxMapDistanceOnScreen();
+                System.out.println("Distance: " + distanceInMeters);
                 new RetrieveEvents(MapsActivity.this).execute(place.target.latitude, place.target.longitude);
             }
         });
@@ -286,7 +281,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+//        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         centerOnLocation();
     }
 
@@ -396,7 +391,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Place place = PlaceAutocomplete.getPlace(this, data);
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
                 Toast.makeText(this, place.getName(), Toast.LENGTH_SHORT).show();
-                new RetrieveEvents(MapsActivity.this).execute(place.getLatLng().latitude,place.getLatLng().longitude);
+//                new RetrieveEvents(MapsActivity.this).execute(place.getLatLng().latitude,place.getLatLng().longitude);
 
             }
             else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
@@ -564,6 +559,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         DecimalFormat decimalFormat = new DecimalFormat("##.####");	//four decimal places corresponds to 11.1 meters
         decimalFormat.setRoundingMode(RoundingMode.UP);
         return decimalFormat.format(event.getLatitude()) + " " + decimalFormat.format(event.getLongitude());
+    }
+
+    private float calculateMaxMapDistanceOnScreen() {
+        VisibleRegion visibleRegion = mMap.getProjection().getVisibleRegion();
+        Location northEastCorner = new Location("");
+        northEastCorner.setLatitude(visibleRegion.latLngBounds.northeast.latitude);
+        northEastCorner.setLongitude(visibleRegion.latLngBounds.northeast.longitude);
+        Location southWestCorner = new Location("");
+        southWestCorner.setLatitude(visibleRegion.latLngBounds.southwest.latitude);
+        southWestCorner.setLongitude(visibleRegion.latLngBounds.southwest.longitude);
+        return southWestCorner.distanceTo(northEastCorner);     //distance in meters
     }
 
     private void clearEventsFromMap() {
