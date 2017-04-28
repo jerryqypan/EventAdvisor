@@ -55,6 +55,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.vision.text.Text;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -258,8 +259,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void createAndShowEventDialogBox(AdapterView<?> parent, View view, int position, long id) {
         AlertDialog.Builder builderInner = new AlertDialog.Builder(MapsActivity.this);
         Event event = (Event) parent.getItemAtPosition(position);
-        View v = getLayoutInflater().inflate(R.layout.select_event, null);
-        builderInner.setView(v);
+        builderInner.setView(inflateAndPopulateEventDialog(event));
 //      builderInner.setMessage(event.getTitle() + " " + event.getDate() + " " + event.getDescription());
 //                        builderInner.setTitle(event.getTitle() + " " + event.getStartTime()+ " - " + event.getEndTime());
         builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -271,6 +271,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         AlertDialog dialog = builderInner.create();
         dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         dialog.show();
+    }
+
+    private View inflateAndPopulateEventDialog(Event event) {
+        View view = getLayoutInflater().inflate(R.layout.select_event, null);
+        TextView eventName = (TextView) view.findViewById(R.id.eventName);
+        TextView eventDate = (TextView) view.findViewById(R.id.eventDate);
+        TextView eventTime = (TextView) view.findViewById(R.id.eventTime);
+        TextView eventLocation = (TextView) view.findViewById(R.id.eventLocation);
+        TextView eventDescription = (TextView) view.findViewById(R.id.eventDescription);
+        ImageView eventImage = (ImageView) view.findViewById(R.id.eventImage);
+        eventName.setText(event.getTitle());
+        eventDate.setText(event.getDate());
+        eventTime.setText(event.getStartTime() + " - " + event.getEndTime());
+        eventLocation.setText(event.getLatitude() + " , " + event.getLongitude());
+        eventDescription.setText(event.getDescription());
+        return view;
     }
 
     private void centerOnLocation() {
