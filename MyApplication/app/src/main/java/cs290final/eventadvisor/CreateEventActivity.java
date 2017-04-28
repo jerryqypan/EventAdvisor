@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
@@ -100,9 +101,10 @@ public class CreateEventActivity extends AppCompatActivity {
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH);
             int day = c.get(Calendar.DAY_OF_MONTH);
-
+            DatePickerDialog picker = new DatePickerDialog(getActivity(),android.R.style.Theme_DeviceDefault_Dialog_NoActionBar, this, year, month, day);
             // Create a new instance of DatePickerDialog and return it
-            return new DatePickerDialog(getActivity(),android.R.style.Theme_DeviceDefault_Dialog_NoActionBar, this, year, month, day);
+            picker.getDatePicker().setMinDate(c.getTime().getTime());
+            return picker;
         }
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
@@ -170,7 +172,11 @@ public class CreateEventActivity extends AppCompatActivity {
         newFragment.setArguments(args);
         newFragment.show(getFragmentManager(), "timePicker");
     }
-    public void createEventAction(View view){
+    public void createEventAction(View view) {
+        if (mDate.getText().toString().length() == 0 || mStartTime.getText().toString().length() == 0 || mEndTime.getText().toString().length() == 0 || mTitle.getText().toString().length()==0 || mDescription.getText().toString().length()==0){
+            Toast.makeText(this,"Please fill all of the form!",Toast.LENGTH_SHORT).show();
+            return;
+        }
         System.out.println("Create Event Activity");
         String date = mDate.getText().toString();
         String title = mTitle.getText().toString();

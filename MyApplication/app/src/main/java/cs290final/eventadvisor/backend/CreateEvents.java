@@ -73,7 +73,7 @@ public class CreateEvents extends AsyncTask<String, String, String > {
                 sb.append(line);
                 break;
             }
-            System.out.println(sb.toString());
+            //System.out.println(sb.toString());
             return sb.toString();
         } catch(Exception e){
             return new String("Exception: " + e.getMessage());
@@ -81,7 +81,11 @@ public class CreateEvents extends AsyncTask<String, String, String > {
     }
     @Override
     protected void onPostExecute(String result){
-        Toast.makeText(context, "Success", Toast.LENGTH_LONG).show(); //currently prints success regardless of outcomes
+        if(result.equals("")){
+            Toast.makeText(context, "Success", Toast.LENGTH_LONG).show(); //currently prints success regardless of outcomes
+        }else{
+            Toast.makeText(context, "Failure "+result, Toast.LENGTH_LONG).show(); //currently prints success regardless of outcomes
+        }
         Intent i = new Intent(context,MapsActivity.class);
         CreateEventActivity current = (CreateEventActivity)context;
         i.putExtra("latitude",current.getCoordinates().split(",")[0]);
