@@ -1,5 +1,7 @@
 package cs290final.eventadvisor;
 
+import android.app.Dialog;
+import android.app.ListFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,13 +19,23 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +56,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,7 +64,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.zip.Inflater;
 
 import cs290final.eventadvisor.backend.Event;
 import cs290final.eventadvisor.backend.JSONToEventGenerator;
@@ -65,7 +85,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleApiClient mGoogleApiClient;
 
     private Location mLastLocation;
-    private List<Event> eventsList;
+//    private List<Event> eventsList;
+    private Map<String, List<Event>> eventsMap = new HashMap<String,List<Event>>();
+    private Map<String, Marker> markersMap = new HashMap<String, Marker>();
     private String eventsJSON;
 
     private DrawerLayout mDrawerLayout;
@@ -139,17 +161,39 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .addApi(LocationServices.API)
                     .build();
         }
-//        setupSearchBar();
-        String testEvents = "{ \"events\":[{\"title\":\"Test1Chapel\",\"date\":\"4-31-2017\",\"startTime\":\"12:00\",\"endTime\":\"16:00\",\"description\":\"This is a test event\",\"longitude\":-78.940278,\"latitude\":36.001901},{\"title\":\"Test2WU\",\"date\":\"4-31-2017\",\"startTime\":\"12:00\",\"endTime\":\"16:00\",\"description\":\"This is a test event\",\"longitude\":-78.939011,\"latitude\":36.000798}]}";
-//        eventsList = JSONToEventGenerator.unmarshallJSONString(testEvents);
-        //System.out.println("is ui" + Thread.currentThread());
-//Chirag pls help me fix this - Jerry
+
+  //Chirag pls help me fix this - Jerry
 //        Intent i = this.getIntent();
 //        if(i.getExtras() != null) {
 //            Double latitude = Double.parseDouble(i.getExtras().getString("latitude", "0.0"));
 //            Double longitude =  Double.parseDouble(i.getExtras().getString("longitude", "0.0"));
 //            mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(longitude,latitude)));
 //        }
+    }
+
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        centerOnLocation();
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 
     /**
@@ -166,26 +210,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap = googleMap;
         mMap.setOnMyLocationButtonClickListener(this);
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             return;
         }
         mMap.setMyLocationEnabled(true);
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
-            public boolean onMarkerClick(Marker marker) {
-                Event event = (Event) marker.getTag();
-                if (event == null) {
-                    return true;
-                }
-                marker.showInfoWindow();
-                Toast.makeText(MapsActivity.this, event.getTitle(), Toast.LENGTH_SHORT).show();
+            public boolean onMarkerClick(final Marker marker) {
+                List<Event> events = (List<Event>) marker.getTag();
+                createAndShowEventsPopupWindow(events);
                 return true;
             }
         });
@@ -194,48 +227,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onCameraIdle() {
                 System.out.println("camera idle");
-                clearEventsFromMap();
+                Toast.makeText(MapsActivity.this, "Camera Idle", Toast.LENGTH_SHORT).show();
+//                clearEventsFromMap();
                 CameraPosition place = mMap.getCameraPosition();
+                float distanceInMeters = calculateMaxMapDistanceOnScreen();
+                System.out.println("Distance: " + distanceInMeters);
                 new RetrieveEvents(MapsActivity.this).execute(place.target.latitude, place.target.longitude);
             }
         });
-//        addEventsToMap();
-
-    }
-
-    protected void onStart() {
-        mGoogleApiClient.connect();
-        super.onStart();
-    }
-
-    protected void onStop() {
-        mGoogleApiClient.disconnect();
-        super.onStop();
-    }
-
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-        centerOnLocation();
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        mMap.setMyLocationEnabled(true);
     }
 
     @Override
@@ -244,31 +243,148 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return false;
     }
 
+    private void createAndShowEventsPopupWindow(List<Event> events) {
+        if (events == null || events.size() == 0) {
+            return;
+        }
+        final ListPopupWindow listPopupWindow = new ListPopupWindow(MapsActivity.this);
+        final EventsAdapter eventsAdapter = new EventsAdapter(events, MapsActivity.this);
+        listPopupWindow.setAdapter(eventsAdapter);
+        listPopupWindow.setAnchorView(findViewById(R.id.map));
+        listPopupWindow.setContentWidth(ListPopupWindow.WRAP_CONTENT);
+        listPopupWindow.setHeight(mDrawerLayout.getHeight()/3);
+        listPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                createAndShowEventDialogBox(parent, view, position, id);
+            }
+        });
+        listPopupWindow.show();
+    }
+
+    private void createAndShowEventDialogBox(AdapterView<?> parent, View view, int position, long id) {
+        AlertDialog.Builder builderInner = new AlertDialog.Builder(MapsActivity.this);
+        Event event = (Event) parent.getItemAtPosition(position);
+        builderInner.setMessage(event.getTitle() + " " + event.getDate() + " " + event.getDescription());
+//                        builderInner.setTitle(event.getTitle() + " " + event.getStartTime()+ " - " + event.getEndTime());
+        builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog,int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builderInner.create();
+        dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        dialog.show();
+    }
+
     private void centerOnLocation() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             return;
         }
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         Toast.makeText(this, "Centered LOCATION", Toast.LENGTH_LONG).show();
         if (mLastLocation != null) {  //default action does this
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 15));
         }
     }
 
-    private void addEventsToMap() {
-        for (Event event : eventsList) {
-            addEventToMap(event);
+    private float calculateMaxMapDistanceOnScreen() {
+        VisibleRegion visibleRegion = mMap.getProjection().getVisibleRegion();
+        Location northEastCorner = new Location("");
+        northEastCorner.setLatitude(visibleRegion.latLngBounds.northeast.latitude);
+        northEastCorner.setLongitude(visibleRegion.latLngBounds.northeast.longitude);
+        Location southWestCorner = new Location("");
+        southWestCorner.setLatitude(visibleRegion.latLngBounds.southwest.latitude);
+        southWestCorner.setLongitude(visibleRegion.latLngBounds.southwest.longitude);
+        return southWestCorner.distanceTo(northEastCorner);     //distance in meters
+    }
+
+    private void clearEventsFromMap() {
+        mMap.clear();
+    }
+
+    public void retrieveAndParseJSON(String json) {
+        eventsJSON = json;
+        eventsMap = new HashMap<>();
+        List<Event> events = JSONToEventGenerator.unmarshallJSONString(eventsJSON);
+        events.add(new Event("dupl1", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, ""));      //need to remove
+        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, ""));      //need to remove
+        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, ""));      //need to remove
+        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, ""));      //need to remove
+        for (Event event : events) {
+            String mapKey = normalizeKeyForMap(event);
+            if (!eventsMap.containsKey(mapKey)) {
+                eventsMap.put(mapKey, new ArrayList<Event>());
+            }
+            eventsMap.get(mapKey).add(event);
+        }
+        addEventsToGoogleMap();
+    }
+
+    private void addEventsToGoogleMap() {
+        for (String key : eventsMap.keySet()) {
+            addEventToGoogleMap(key, eventsMap.get(key));
+        }
+        removeUnusedMarkersFromGoogleMap();
+    }
+
+    private void addEventToGoogleMap(String key, List<Event> events) {
+        if (markersMap.containsKey(key)) {
+            markersMap.get(key).setTag(events);
+        } else {
+            if (events.size() > 0) {
+                MarkerOptions markerOptions = new MarkerOptions();
+//            markerOptions.title(event.getTitle());
+                String latitude = key.split(" ")[0];
+                String longitude = key.split(" ")[1];
+                markerOptions.position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
+//            markerOptions.snippet(event.getDescription());
+                Marker eventMarker = mMap.addMarker(markerOptions);
+                eventMarker.setTag(events);
+                markersMap.put(key, eventMarker);
+            }
         }
     }
+
+    private void removeUnusedMarkersFromGoogleMap() {
+        Iterator iterator = markersMap.keySet().iterator();
+        while (iterator.hasNext()) {
+            String key = (String) iterator.next();
+            if (!eventsMap.containsKey(key)) {
+                markersMap.get(key).remove();
+                iterator.remove();
+            }
+        }
+    }
+
+    private String normalizeKeyForMap(Event event) {
+        DecimalFormat decimalFormat = new DecimalFormat("##.####");	//four decimal places corresponds to 11.1 meters
+        decimalFormat.setRoundingMode(RoundingMode.UP);
+        return decimalFormat.format(event.getLatitude()) + " " + decimalFormat.format(event.getLongitude());
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_SELECT_PLACE) {  //search bar place result
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(this, data);
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+                Toast.makeText(this, place.getName(), Toast.LENGTH_SHORT).show();
+                //don't need this as it will be taken care of in the camera idle listener
+//                new RetrieveEvents(MapsActivity.this).execute(place.getLatLng().latitude,place.getLatLng().longitude);
+
+            }
+            else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(this, data);
+            }
+            searchBarMenuItem.collapseActionView(); //closes view so that things can be re-searched
+            searchView.setIconified(true);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     public void createActivityAction(View v){
         Intent intent = new Intent(this,CreateEventActivity.class);
         intent.putExtra("latitude", Double.toString(mMap.getCameraPosition().target.latitude));
@@ -283,24 +399,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-//
-//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String query) {
-//                System.out.println("Searched: " + query);
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String newText) {
-//                return false;
-//            }
-//        });
-
         return true;
     }
-
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -320,31 +420,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     GooglePlayServicesNotAvailableException e) {
                 e.printStackTrace();
             }
-
             return true;
         } else if (id == android.R.id.home) {
             mDrawerLayout.openDrawer(GravityCompat.START);
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_SELECT_PLACE) {  //search bar place result
-            if (resultCode == RESULT_OK) {
-                Place place = PlaceAutocomplete.getPlace(this, data);
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-                Toast.makeText(this, place.getName(), Toast.LENGTH_SHORT).show();
-                new RetrieveEvents(MapsActivity.this).execute(place.getLatLng().latitude,place.getLatLng().longitude);
-
-            }
-            else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                Status status = PlaceAutocomplete.getStatus(this, data);
-            }
-            searchBarMenuItem.collapseActionView(); //closes view so that things can be re-searched
-            searchView.setIconified(true);
-        }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public void onDeleteAccountClick(View v) {
@@ -422,47 +502,56 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         in.setClass(context, MapsActivity.class);
         return in;
     }
-    private void addEventToMap(Event event) {
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.title(event.getTitle());
-        markerOptions.position(new LatLng(event.getLatitude(), event.getLongitude()));
-        markerOptions.snippet(event.getDescription());
-        Marker eventMarker = mMap.addMarker(markerOptions);
-        eventMarker.setTag(event);
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
     }
 
-//    private void setupSearchBar() {
-//        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
-//                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
-//        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-//            @Override
-//            public void onPlaceSelected(Place place) {
-//                // TODO: Get info about the selected place.
-//                System.out.println("place selected");
-//                Marker searchedPlace = mMap.addMarker(new MarkerOptions().title((String) place.getName()).position(place.getLatLng()));
-//                System.out.println(place.getLatLng().longitude);
-//                System.out.println(place.getLatLng().latitude);
-//                new RetrieveEvents(MapsActivity.this).execute(place.getLatLng().latitude,place.getLatLng().longitude);
-//                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(place.getLatLng(), 13));
-//                searchedPlace.showInfoWindow();
-//            }
-//
-//            @Override
-//            public void onError(Status status) {
-//                // TODO: Handle the error.
-//                System.out.println("searchbar error");
-//            }
-//        });
-//    }
+    private static class EventsAdapter extends BaseAdapter {
+        private List<Event> eventsList;
+        private Context context;
+        private List<TextView> eventsViews;
 
-    public void retrieveJSON(String json) {
-        System.out.println("maps" + Thread.currentThread());
-        eventsJSON = json;
-        eventsList = JSONToEventGenerator.unmarshallJSONString(eventsJSON);
-        addEventsToMap();
-    }
+        public EventsAdapter(List<Event> eventsList, Context context) {
+            this.eventsList = eventsList;
+            this.context = context;
+            createViews();
+        }
 
-    private void clearEventsFromMap() {
-        mMap.clear();
+        private void createViews() {
+            eventsViews = new ArrayList<TextView>();
+            for (int i = 0; i < eventsList.size(); i++) {
+                Event event = eventsList.get(i);
+                View v = LayoutInflater.from(context).inflate(android.R.layout.simple_list_item_1, null);
+                TextView textView = (TextView) v;
+                textView.setText(event.getTitle() + " " + event.getDate());
+                eventsViews.add(textView);
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return eventsList.size();
+        }
+
+        @Override
+        public Event getItem(int position) {
+            return eventsList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return eventsList.get(position).getIdEvent();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            return eventsViews.get(position);
+        }
     }
 }
+

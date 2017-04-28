@@ -1,17 +1,28 @@
 package cs290final.eventadvisor;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
@@ -22,36 +33,127 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
-import com.google.android.gms.location.places.ui.PlaceSelectionListener;
-import com.google.android.gms.maps.CameraUpdateFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 import java.util.Locale;
 
 import cs290final.eventadvisor.backend.CreateEvents;
-import cs290final.eventadvisor.backend.RetrieveEvents;
 
 /**
  * Created by emilymeng on 4/16/17.
  */
 
 public class CreateEventActivity extends AppCompatActivity {
-    static EditText mStartTime;
-    static EditText mEndTime;
-    static EditText mDate;
-    static EditText mTitle;
-    static EditText mDescription;
-    static EditText mLocation;
-    private String mUser;
 
-    public String getCoordinates() {
+    private static EditText mStartTime;
+    private static EditText mEndTime;
+    private static EditText mDate;
+    private static EditText mTitle;
+    private static EditText mDescription;
+    private static EditText mLocation;
+    private Button cameraButton;
+    private String mUser;
+  
+  public String getCoordinates() {
         return mCoordinates;
     }
 
     private String mCoordinates;
+
     private static final int REQUEST_SELECT_PLACE = 1234;
-    static Calendar myCalendar = Calendar.getInstance();
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static Calendar myCalendar = Calendar.getInstance();
     private static final String TAG = "CreateEventActivity";
+    private String mCurrentPhotoPath;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_create);
+        mDate=(EditText) findViewById(R.id.editDate);
+        mStartTime=(EditText) findViewById(R.id.editStartTime);
+        mEndTime=(EditText) findViewById(R.id.editEndTime);
+        mTitle=(EditText) findViewById(R.id.editEventName);
+        mDescription= (EditText) findViewById(R.id.editDescription);
+        mLocation= (EditText) findViewById(R.id.editLocation);
+        cameraButton = (Button) findViewById(R.id.cameraButton);
+        checkIfCameraSupported();
+        checkIfWriteToStoreAllowed();
+    }
+
+    private void checkIfCameraSupported() {
+        boolean hasCamera = getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+        if (hasCamera) {
+            cameraButton.setEnabled(true);
+        } else {
+            cameraButton.setEnabled(false);
+        }
+    }
+
+    private void checkIfWriteToStoreAllowed() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            return;
+        }
+    }
+
+    public void startCameraButtonAction(View view) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+                System.out.println("Error occurred while creating the File for camera");
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.cs290final.eventadvisor.android.fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        } else {
+            Toast.makeText(this, "This device cannot support this feature", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    private void addPicToGallery() {
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        values.put(MediaStore.MediaColumns.DATA, mCurrentPhotoPath);
+        this.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+    }
 
 
     public static class TimePickerFragment extends DialogFragment
@@ -118,6 +220,8 @@ public class CreateEventActivity extends AppCompatActivity {
         }
     }
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,15 +247,26 @@ public class CreateEventActivity extends AppCompatActivity {
                 // TODO: Get info about the selected place.
                 //place.getLatLng().longitude;
 
-            }
 
-            @Override
-            public void onError(Status status) {
-                // TODO: Handle the error.
-                System.out.println("searchbar error");
-            }
-        });
-    }
+//        private void setupSearchBar() {
+//        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+//                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+//        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+//            @Override
+//            public void onPlaceSelected(Place place) {
+//                // TODO: Get info about the selected place.
+//                //place.getLatLng().longitude;
+//
+//            }
+//
+//            @Override
+//            public void onError(Status status) {
+//                // TODO: Handle the error.
+//                System.out.println("searchbar error");
+//            }
+//        });
+//    }
+
     public void showDatePickerDialog(View v) {
         DialogFragment newFragment = new DatePickerFragment();
         newFragment.show(getFragmentManager(), "datePicker");
@@ -203,6 +318,17 @@ public class CreateEventActivity extends AppCompatActivity {
             else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
             }
+        }
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            try {
+                Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.fromFile(new File(mCurrentPhotoPath)));
+//                MediaStore.Images.Media.insertImage(getContentResolver(), imageBitmap, "tes" , "sdf");
+                addPicToGallery();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

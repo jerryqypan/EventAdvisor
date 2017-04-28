@@ -3,4 +3,5 @@
     <dimen name="auth_method_button_width">208dp</dimen>
     <dimen name="auth_method_button_marginBottom">8dp</dimen>
     <dimen name="auth_method_button_drawablePadding">12dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
 </resources>
