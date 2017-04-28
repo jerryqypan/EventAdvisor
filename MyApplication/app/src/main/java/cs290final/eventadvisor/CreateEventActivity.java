@@ -9,7 +9,6 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.net.Uri;
@@ -33,8 +32,6 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
-import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,6 +64,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
     private static final int REQUEST_SELECT_PLACE = 1234;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_STORAGE_PERMISSION = 2;
     private static Calendar myCalendar = Calendar.getInstance();
     private static final String TAG = "CreateEventActivity";
     private String mCurrentPhotoPath;
@@ -86,7 +84,7 @@ public class CreateEventActivity extends AppCompatActivity {
         mCoordinates = i.getExtras().getString("latitude")+","+i.getExtras().getString("longitude");
         mUser = i.getExtras().getString("uid");
         mLocation.setText(mCoordinates);
-
+        checkIfCameraSupported();
     }
 
     private void checkIfCameraSupported() {
@@ -98,7 +96,7 @@ public class CreateEventActivity extends AppCompatActivity {
         }
     }
 
-    private void checkIfWriteToStoreAllowed() {
+    private boolean checkIfWriteToStorageAllowed() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -107,14 +105,17 @@ public class CreateEventActivity extends AppCompatActivity {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            return;
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_STORAGE_PERMISSION);
+            return false;
         }
+        return true;
     }
 
     public void startCameraButtonAction(View view) {
-        checkIfCameraSupported();
-        checkIfWriteToStoreAllowed();
+        boolean hasPermission = checkIfWriteToStorageAllowed();
+        if (!hasPermission) {
+            return;
+        }
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -327,6 +328,15 @@ public class CreateEventActivity extends AppCompatActivity {
 
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == REQUEST_STORAGE_PERMISSION) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                startCameraButtonAction(null);
+            }
+        }
     }
 
 
