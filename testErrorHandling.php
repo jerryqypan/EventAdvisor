@@ -8,21 +8,22 @@
   } catch(PDOException $e) {
       die('Could not connect to the database:<br/>' . $e);
   }
-  $title = $_POST['title'];
-  $date = $_POST['date'];
-  $startTime = $_POST['startTime'];
-  $endTime = $_POST['endTime'];
-  $description = $_POST['description'];
-  $longitude = floatval($_POST['longitude']);
-  $latitude = floatval($_POST['latitude']);
-  $uid = $_POST['uid'];
-  // $title = "Wannamaker";
-  // $date = "7-4-17";
-  // $startTime = "14:00";
-  // $endTime = "16:00";
-  // $description = "Test wannamaker";
-  // $longitude = 35.9990892;
-  // $latitude = -78.9391148;
+  // $title = $_POST['title'];
+  // $date = $_POST['date'];
+  // $startTime = $_POST['startTime'];
+  // $endTime = $_POST['endTime'];
+  // $description = $_POST['description'];
+  // $longitude = floatval($_POST['longitude']);
+  // $latitude = floatval($_POST['latitude']);
+  // $uid = $_POST['uid'];
+  $title = "testErrorException";
+  $date = "7-4-17";
+  $startTime = "14:00";
+  $endTime = "16:00";
+  $description = "Test wannamaker";
+  $longitude = 35.9990892;
+  $latitude = -78.9391148;
+  $uid= "thisisn'treal";
   $sthandler = $db->prepare("INSERT INTO Event(title,date,starttime,endtime,description,longitude,latitude,uid) values(:title,:date,:startTime,:endTime,:description,:longitude,:latitude,:uid)"); //this prevents sql injections by parameterizing the inputs
   #$sthandler = $db->prepare("SELECT * FROM Event");
   $sthandler->execute(array(
@@ -35,11 +36,11 @@
     ':latitude' => $latitude,
     ':uid' => $uid
     ));
-    if($sthandler->errorCode() == 0) {
+  if($sthandler->errorCode() == 0) {
     while(($row = $sthandler->fetch()) != false) {
         echo $row . "\n";
-    	}
-	} else {
+    }
+} else {
     $errors = $sthandler->errorInfo();
     echo($errors[2]);
 }
