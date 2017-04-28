@@ -18,9 +18,10 @@
             android:id="@+id/main_logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerInParent="true"
-            android:src="@drawable/launch_logo" />
+            android:layout_marginTop="141dp"
+            android:src="@drawable/launch_logo"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
 
         <Button
             android:id="@+id/get_started_button"
@@ -33,8 +34,7 @@
             android:onClick="onStartClick"
             android:text="Get Started"
             android:textColor="#ffffff"
-            android:textSize="30sp"
-            android:theme="@style/CustomButton" />
+            android:textSize="30sp" />
     </RelativeLayout>
 
 
