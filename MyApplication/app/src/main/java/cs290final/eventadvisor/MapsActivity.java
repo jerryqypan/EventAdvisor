@@ -1,19 +1,17 @@
 package cs290final.eventadvisor;
 
-import android.app.Dialog;
-import android.app.ListFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -23,7 +21,6 @@ import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,11 +28,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,13 +50,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -71,7 +65,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.Inflater;
 
 import cs290final.eventadvisor.backend.Event;
 import cs290final.eventadvisor.backend.JSONToEventGenerator;
@@ -265,7 +258,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void createAndShowEventDialogBox(AdapterView<?> parent, View view, int position, long id) {
         AlertDialog.Builder builderInner = new AlertDialog.Builder(MapsActivity.this);
         Event event = (Event) parent.getItemAtPosition(position);
-        builderInner.setMessage(event.getTitle() + " " + event.getDate() + " " + event.getDescription());
+        View v = getLayoutInflater().inflate(R.layout.select_event, null);
+        builderInner.setView(v);
+//      builderInner.setMessage(event.getTitle() + " " + event.getDate() + " " + event.getDescription());
 //                        builderInner.setTitle(event.getTitle() + " " + event.getStartTime()+ " - " + event.getEndTime());
         builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
