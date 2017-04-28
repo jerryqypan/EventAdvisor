@@ -25,7 +25,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:orientation="vertical"
-
             android:padding="3dp">
 
             <TextView
@@ -49,8 +48,9 @@
 
             <Button
                 android:id="@+id/sign_out_button"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="5dp"
                 android:onClick="onSignOutClick"
                 android:textColor="#FFFFFF"
@@ -59,8 +59,9 @@
 
             <Button
                 android:id="@+id/delete_account_button"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="5dp"
                 android:theme="@style/WarnButton"
                 android:onClick="onDeleteAccountClick"
