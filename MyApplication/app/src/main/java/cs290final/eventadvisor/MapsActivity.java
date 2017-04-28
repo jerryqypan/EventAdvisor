@@ -1,5 +1,7 @@
 package cs290final.eventadvisor;
 
+import android.app.Dialog;
+import android.app.ListFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,17 +19,23 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,6 +71,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.Inflater;
 
 import cs290final.eventadvisor.backend.Event;
 import cs290final.eventadvisor.backend.JSONToEventGenerator;
@@ -201,67 +210,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public boolean onMarkerClick(final Marker marker) {
                 List<Event> events = (List<Event>) marker.getTag();
-//                Event event = (Event) marker.getTag();
-                if (events == null || events.size() == 0) {
-                    return true;
-                }
-                if (events.size() == 1) {
-                    marker.setTitle(events.get(0).getTitle());
-                    marker.setSnippet(events.get(0).getDescription());
-                    marker.showInfoWindow();
-                    return true;
-                }
-//                marker.showInfoWindow();
-//                Toast.makeText(MapsActivity.this, event.getTitle(), Toast.LENGTH_SHORT).show();
-
-//                Fragment newFragment = new EventsFragment();
-//                getFragmentManager().beginTransaction().add(R.id.map, newFragment).commit();
-//                PopupWindow popupWindow = new PopupWindow(MapsActivity.this);
-//                popupWindow.showAtLocation(findViewById(R.id.map), Gravity.BOTTOM, 10, 10);
-                AlertDialog.Builder popup = new AlertDialog.Builder(MapsActivity.this);
-//                popup.setIcon(R.drawable.com_facebook_button_icon);
-                popup.setTitle("Events at this location:");
-
-                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MapsActivity.this, android.R.layout.select_dialog_item);
-                final EventsAdapter eventsAdapter = new EventsAdapter(events, MapsActivity.this);
-//                for (Event event : events) {
-//                    arrayAdapter.add(event.getTitle() + " " + event.getDate());
-//                }
-//                arrayAdapter.add("Hardik");
-//                arrayAdapter.add("Archit");
-//                arrayAdapter.add("Jignesh");
-//                arrayAdapter.add("Umang");
-//                arrayAdapter.add("Gatti");
-
-
-                popup.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                popup.setAdapter(eventsAdapter, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Event event = (Event) eventsAdapter.getItem(which);
-                        marker.setTitle(event.getTitle() + " " + which);
-                        marker.setSnippet(event.getDescription());
-                        marker.showInfoWindow();
-                        String strName = event.getTitle() + " " + event.getDescription();
-                        AlertDialog.Builder builderInner = new AlertDialog.Builder(MapsActivity.this);
-                        builderInner.setMessage(strName);
-                        builderInner.setTitle(event.getTitle() + " " + event.getStartTime()+ " - " + event.getEndTime());
-                        builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog,int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                        builderInner.show();
-                    }
-                });
-                popup.show();
+                createAndShowEventsPopupWindow(events);
                 return true;
             }
         });
@@ -284,6 +233,41 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onMyLocationButtonClick() {
         centerOnLocation();
         return false;
+    }
+
+    private void createAndShowEventsPopupWindow(List<Event> events) {
+        if (events == null || events.size() == 0) {
+            return;
+        }
+        final ListPopupWindow listPopupWindow = new ListPopupWindow(MapsActivity.this);
+        final EventsAdapter eventsAdapter = new EventsAdapter(events, MapsActivity.this);
+        listPopupWindow.setAdapter(eventsAdapter);
+        listPopupWindow.setAnchorView(findViewById(R.id.map));
+        listPopupWindow.setContentWidth(ListPopupWindow.WRAP_CONTENT);
+        listPopupWindow.setHeight(mDrawerLayout.getHeight()/3);
+        listPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                createAndShowEventDialogBox(parent, view, position, id);
+            }
+        });
+        listPopupWindow.show();
+    }
+
+    private void createAndShowEventDialogBox(AdapterView<?> parent, View view, int position, long id) {
+        AlertDialog.Builder builderInner = new AlertDialog.Builder(MapsActivity.this);
+        Event event = (Event) parent.getItemAtPosition(position);
+        builderInner.setMessage(event.getTitle() + " " + event.getDate() + " " + event.getDescription());
+//                        builderInner.setTitle(event.getTitle() + " " + event.getStartTime()+ " - " + event.getEndTime());
+        builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog,int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builderInner.create();
+        dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        dialog.show();
     }
 
     private void centerOnLocation() {
@@ -317,6 +301,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         eventsJSON = json;
         eventsMap = new HashMap<>();
         List<Event> events = JSONToEventGenerator.unmarshallJSONString(eventsJSON);
+        events.add(new Event("dupl1", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, ""));      //need to remove
+        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, ""));      //need to remove
+        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, ""));      //need to remove
+        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, ""));      //need to remove
         for (Event event : events) {
             String mapKey = normalizeKeyForMap(event);
             if (!eventsMap.containsKey(mapKey)) {
@@ -514,10 +502,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static class EventsAdapter extends BaseAdapter {
         private List<Event> eventsList;
         private Context context;
+        private List<TextView> eventsViews;
 
         public EventsAdapter(List<Event> eventsList, Context context) {
             this.eventsList = eventsList;
             this.context = context;
+            createViews();
+        }
+
+        private void createViews() {
+            eventsViews = new ArrayList<TextView>();
+            for (int i = 0; i < eventsList.size(); i++) {
+                Event event = eventsList.get(i);
+                View v = LayoutInflater.from(context).inflate(android.R.layout.simple_list_item_1, null);
+                TextView textView = (TextView) v;
+                textView.setText(event.getTitle() + " " + event.getDate());
+                eventsViews.add(textView);
+            }
         }
 
         @Override
@@ -526,7 +527,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         @Override
-        public Object getItem(int position) {
+        public Event getItem(int position) {
             return eventsList.get(position);
         }
 
@@ -537,12 +538,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-//            TextView textView = new TextView(context);
-            Event event = eventsList.get(position);
-//            textView.setText(event.getTitle() + " " + event.getDate());
-            View v = LayoutInflater.from(context).inflate(android.R.layout.simple_list_item_1, null);
-            ((TextView) v).setText(event.getTitle() + " " + event.getDate());
-            return v;
+            return eventsViews.get(position);
         }
     }
 }
