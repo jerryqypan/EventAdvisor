@@ -46,6 +46,7 @@ import cs290final.eventadvisor.backend.CreateEvents;
  */
 
 public class CreateEventActivity extends AppCompatActivity {
+
     private static EditText mStartTime;
     private static EditText mEndTime;
     private static EditText mDate;
@@ -53,6 +54,14 @@ public class CreateEventActivity extends AppCompatActivity {
     private static EditText mDescription;
     private static EditText mLocation;
     private Button cameraButton;
+    private String mUser;
+  
+  public String getCoordinates() {
+        return mCoordinates;
+    }
+
+    private String mCoordinates;
+
     private static final int REQUEST_SELECT_PLACE = 1234;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static Calendar myCalendar = Calendar.getInstance();
@@ -161,7 +170,7 @@ public class CreateEventActivity extends AppCompatActivity {
             System.out.println("STARTOREND"+startOrEnd);
             System.out.println("TEST"+ getArguments().getString("startorEnd"));
             // Create a new instance of TimePickerDialog and return it
-            return new TimePickerDialog(getActivity(), this, hour, minute,
+            return new TimePickerDialog(getActivity(),android.R.style.Theme_DeviceDefault_Dialog_NoActionBar, this, hour, minute,
                     DateFormat.is24HourFormat(getActivity()));
         }
 
@@ -173,10 +182,10 @@ public class CreateEventActivity extends AppCompatActivity {
                 fMinute=Integer.toString(minute);
             }
             if(startOrEnd.equals("start")){
-                mStartTime.setText("Start Time :"+hourOfDay+":"+fMinute+":00");
+                mStartTime.setText(""+hourOfDay+":"+fMinute+":00");
             }
             if(startOrEnd.equals("end")){
-                mEndTime.setText("End Time: "+hourOfDay+":"+fMinute+":00");
+                mEndTime.setText(""+hourOfDay+":"+fMinute+":00");
             }else{
                 Log.d(TAG,startOrEnd);
             }
@@ -195,7 +204,7 @@ public class CreateEventActivity extends AppCompatActivity {
             int day = c.get(Calendar.DAY_OF_MONTH);
 
             // Create a new instance of DatePickerDialog and return it
-            return new DatePickerDialog(getActivity(), this, year, month, day);
+            return new DatePickerDialog(getActivity(),android.R.style.Theme_DeviceDefault_Dialog_NoActionBar, this, year, month, day);
         }
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
@@ -210,6 +219,33 @@ public class CreateEventActivity extends AppCompatActivity {
 
         }
     }
+
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Intent i = getIntent();
+        setContentView(R.layout.activity_create);
+        mDate=(EditText) findViewById(R.id.editDate);
+        mStartTime=(EditText) findViewById(R.id.editStartTime);
+        mEndTime=(EditText) findViewById(R.id.editEndTime);
+        mTitle=(EditText) findViewById(R.id.editEventName);
+        mDescription= (EditText) findViewById(R.id.editDescription);
+        mLocation= (EditText) findViewById(R.id.editLocation);
+        mCoordinates = i.getExtras().getString("latitude")+","+i.getExtras().getString("longitude");
+        mUser = i.getExtras().getString("uid");
+        mLocation.setText(mCoordinates);
+
+    }
+        private void setupSearchBar() {
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                //place.getLatLng().longitude;
 
 
 //        private void setupSearchBar() {
@@ -259,7 +295,7 @@ public class CreateEventActivity extends AppCompatActivity {
         String location = mLocation.getText().toString();
         String lat = location.split(",")[0];
         String lon = location.split(",")[1];
-        new CreateEvents(CreateEventActivity.this).execute(date,title,description,startTime,endTime,lat,lon);
+        new CreateEvents(CreateEventActivity.this).execute(title,date,description,startTime,endTime,lat,lon,mUser);
     }
     public void showLocationSearch(View view){
         try {       //opens google api search bar

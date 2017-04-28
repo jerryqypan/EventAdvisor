@@ -52,6 +52,7 @@
         <activity
             android:name=".CreateEventActivity"
             android:label="CreateEvent"></activity>
+
         <activity
             android:name=".SignupActivity"
             android:label="Signup"></activity>
@@ -64,6 +65,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
+
     </application>
 
 </manifest>

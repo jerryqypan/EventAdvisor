@@ -10,9 +10,16 @@
   $json = '{"events":[';
   $longitude = floatval($_POST['longitude']);
   $latitude = floatval($_POST['latitude']);
-  $sthandler = $db->prepare("SELECT * FROM Event where sqrt(pow('$longitude'-Event.longitude,2)+pow('$latitude'-Event.latitude,2))<.01");
+  #$longitude = -78.940294;
+  #$latitude = 36.001769;
+  $date = date("Y/m/d");
+  $sthandler = $db->prepare("SELECT * FROM Event where (sqrt(pow(:longitude-Event.longitude,2)+pow(:latitude-Event.latitude,2))<.01) and (Event.date>=:date)"); //this prevents sql injections by parameterizing the inputs
   #$sthandler = $db->prepare("SELECT * FROM Event");
-  $sthandler->execute();
+  $sthandler->execute(array(
+    ':longitude' => $longitude,
+    ':latitude' => $latitude,
+    ':date' => $date
+    ));
   while($result = $sthandler->fetch(PDO::FETCH_ASSOC)){
     $json.=json_encode($result); //need to echo multiple results
     $json.=',';
@@ -20,7 +27,4 @@
   $json = rtrim($json,',');
   $json.=']}';
   print_r($json);
-    //mysqli_close($con);
-    // $text = $_POST['text'];
-    // echo '{"events":[{"title":"TestEvent","date":"4-31-2017","startTime":"12:00","endTime":"16:00","description":"This is a test event","longitude":35.998456,"latitude":-78.939116},{"title":"TestEvent2","date":"4-31-2017","startTime":"12:00","endTime":"16:00","description":"This is a test event","longitude":35.998456,"latitude":-78.939126}]}';
 ?>

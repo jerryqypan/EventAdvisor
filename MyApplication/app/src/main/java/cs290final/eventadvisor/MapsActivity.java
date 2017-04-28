@@ -161,6 +161,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .addApi(LocationServices.API)
                     .build();
         }
+
+  //Chirag pls help me fix this - Jerry
+//        Intent i = this.getIntent();
+//        if(i.getExtras() != null) {
+//            Double latitude = Double.parseDouble(i.getExtras().getString("latitude", "0.0"));
+//            Double longitude =  Double.parseDouble(i.getExtras().getString("longitude", "0.0"));
+//            mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(longitude,latitude)));
+//        }
     }
 
     protected void onStart() {
@@ -379,6 +387,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void createActivityAction(View v){
         Intent intent = new Intent(this,CreateEventActivity.class);
+        intent.putExtra("latitude", Double.toString(mMap.getCameraPosition().target.latitude));
+        intent.putExtra("longitude",Double.toString(mMap.getCameraPosition().target.longitude));
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        intent.putExtra("uid",currentUser.getUid());
         startActivity(intent);
     }
 

@@ -17,6 +17,18 @@ public class Event {
     private String description;
     private double latitude;
     private double longitude;
+
+
+    private String uid;
+
+    public int getIdEvent() {
+        return idEvent;
+    }
+
+    public void setIdEvent(int idEvent) {
+        this.idEvent = idEvent;
+    }
+
     private int idEvent;
     private String uid;
 
@@ -34,6 +46,7 @@ public class Event {
         this.uid = uid;
     }
 
+
     public int getIdEvent() {
         return idEvent;
     }
@@ -45,6 +58,7 @@ public class Event {
     public String getUid() {
         return uid;
     }
+
 
     public void setUid(String uid) {
         this.uid = uid;

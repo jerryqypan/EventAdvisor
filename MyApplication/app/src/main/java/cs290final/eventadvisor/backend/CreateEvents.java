@@ -12,6 +12,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 
+import cs290final.eventadvisor.CreateEventActivity;
 import cs290final.eventadvisor.MapsActivity;
 
 /**
@@ -37,8 +38,9 @@ public class CreateEvents extends AsyncTask<String, String, String > {
             String description=arg0[4];
             String lat=arg0[5];
             String lon=arg0[6];
+            String uid=arg0[7];
             String link="https://users.cs.duke.edu/~qp7/createEvent.php";
-            String data ="&" + URLEncoder.encode("title", "UTF-8") + "=" +
+            String data =URLEncoder.encode("title", "UTF-8") + "=" +
                     URLEncoder.encode(title, "UTF-8");
             data+="&" + URLEncoder.encode("date", "UTF-8") + "=" +
                     URLEncoder.encode(date, "UTF-8");
@@ -52,13 +54,14 @@ public class CreateEvents extends AsyncTask<String, String, String > {
                     URLEncoder.encode(lon, "UTF-8");
             data+="&" + URLEncoder.encode("latitude", "UTF-8") + "=" +
                     URLEncoder.encode(lat, "UTF-8");
+            data+="&" + URLEncoder.encode("uid", "UTF-8") + "=" +
+                    URLEncoder.encode(uid, "UTF-8");
             URL url = new URL(link);
             URLConnection conn = url.openConnection();
             conn.setDoOutput(true);
             OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
             wr.write( data );
             wr.flush();
-            System.out.println("after read");
             BufferedReader reader = new BufferedReader(new
                     InputStreamReader(conn.getInputStream()));
 
@@ -78,8 +81,12 @@ public class CreateEvents extends AsyncTask<String, String, String > {
     }
     @Override
     protected void onPostExecute(String result){
-        Toast.makeText(context, "Success", Toast.LENGTH_LONG).show();
-        context.startActivity(new Intent(context,MapsActivity.class));
+        Toast.makeText(context, "Success", Toast.LENGTH_LONG).show(); //currently prints success regardless of outcomes
+        Intent i = new Intent(context,MapsActivity.class);
+        CreateEventActivity current = (CreateEventActivity)context;
+        i.putExtra("latitude",current.getCoordinates().split(",")[0]);
+        i.putExtra("longitude",current.getCoordinates().split(",")[1]);
+        context.startActivity(i);
 
     }
 }
