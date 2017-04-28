@@ -48,7 +48,8 @@ import cs290final.eventadvisor.backend.CreateEvents;
  */
 
 public class CreateEventActivity extends AppCompatActivity {
-
+    protected static final String STATE_SELECTED_LATITUDE = "state_selected_latitude";
+    protected static final String STATE_SELECTED_LONGITUDE = "state_selected_longitude";
     private static EditText mStartTime;
     private static EditText mEndTime;
     private static EditText mDate;
@@ -85,8 +86,7 @@ public class CreateEventActivity extends AppCompatActivity {
         mCoordinates = i.getExtras().getString("latitude")+","+i.getExtras().getString("longitude");
         mUser = i.getExtras().getString("uid");
         mLocation.setText(mCoordinates);
-        checkIfCameraSupported();
-        checkIfWriteToStoreAllowed();
+
     }
 
     private void checkIfCameraSupported() {
@@ -113,6 +113,8 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     public void startCameraButtonAction(View view) {
+        checkIfCameraSupported();
+        checkIfWriteToStoreAllowed();
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -292,6 +294,15 @@ public class CreateEventActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+    public void createEventsCallBack(String latitude, String longitude) {
+        Intent intent = new Intent();
+        intent.putExtra(STATE_SELECTED_LATITUDE, Double.parseDouble(latitude));
+        intent.putExtra(STATE_SELECTED_LONGITUDE, Double.parseDouble(longitude));
+        setResult(RESULT_OK, intent);
+        this.finish();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SELECT_PLACE) {  //search bar place result

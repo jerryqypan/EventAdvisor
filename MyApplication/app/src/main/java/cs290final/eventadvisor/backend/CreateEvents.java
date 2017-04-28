@@ -21,6 +21,8 @@ import cs290final.eventadvisor.MapsActivity;
 
 public class CreateEvents extends AsyncTask<String, String, String > {
     private Context context;
+    private String lat;
+    private String lon;
 
     public CreateEvents(Context context){
         this.context=context;
@@ -36,8 +38,8 @@ public class CreateEvents extends AsyncTask<String, String, String > {
             String startTime=arg0[2];
             String endTime=arg0[3];
             String description=arg0[4];
-            String lat=arg0[5];
-            String lon=arg0[6];
+            lat=arg0[5];
+            lon=arg0[6];
             String uid=arg0[7];
             String link="https://users.cs.duke.edu/~qp7/createEvent.php";
             String data =URLEncoder.encode("title", "UTF-8") + "=" +
@@ -86,11 +88,10 @@ public class CreateEvents extends AsyncTask<String, String, String > {
         }else{
             Toast.makeText(context, "Failure "+result, Toast.LENGTH_LONG).show(); //currently prints success regardless of outcomes
         }
-        Intent i = new Intent(context,MapsActivity.class);
-        CreateEventActivity current = (CreateEventActivity)context;
-        i.putExtra("latitude",current.getCoordinates().split(",")[0]);
-        i.putExtra("longitude",current.getCoordinates().split(",")[1]);
-        context.startActivity(i);
+        if (context instanceof CreateEventActivity) {
+            CreateEventActivity activity = (CreateEventActivity) context;
+            activity.createEventsCallBack(lat, lon);
+        }
 
     }
 }

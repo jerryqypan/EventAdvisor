@@ -50,6 +50,7 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -94,6 +95,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private NavigationView mNavigationView;
 
     private static final int REQUEST_SELECT_PLACE = 1234;
+    private static final int CREATE_EVENTS = 12345;
     private SearchView searchView;
     private MenuItem searchBarMenuItem;
 
@@ -161,23 +163,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .addApi(LocationServices.API)
                     .build();
         }
-
-  //Chirag pls help me fix this - Jerry
-//        Intent i = this.getIntent();
-//        if(i.getExtras() != null) {
-//            Double latitude = Double.parseDouble(i.getExtras().getString("latitude", "0.0"));
-//            Double longitude =  Double.parseDouble(i.getExtras().getString("longitude", "0.0"));
-//            mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(longitude,latitude)));
-//        }
+        mGoogleApiClient.connect();
     }
 
     protected void onStart() {
-        mGoogleApiClient.connect();
+        //mGoogleApiClient.connect();
         super.onStart();
     }
 
     protected void onStop() {
-        mGoogleApiClient.disconnect();
+       // mGoogleApiClient.disconnect();
         super.onStop();
     }
 
@@ -382,6 +377,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             searchBarMenuItem.collapseActionView(); //closes view so that things can be re-searched
             searchView.setIconified(true);
         }
+        if (requestCode == CREATE_EVENTS && resultCode == RESULT_OK) {
+            double lat = data.getDoubleExtra(CreateEventActivity.STATE_SELECTED_LATITUDE, -100000);
+            double lon = data.getDoubleExtra(CreateEventActivity.STATE_SELECTED_LONGITUDE, -100000);
+            if (!(lat == -100000 || lon == -100000)) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(lat,lon)));
+                System.out.println("lat"+lat);
+                System.out.println("lon"+lon);
+            }
+        }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -391,7 +395,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         intent.putExtra("longitude",Double.toString(mMap.getCameraPosition().target.longitude));
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         intent.putExtra("uid",currentUser.getUid());
-        startActivity(intent);
+        startActivityForResult(intent, CREATE_EVENTS);
     }
 
     @Override
