@@ -9,7 +9,7 @@
   }
   $uid = $_POST['uid'];
   $idEvent = $_POST['idEvent'];
-  $addOrDelete = $_Post['addOrDelete'];
+  $addOrDelete = $_POST['addOrDelete'];
   if($addOrDelete == 'add'){
     $sthandler = $db->prepare("INSERT INTO EventInterest(idEvent,uid) values (:idEvent,:uid)");
   }else{

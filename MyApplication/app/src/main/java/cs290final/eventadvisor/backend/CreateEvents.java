@@ -2,10 +2,14 @@ package cs290final.eventadvisor.backend;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.Base64;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
@@ -35,12 +39,22 @@ public class CreateEvents extends AsyncTask<String, String, String > {
         try{
             String title=args[0];
             String date=args[1];
-            String startTime=args[2];
-            String endTime=args[3];
-            String description=args[4];
+            String description=args[2];
+            String startTime=args[3];
+            String endTime=args[4];
             lat=args[5];
             lon=args[6];
             String uid=args[7];
+            String photoPath =args[8];
+            BitmapFactory.Options options = null;
+            options = new BitmapFactory.Options();
+            options.inSampleSize = 3;
+            Bitmap bitmap = BitmapFactory.decodeFile(photoPath,
+                    options);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+            byte[] byte_arr = stream.toByteArray();
+            String encodedPhoto = Base64.encodeToString(byte_arr, 0);
             String link="https://users.cs.duke.edu/~qp7/createEvent.php";
             String data =URLEncoder.encode("title", "UTF-8") + "=" +
                     URLEncoder.encode(title, "UTF-8");
@@ -58,6 +72,7 @@ public class CreateEvents extends AsyncTask<String, String, String > {
                     URLEncoder.encode(lat, "UTF-8");
             data+="&" + URLEncoder.encode("uid", "UTF-8") + "=" +
                     URLEncoder.encode(uid, "UTF-8");
+            data+="&" + URLEncoder.encode("photo","UTF-8") + "=" + URLEncoder.encode(encodedPhoto,"UTF-8");
             URL url = new URL(link);
             URLConnection conn = url.openConnection();
             conn.setDoOutput(true);

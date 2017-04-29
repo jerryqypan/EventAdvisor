@@ -19,13 +19,14 @@ public class Event {
     private double longitude;
     private int idEvent;
     private String uid;
+    private String url;
     private boolean isInterested;
 
 
     public Event() {
     }
 
-    public Event(String title, String date, String startTime, String endTime, String description, double longitude, double latitude, String uid,boolean isInterested){
+    public Event(String title, String date, String startTime, String endTime, String description, double longitude, double latitude, String uid,String url, boolean isInterested){
         this.title=title;
         this.date=date;
         this.startTime=startTime;
@@ -34,6 +35,7 @@ public class Event {
         this.latitude=latitude;
         this.longitude=longitude;
         this.uid = uid;
+        this.url = url;
         this.isInterested=isInterested;
     }
 
@@ -111,6 +113,8 @@ public class Event {
     public void setIdEvent(int idEvent) {
         this.idEvent = idEvent;
     }
+    public String getUrl(){return url;}
+    public void setUrl(String url){this.url=url;}
 
     @Override
     public String toString() {

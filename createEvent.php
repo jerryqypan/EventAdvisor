@@ -16,6 +16,12 @@
   $longitude = floatval($_POST['longitude']);
   $latitude = floatval($_POST['latitude']);
   $uid = $_POST['uid'];
+  $photo = $_POST['photo'];
+  $binary=base64_decode($base);
+  header('Content-Type: bitmap; charset=utf-8');
+  $file = fopen('uploadedimages/test.png', 'wb');
+  fwrite($file, $binary);
+  fclose($file);
   // $title = "Wannamaker";
   // $date = "7-4-17";
   // $startTime = "14:00";
