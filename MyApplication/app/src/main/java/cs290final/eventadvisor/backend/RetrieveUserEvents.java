@@ -13,40 +13,30 @@ import java.net.URLEncoder;
 import cs290final.eventadvisor.MapsActivity;
 
 /**
- * Created by Jerry on 4/16/2017.
+ * Created by jerry on 4/29/2017.
  */
 
-public class RetrieveEvents extends AsyncTask<String,String,String> {
+public class RetrieveUserEvents extends AsyncTask<String,String,String>{
     private Context context;
 
-    public RetrieveEvents(Context context) {
+    public RetrieveUserEvents(Context context) {
         this.context = context;
     }
-
     protected void onPreExecute(){
     }
     @Override
     protected String doInBackground(String... args){
-        System.out.println("doinbackgrougn" + Thread.currentThread());
         try{
-            System.out.println("testing");
-            String lat=args[0];
-            String lon=args[1];
-            String uid=args[2];
-            String link="https://users.cs.duke.edu/~qp7/retrieveEvents.php";
-            String data  = URLEncoder.encode("latitude", "UTF-8") + "=" +
-                    URLEncoder.encode(lat, "UTF-8");
-            data+="&" + URLEncoder.encode("longitude", "UTF-8") + "=" +
-                    URLEncoder.encode(lon, "UTF-8");
-            data+="&" + URLEncoder.encode("uid","UTF-8") + "=" +
-                    URLEncoder.encode(uid,"UTF-8");
+            String uid=args[0];
+            String link="https://users.cs.duke.edu/~qp7/retrieveUserEvents.php";
+            String data  = URLEncoder.encode("uid", "UTF-8") + "=" +
+                    URLEncoder.encode(uid, "UTF-8");
             URL url = new URL(link);
             URLConnection conn = url.openConnection();
             conn.setDoOutput(true);
             OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
             wr.write( data );
             wr.flush();
-            System.out.println("after read");
             BufferedReader reader = new BufferedReader(new
                     InputStreamReader(conn.getInputStream()));
 
@@ -66,10 +56,10 @@ public class RetrieveEvents extends AsyncTask<String,String,String> {
     }
     @Override
     protected void onPostExecute(String result){
-        if (context instanceof MapsActivity) {
-            MapsActivity mapsActivity = (MapsActivity) context;
-            mapsActivity.retrieveAndParseJSON(result);
-            System.out.println("onpostexecute" + Thread.currentThread());
-        }
+//        if (context instanceof MapsActivity) {
+//            MapsActivity mapsActivity = (MapsActivity) context;
+//            mapsActivity.retrieveAndParseJSON(result);
+//            System.out.println("onpostexecute" + Thread.currentThread());
+//        }
     }
 }
