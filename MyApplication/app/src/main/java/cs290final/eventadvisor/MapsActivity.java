@@ -96,7 +96,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int CREATE_EVENTS = 12345;
     private SearchView searchView;
     private MenuItem searchBarMenuItem;
-
+    private FirebaseUser currentUser;
     View mRootView;         //can these be private? -Chirag
     ImageView mUserProfilePicture;
     TextView mUserEmail;
@@ -107,7 +107,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             // User is already signed in, take them to the map activity directly
         } else {
@@ -225,7 +225,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 CameraPosition place = mMap.getCameraPosition();
                 float distanceInMeters = calculateMaxMapDistanceOnScreen();
                 System.out.println("Distance: " + distanceInMeters);
-                new RetrieveEvents(MapsActivity.this).execute(place.target.latitude, place.target.longitude);
+
+                new RetrieveEvents(MapsActivity.this).execute(Double.toString(place.target.latitude), Double.toString(place.target.longitude),currentUser.getUid());
             }
         });
     }
@@ -331,10 +332,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         eventsJSON = json;
         eventsMap = new HashMap<>();
         List<Event> events = JSONToEventGenerator.unmarshallJSONString(eventsJSON);
-        events.add(new Event("dupl1", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, ""));      //need to remove
-        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, ""));      //need to remove
-        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, ""));      //need to remove
-        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, ""));      //need to remove
+        events.add(new Event("dupl1", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "",false));      //need to remove
+        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "",true));      //need to remove
+        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "",false));      //need to remove
+        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "",true));      //need to remove
         for (Event event : events) {
             String mapKey = normalizeKeyForMap(event);
             if (!eventsMap.containsKey(mapKey)) {
@@ -420,7 +421,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent intent = new Intent(this,CreateEventActivity.class);
         intent.putExtra("latitude", Double.toString(mMap.getCameraPosition().target.latitude));
         intent.putExtra("longitude",Double.toString(mMap.getCameraPosition().target.longitude));
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         intent.putExtra("uid",currentUser.getUid());
         startActivityForResult(intent, CREATE_EVENTS);
     }
@@ -473,10 +473,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void populateProfile() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user.getPhotoUrl() != null) {
+        if (currentUser.getPhotoUrl() != null) {
             Glide.with(this)
-                    .load(user.getPhotoUrl())
+                    .load(currentUser.getPhotoUrl())
                     .fitCenter()
                     .into(mUserProfilePicture);
         } else {
@@ -484,9 +483,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         mUserEmail.setText(
-                TextUtils.isEmpty(user.getEmail()) ? "No email" : user.getEmail());
+                TextUtils.isEmpty(currentUser.getEmail()) ? "No email" : currentUser.getEmail());
         mUserDisplayName.setText(
-                TextUtils.isEmpty(user.getDisplayName()) ? "No display name" : user.getDisplayName());
+                TextUtils.isEmpty(currentUser.getDisplayName()) ? "No display name" : currentUser.getDisplayName());
 
 
     }
