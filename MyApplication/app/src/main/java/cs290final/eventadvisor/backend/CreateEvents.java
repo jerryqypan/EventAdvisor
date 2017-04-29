@@ -31,16 +31,16 @@ public class CreateEvents extends AsyncTask<String, String, String > {
     protected void onPreExecute(){
     }
     @Override
-    protected String doInBackground(String... arg0){
+    protected String doInBackground(String... args){
         try{
-            String title=arg0[0];
-            String date=arg0[1];
-            String startTime=arg0[2];
-            String endTime=arg0[3];
-            String description=arg0[4];
-            lat=arg0[5];
-            lon=arg0[6];
-            String uid=arg0[7];
+            String title=args[0];
+            String date=args[1];
+            String startTime=args[2];
+            String endTime=args[3];
+            String description=args[4];
+            lat=args[5];
+            lon=args[6];
+            String uid=args[7];
             String link="https://users.cs.duke.edu/~qp7/createEvent.php";
             String data =URLEncoder.encode("title", "UTF-8") + "=" +
                     URLEncoder.encode(title, "UTF-8");
