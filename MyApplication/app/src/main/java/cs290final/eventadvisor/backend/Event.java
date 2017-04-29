@@ -19,19 +19,14 @@ public class Event {
     private double longitude;
     private int idEvent;
     private String uid;
+    private boolean isInterested;
 
-    public int getIdEvent() {
-        return idEvent;
-    }
 
-    public void setIdEvent(int idEvent) {
-        this.idEvent = idEvent;
-    }
 
     public Event() {
     }
 
-    public Event(String title, String date, String startTime, String endTime, String description, double longitude, double latitude, String uid){
+    public Event(String title, String date, String startTime, String endTime, String description, double longitude, double latitude, String uid,boolean isInterested){
         this.title=title;
         this.date=date;
         this.startTime=startTime;
@@ -40,6 +35,7 @@ public class Event {
         this.latitude=latitude;
         this.longitude=longitude;
         this.uid = uid;
+        this.isInterested=isInterested;
     }
 
 
@@ -106,6 +102,15 @@ public class Event {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+    public boolean getISInterested(){return isInterested;}
+    public void setIsInterestd(boolean isInterested){this.isInterested=isInterested;}
+    public int getIdEvent() {
+        return idEvent;
+    }
+
+    public void setIdEvent(int idEvent) {
+        this.idEvent = idEvent;
     }
 
     @Override
