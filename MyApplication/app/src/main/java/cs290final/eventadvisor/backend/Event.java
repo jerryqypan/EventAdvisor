@@ -102,8 +102,8 @@ public class Event {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
-    public boolean getISInterested(){return isInterested;}
-    public void setIsInterestd(boolean isInterested){this.isInterested=isInterested;}
+    public boolean getisInterested(){return isInterested;}
+    public void setisInterested(boolean isInterested){this.isInterested=isInterested;}
     public int getIdEvent() {
         return idEvent;
     }
