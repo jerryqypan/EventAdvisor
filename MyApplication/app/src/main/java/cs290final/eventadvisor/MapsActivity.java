@@ -12,6 +12,7 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -29,9 +30,12 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
@@ -276,6 +280,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         TextView eventLocation = (TextView) view.findViewById(R.id.eventLocation);
         TextView eventDescription = (TextView) view.findViewById(R.id.eventDescription);
         ImageView eventImage = (ImageView) view.findViewById(R.id.eventImage);
+        final ToggleButton eventInterest = (ToggleButton) view.findViewById(R.id.toggleButtonInterest);
+        eventInterest.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.spottheme_btn_rating_star_off_normal_holo_light));
+        eventInterest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (eventInterest.isChecked()) {
+                    eventInterest.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.spottheme_btn_rating_star_off_normal_holo_light));
+                } else {
+                    eventInterest.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.spottheme_btn_rating_star_on_normal_holo_light));
+                }
+            }
+        });
         eventName.setText(event.getTitle());
         eventDate.setText(event.getDate());
         eventTime.setText(event.getStartTime() + " - " + event.getEndTime());

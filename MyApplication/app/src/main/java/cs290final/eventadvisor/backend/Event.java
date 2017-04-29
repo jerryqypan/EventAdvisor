@@ -20,6 +20,7 @@ public class Event {
     private int idEvent;
     private String uid;
 
+
     public int getIdEvent() {
         return idEvent;
     }
