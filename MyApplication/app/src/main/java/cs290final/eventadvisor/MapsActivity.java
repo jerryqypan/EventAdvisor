@@ -30,9 +30,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -48,7 +46,6 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -60,7 +57,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.vision.text.Text;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -75,6 +71,7 @@ import java.util.Map;
 import cs290final.eventadvisor.backend.Event;
 import cs290final.eventadvisor.backend.JSONToEventGenerator;
 import cs290final.eventadvisor.backend.RetrieveEvents;
+import cs290final.eventadvisor.backend.SelectInterest;
 
 // API Key: AIzaSyCJm1es7DqRc1zqyW7AKQFQpeXcD1kNFm0
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
@@ -273,7 +270,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         dialog.show();
     }
 
-    private View inflateAndPopulateEventDialog(Event event) {
+    private View inflateAndPopulateEventDialog(final Event event) {
         View view = getLayoutInflater().inflate(R.layout.select_event, null);
         TextView eventName = (TextView) view.findViewById(R.id.eventName);
         TextView eventDate = (TextView) view.findViewById(R.id.eventDate);
@@ -287,10 +284,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onClick(View v) {
                 if (eventInterest.isChecked()) {
-                    eventInterest.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.spottheme_btn_rating_star_off_normal_holo_light));
-                } else {
                     eventInterest.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.spottheme_btn_rating_star_on_normal_holo_light));
+                    new SelectInterest(eventInterest).execute(currentUser.getUid(), Integer.toString(event.getIdEvent()), "add");
+                    event.setisInterested(eventInterest.isSelected());
+                } else {
+                    eventInterest.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.spottheme_btn_rating_star_off_normal_holo_light));
+                    new SelectInterest(eventInterest).execute(currentUser.getUid(), Integer.toString(event.getIdEvent()), "delete");
+                    event.setisInterested(eventInterest.isSelected());
                 }
+
             }
         });
         eventName.setText(event.getTitle());
@@ -298,6 +300,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         eventTime.setText(event.getStartTime() + " - " + event.getEndTime());
         eventLocation.setText(event.getLatitude() + " , " + event.getLongitude());
         eventDescription.setText(event.getDescription());
+        eventInterest.setChecked(event.getisInterested());
+        if (event.getisInterested()) {
+            eventInterest.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.spottheme_btn_rating_star_on_normal_holo_light));
+        }
         return view;
     }
 
