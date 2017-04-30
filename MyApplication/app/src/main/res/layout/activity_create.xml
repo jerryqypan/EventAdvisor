@@ -96,6 +96,7 @@
                 android:onClick="showSelectPictureDialog"
                 android:text="Add Image"/>
 
+
         </LinearLayout>
 
 
