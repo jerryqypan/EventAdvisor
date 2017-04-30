@@ -286,11 +286,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (eventInterest.isChecked()) {
                     eventInterest.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.spottheme_btn_rating_star_on_normal_holo_light));
                     new SelectInterest(eventInterest).execute(currentUser.getUid(), Integer.toString(event.getIdEvent()), "add");
-                    event.setisInterested(eventInterest.isSelected());
+                    event.setisInterested(eventInterest.isChecked());
                 } else {
                     eventInterest.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.spottheme_btn_rating_star_off_normal_holo_light));
                     new SelectInterest(eventInterest).execute(currentUser.getUid(), Integer.toString(event.getIdEvent()), "delete");
-                    event.setisInterested(eventInterest.isSelected());
+                    event.setisInterested(eventInterest.isChecked());
                 }
 
             }
