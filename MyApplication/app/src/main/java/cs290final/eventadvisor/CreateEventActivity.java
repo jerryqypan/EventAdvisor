@@ -117,6 +117,10 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     public void showSelectPictureDialog(View v) {
+        boolean canWriteStorage = checkIfWriteToStorageAllowed();
+        if (!canWriteStorage) {
+            return;
+        }
         final String[] items = {"Take Photo", "Choose from Gallery",
                 "Cancel" };
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -317,6 +321,7 @@ public class CreateEventActivity extends AppCompatActivity {
         String location = mLocation.getText().toString();
         String lat = location.split(",")[0];
         String lon = location.split(",")[1];
+        System.out.println("PhotoPath: " + mCurrentPhotoPath);
         new CreateEvents(CreateEventActivity.this).execute(title,date,description,startTime,endTime,lat,lon,mUser,mCurrentPhotoPath);
     }
     public void showLocationSearch(View view){
@@ -383,7 +388,7 @@ public class CreateEventActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == REQUEST_STORAGE_PERMISSION) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                startCameraButton();
+                showSelectPictureDialog(null);
             }
         }
     }

@@ -59,6 +59,7 @@ public class CreateEvents extends AsyncTask<String, String, String > {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
                 byte[] byte_arr = stream.toByteArray();
                 encodedPhoto = Base64.encodeToString(byte_arr, 0);
+                System.out.println("encodedphoto: " + encodedPhoto);
             }
 
             //System.out.println("this is the photo");
