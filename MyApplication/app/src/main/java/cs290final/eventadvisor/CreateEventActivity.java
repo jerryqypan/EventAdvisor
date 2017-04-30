@@ -28,6 +28,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -36,6 +37,7 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
@@ -338,6 +340,19 @@ public class CreateEventActivity extends AppCompatActivity {
                 Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.fromFile(new File(mCurrentPhotoPath)));
 //                MediaStore.Images.Media.insertImage(getContentResolver(), imageBitmap, "tes" , "sdf");
                 addPicToGallery();
+                final ImageView imgView = new ImageView(this);
+                Picasso.with(this).load(new File(mCurrentPhotoPath)).into(imgView, new com.squareup.picasso.Callback() { //need to find a better solution
+                    @Override
+                    public void onSuccess() {
+                        cameraButton.setBackground(imgView.getDrawable());
+                        cameraButton.setText("");
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                });
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -355,6 +370,19 @@ public class CreateEventActivity extends AppCompatActivity {
                 String picturePath = cursor.getString(columnIndex);
                 cursor.close();
                 mCurrentPhotoPath = picturePath;
+                final ImageView imgView = new ImageView(this);
+                Picasso.with(this).load(new File(mCurrentPhotoPath)).into(imgView, new com.squareup.picasso.Callback() { //need to find a better solution
+                            @Override
+                            public void onSuccess() {
+                                cameraButton.setBackground(imgView.getDrawable());
+                                cameraButton.setText("");
+                            }
+
+                            @Override
+                            public void onError() {
+
+                            }
+                        });
                 Log.d(TAG, "cursor picture path " + picturePath);
             }
         }
