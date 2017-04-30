@@ -48,11 +48,16 @@
 
                 <Button
                     android:id="@+id/button2"
+                    style="@style/ButtonSpotTheme"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center|bottom"
+                    android:padding="5dp"
+                    android:paddingStart="30dp"
+                    android:paddingEnd="30dp"
+                    android:layout_gravity="right|bottom"
                     android:onClick="createActivityAction"
-                    android:text="Create Event" />
+                    android:text="Create Event"
+                    android:textColor="@color/colorAccent" />
 
                 <!--<fragment-->
                 <!--android:id="@+id/place_autocomplete_fragment"-->
