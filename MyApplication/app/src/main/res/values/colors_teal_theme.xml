@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="spot_primary">#00838e</color>
+    <color name="spot_primary_dark">#005661</color>
+    <color name="spot_primary_light">#4fb3be</color>
+    <color name="spot_accent">#ffc107</color>
+    <color name="spot_secondary_light">#ffdd4b</color>
+    <color name="spot_secondary_dark">#c67c00</color>
+    <color name="spot_primary_text">#ffffff</color>
+    <color name="spot_secondary_text">#004d40</color>
+    <color name="spot_icons">#FFFFFF</color>
+    <color name="spot_divider">#BDBDBD</color>
+</resources>

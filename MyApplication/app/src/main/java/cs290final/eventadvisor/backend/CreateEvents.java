@@ -107,6 +107,12 @@ public class CreateEvents extends AsyncTask<String, String, String > {
             CreateEventActivity activity = (CreateEventActivity) context;
             activity.createEventsCallBack(lat, lon);
         }
+        Toast.makeText(context, "Success", Toast.LENGTH_LONG).show(); //currently prints success regardless of outcomes
+        Intent i = new Intent(context,MapsActivity.class);
+        CreateEventActivity current = (CreateEventActivity)context;
+        i.putExtra("latitude",current.getCoordinates().split(",")[0]);
+        i.putExtra("longitude",current.getCoordinates().split(",")[1]);
+        context.startActivity(i);
 
     }
 }

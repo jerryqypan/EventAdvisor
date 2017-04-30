@@ -6,14 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="cs290final.eventadvisor.MapsActivity">
+    tools:context="cs290final.eventadvisor.MapsActivity" >
 
     <android.support.design.widget.CoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/map_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent" >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -24,27 +24,55 @@
                 android:id="@+id/appbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="?attr/colorPrimary"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
-                    android:background="?attr/colorPrimary"
                     android:elevation="10dp"
-                    app:layout_scrollFlags="scroll|enterAlways">
-
-
-                </android.support.v7.widget.Toolbar>
+                    app:layout_scrollFlags="scroll|enterAlways" />
 
             </android.support.design.widget.AppBarLayout>
 
-            <fragment
-                android:id="@+id/map"
-                android:name="com.google.android.gms.maps.SupportMapFragment"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context="cs290final.eventadvisor.MapsActivity">
+                android:layout_height="match_parent">
+
+                <fragment
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:context="cs290final.eventadvisor.MapsActivity">
+
+                    <!--<Button-->
+                    <!--android:id="@+id/button2"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="right|bottom"-->
+                    <!--android:onClick="createActivityAction"-->
+                    <!--android:text="Create Event" />-->
+
+                    <!--<fragment-->
+                    <!--android:id="@+id/place_autocomplete_fragment"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"-->
+                    <!--tools:layout="@layout/place_autocomplete_fragment" />-->
+                </fragment>
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/fab_create_event"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="16dp"
+                    android:elevation="10dp"
+                    android:src="@drawable/ic_plus_sign"
+                    android:onClick="createActivityAction" />
+
 
                 <Button
                     android:id="@+id/button2"
@@ -54,14 +82,10 @@
                     android:onClick="createActivityAction"
                     android:text="Create Event" />
 
-                <!--<fragment-->
-                <!--android:id="@+id/place_autocomplete_fragment"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"-->
-                <!--tools:layout="@layout/place_autocomplete_fragment" />-->
-            </fragment>
 
+            </FrameLayout>
+
+            <include layout="@layout/layout_events_list"></include>
 
 
         </LinearLayout>
@@ -76,6 +100,8 @@
         android:fitsSystemWindows="true"
 
         app:menu="@menu/menu_navigation" />
+
+
 
 
 </android.support.v4.widget.DrawerLayout>

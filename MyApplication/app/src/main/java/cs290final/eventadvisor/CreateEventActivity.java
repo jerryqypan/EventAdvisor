@@ -47,16 +47,17 @@ import cs290final.eventadvisor.backend.CreateEvents;
 public class CreateEventActivity extends AppCompatActivity {
     protected static final String STATE_SELECTED_LATITUDE = "state_selected_latitude";
     protected static final String STATE_SELECTED_LONGITUDE = "state_selected_longitude";
-    private static EditText mStartTime;
-    private static EditText mEndTime;
-    private static EditText mDate;
-    private static EditText mTitle;
-    private static EditText mDescription;
-    private static EditText mLocation;
     private Button cameraButton;
+
+    static EditText mStartTime;
+    static EditText mEndTime;
+    static EditText mDate;
+    static EditText mTitle;
+    static EditText mDescription;
+    static EditText mLocation;
     private String mUser;
-  
-  public String getCoordinates() {
+
+    public String getCoordinates() {
         return mCoordinates;
     }
 
@@ -229,27 +230,6 @@ public class CreateEventActivity extends AppCompatActivity {
 
         }
     }
-
-
-
-//        private void setupSearchBar() {
-//        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
-//                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
-//        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-//            @Override
-//            public void onPlaceSelected(Place place) {
-//                // TODO: Get info about the selected place.
-//                //place.getLatLng().longitude;
-//
-//            }
-//
-//            @Override
-//            public void onError(Status status) {
-//                // TODO: Handle the error.
-//                System.out.println("searchbar error");
-//            }
-//        });
-//    }
 
     public void showDatePickerDialog(View v) {
         DialogFragment newFragment = new DatePickerFragment();
