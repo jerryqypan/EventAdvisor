@@ -17,14 +17,18 @@
   $latitude = floatval($_POST['latitude']);
   $uid = $_POST['uid'];
   $photo = $_POST['photo'];
-  $binary=base64_decode($photo);
-  $time = time();
-  $filedir = "images/".$uid.$time.".png";
-  header('Content-Type: bitmap; charset=utf-8');
-  $file = fopen($filedir, "wb");
-  fwrite($file, $binary);
-  fclose($file);
-  $url="https://users.cs.duke.edu/~qp7/".$filedir;
+  if($photo==""){
+  		$url=$photo;
+  	}else{
+  		$binary=base64_decode($photo);
+  		$time = time();
+  		$filedir = "images/".$uid.$time.".png";
+  		header('Content-Type: bitmap; charset=utf-8');
+  		$file = fopen($filedir, "wb");
+  		fwrite($file, $binary);
+  		fclose($file);
+  		$url="https://users.cs.duke.edu/~qp7/".$filedir;
+	}
   // $title = "Wannamaker";
   // $date = "7-4-17";
   // $startTime = "14:00";

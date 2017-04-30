@@ -46,15 +46,21 @@ public class CreateEvents extends AsyncTask<String, String, String > {
             lon=args[6];
             String uid=args[7];
             String photoPath =args[8];
-            BitmapFactory.Options options = null;
-            options = new BitmapFactory.Options();
-            options.inSampleSize = 3;
-            Bitmap bitmap = BitmapFactory.decodeFile(photoPath,
-                    options);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
-            byte[] byte_arr = stream.toByteArray();
-            String encodedPhoto = Base64.encodeToString(byte_arr, 0);
+            String encodedPhoto;
+            if(photoPath==null){
+                encodedPhoto="";
+            }else{
+                BitmapFactory.Options options = null;
+                options = new BitmapFactory.Options();
+                options.inSampleSize = 3;
+                Bitmap bitmap = BitmapFactory.decodeFile(photoPath,
+                        options);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+                byte[] byte_arr = stream.toByteArray();
+                encodedPhoto = Base64.encodeToString(byte_arr, 0);
+            }
+
             //System.out.println("this is the photo");
             //System.out.print(encodedPhoto);
             String link="https://users.cs.duke.edu/~qp7/createEvent.php";
