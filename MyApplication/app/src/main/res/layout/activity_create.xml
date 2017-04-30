@@ -26,8 +26,7 @@
             android:layout_height="wrap_content"
             android:text="Event Name:"
             android:textSize="18sp"
-            android:layout_below="@id/textview"
-            android:layout_toLeftOf="@+id/cameraButton"/>
+            android:layout_below="@id/textview"/>
 
         <EditText
             android:id="@+id/editEventName"
@@ -35,57 +34,68 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
             android:inputType="text"
-            android:layout_below="@id/hintName"
-            android:layout_alignParentStart="true"
-            android:layout_toLeftOf="@+id/cameraButton"
-            />
+            android:layout_below="@id/hintName"/>
 
-        <Button
-            android:id="@+id/cameraButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="showSelectPictureDialog"
-            android:text=" Add Image "
-            android:textColor= "@color/colorAccent"
-            android:layout_marginLeft="10dp"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@+id/textview"
-            android:layout_alignBottom="@+id/editEventName" />
-
-        <TextView
-            android:id="@+id/hintStart"
+        <LinearLayout
+            android:id="@+id/timesImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Start Time:"
-            android:textSize="18sp"
-            android:layout_below="@id/editEventName"/>
+            android:weightSum="1.0"
+            android:orientation="horizontal"
+            android:layout_below="@id/editEventName">
 
-        <EditText
-            android:id="@+id/editStartTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:focusable="false"
-            android:onClick="showStartTimePickerDialog"
-            android:layout_below="@id/hintStart"/>
+            <LinearLayout
+                android:id="@+id/addTimes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="1">
 
-        <TextView
-            android:id="@+id/hintEnd"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="End Time:"
-            android:textSize="18sp"
-            android:layout_below="@id/editStartTime"/>
+                <TextView
+                    android:id="@+id/hintStartTime"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Start Time:"
+                    android:textSize="18sp"/>
 
-        <EditText
-            android:id="@+id/editEndTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
-            android:onClick="showEndTimePickerDialog"
-            android:focusable="false"
-            android:layout_below="@id/hintEnd"
-            />
+
+                <EditText
+                    android:id="@+id/editStartTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:focusable="false"
+                    android:onClick="showStartTimePickerDialog"/>
+
+                <TextView
+                    android:id="@+id/hintEndTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="End Time:"
+                    android:textSize="18sp"/>
+
+                <EditText
+                    android:id="@+id/editEndTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:onClick="showEndTimePickerDialog"
+                    android:focusable="false"/>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/cameraButton"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:layout_gravity="right|center_vertical"
+                android:layout_marginRight="5dp"
+                android:onClick="showSelectPictureDialog"
+                android:text="Add Image"
+                android:textColor= "@color/colorAccent" />
+
+        </LinearLayout>
+
 
         <TextView
             android:id="@+id/hintDate"
@@ -93,7 +103,7 @@
             android:layout_height="wrap_content"
             android:text="Date:"
             android:textSize="18sp"
-            android:layout_below="@id/editEndTime"/>
+            android:layout_below="@id/timesImage"/>
 
         <EditText
             android:id="@+id/editDate"
