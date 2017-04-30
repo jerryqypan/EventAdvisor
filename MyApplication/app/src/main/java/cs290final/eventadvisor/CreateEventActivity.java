@@ -59,12 +59,13 @@ public class CreateEventActivity extends AppCompatActivity {
     private static EditText mLocation;
     private Button cameraButton;
     private String mUser;
-  
-  public String getCoordinates() {
+    private String mCoordinates;
+
+
+    public String getCoordinates() {
         return mCoordinates;
     }
 
-    private String mCoordinates;
 
     private static final int REQUEST_SELECT_PLACE = 1234;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -88,7 +89,7 @@ public class CreateEventActivity extends AppCompatActivity {
         cameraButton = (Button) findViewById(R.id.cameraButton);
         mCoordinates = i.getExtras().getString("latitude")+","+i.getExtras().getString("longitude");
         mUser = i.getExtras().getString("uid");
-        mLocation.setText(mCoordinates);
+        mLocation.setText("Current Location");
         checkIfCameraSupported();
     }
 
@@ -314,9 +315,8 @@ public class CreateEventActivity extends AppCompatActivity {
         String description = mDescription.getText().toString();
         String startTime = mStartTime.getText().toString();
         String endTime = mEndTime.getText().toString();
-        String location = mLocation.getText().toString();
-        String lat = location.split(",")[0];
-        String lon = location.split(",")[1];
+        String lat = mCoordinates.split(",")[0];
+        String lon = mCoordinates.split(",")[1];
         new CreateEvents(CreateEventActivity.this).execute(title,date,description,startTime,endTime,lat,lon,mUser,mCurrentPhotoPath);
     }
     public void showLocationSearch(View view){
@@ -343,8 +343,8 @@ public class CreateEventActivity extends AppCompatActivity {
         if (requestCode == REQUEST_SELECT_PLACE) {  //search bar place result
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
-                String coordinates = ""+place.getLatLng().latitude+","+place.getLatLng().longitude;
-                mLocation.setText(coordinates);
+                mCoordinates = ""+place.getLatLng().latitude+","+place.getLatLng().longitude;
+                mLocation.setText(place.getName());
             }
             else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);

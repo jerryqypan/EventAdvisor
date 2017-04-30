@@ -47,6 +47,7 @@ public class CreateEvents extends AsyncTask<String, String, String > {
             String uid=args[7];
             String photoPath =args[8];
             String encodedPhoto;
+            System.out.println("photoPath"+photoPath);
             if(photoPath==null){
                 encodedPhoto="";
             }else{
