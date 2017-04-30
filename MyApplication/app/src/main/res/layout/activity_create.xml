@@ -35,7 +35,7 @@
             android:layout_marginBottom="15dp"
             android:inputType="text"
             android:layout_below="@id/hintName"/>
-
+        
         <LinearLayout
             android:id="@+id/timesImage"
             android:layout_width="match_parent"
@@ -137,7 +137,7 @@
             android:id="@+id/hintDesc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Description (optional):"
+            android:text="Description:"
             android:textSize="18sp"
             android:layout_below="@id/editLocation"/>
 
@@ -154,7 +154,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="createEventAction"
-            android:textColor= "@color/colorAccent"
+            android:textColor= "?attr/colorAccent"
             android:text="Create Spot"
             android:layout_below="@id/editDescription"/>
     </RelativeLayout>

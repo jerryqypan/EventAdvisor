@@ -9,11 +9,15 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -22,6 +26,7 @@ import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -59,7 +64,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.mikepenz.iconics.context.IconicsLayoutInflater;
 
+import java.io.Serializable;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -68,15 +77,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import cs290final.eventadvisor.adapters.EventItemAdapter;
 import cs290final.eventadvisor.backend.Event;
 import cs290final.eventadvisor.backend.JSONToEventGenerator;
 import cs290final.eventadvisor.backend.RetrieveEvents;
 import cs290final.eventadvisor.backend.SelectInterest;
+import cs290final.eventadvisor.fragments.CustomBottomSheetDialogFragment;
+import cs290final.eventadvisor.utils.CircleTransform;
 
 // API Key: AIzaSyCJm1es7DqRc1zqyW7AKQFQpeXcD1kNFm0
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMyLocationButtonClickListener {
 
+    private static final String TAG = "MAPS_ACTIVITY";
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
 
@@ -99,9 +112,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     TextView mUserEmail;
     TextView mUserDisplayName;
 
+    private EventItemAdapter.EventItemListener mEventClickListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -110,6 +125,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else {
             startActivity(new Intent(this, MainActivity.class));
         }
+
+
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_create_event);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createActivityAction(view);
+            }
+        });
 
         // Create Navigation drawer and inflate layout
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -159,6 +184,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .build();
         }
         mGoogleApiClient.connect();
+
     }
 
     protected void onStart() {
@@ -208,7 +234,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public boolean onMarkerClick(final Marker marker) {
                 List<Event> events = (List<Event>) marker.getTag();
-                createAndShowEventsPopupWindow(events);
+                Log.d(TAG, "onMarkerClick: [Events: " + events.toString() + "]");
+                mEventClickListener = new EventItemAdapter.EventItemListener() {
+                    @Override
+                    public void onItemClick(Event event) {
+                        Log.d(TAG, "onItemClick: Clicked on event" + event.getTitle());
+                    }
+                };
+                //createAndShowEventsPopupWindow(events);
+                final BottomSheetDialogFragment bottomSheet = CustomBottomSheetDialogFragment.newInstance(5, events, mEventClickListener);
+                bottomSheet.show(getSupportFragmentManager(), bottomSheet.getTag());
                 return true;
             }
         });
@@ -216,13 +251,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
-                System.out.println("camera idle");
+                Log.d(TAG, "CAMERA IDLE");
                 Toast.makeText(MapsActivity.this, "Camera Idle", Toast.LENGTH_SHORT).show();
 //                clearEventsFromMap();
                 CameraPosition place = mMap.getCameraPosition();
                 float distanceInMeters = calculateMaxMapDistanceOnScreen();
-                System.out.println("Distance: " + distanceInMeters);
-
                 new RetrieveEvents(MapsActivity.this).execute(Double.toString(place.target.latitude), Double.toString(place.target.longitude),currentUser.getUid(),Float.toString(calculateMaxMapDistanceOnScreen()));
             }
         });
@@ -342,7 +375,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "","",true));      //need to remove
         events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "","",false));      //need to remove
         events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "","",true));      //need to remove
-
         for (Event event : events) {
             String mapKey = normalizeKeyForMap(event);
             if (!eventsMap.containsKey(mapKey)) {
@@ -417,8 +449,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             double lon = data.getDoubleExtra(CreateEventActivity.STATE_SELECTED_LONGITUDE, -100000);
             if (!(lat == -100000 || lon == -100000)) {
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(lat,lon)));
-                System.out.println("lat"+lat);
-                System.out.println("lon"+lon);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -426,8 +456,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void createActivityAction(View v){
         Intent intent = new Intent(this,CreateEventActivity.class);
-        intent.putExtra("latitude", Double.toString(mMap.getCameraPosition().target.latitude));
-        intent.putExtra("longitude",Double.toString(mMap.getCameraPosition().target.longitude));
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            return;
+        }
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        intent.putExtra("latitude", Double.toString(mLastLocation.getLatitude()));
+        intent.putExtra("longitude",Double.toString(mLastLocation.getLongitude()));
         intent.putExtra("uid",currentUser.getUid());
         startActivityForResult(intent, CREATE_EVENTS);
     }
@@ -484,6 +519,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             Glide.with(this)
                     .load(currentUser.getPhotoUrl())
                     .fitCenter()
+                    .transform(new CircleTransform(this))
                     .into(mUserProfilePicture);
         } else {
             mUserProfilePicture = (ImageView) findViewById(R.id.user_profile_picture);
@@ -592,5 +628,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             return eventsViews.get(position);
         }
     }
+
+
+
+
 }
 

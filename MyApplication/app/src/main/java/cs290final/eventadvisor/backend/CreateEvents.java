@@ -47,6 +47,7 @@ public class CreateEvents extends AsyncTask<String, String, String > {
             String uid=args[7];
             String photoPath =args[8];
             String encodedPhoto;
+            System.out.println("photoPath"+photoPath);
             if(photoPath==null){
                 encodedPhoto="";
             }else{
@@ -55,8 +56,10 @@ public class CreateEvents extends AsyncTask<String, String, String > {
                 options.inSampleSize = 3;
                 Bitmap bitmap = BitmapFactory.decodeFile(photoPath,
                         options);
+                float ratio= 800/(float)bitmap.getWidth();
+                Bitmap recent = Bitmap.createScaledBitmap(bitmap,800,(int)(bitmap.getHeight()*ratio),true);
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+                recent.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                 byte[] byte_arr = stream.toByteArray();
                 encodedPhoto = Base64.encodeToString(byte_arr, 0);
                 System.out.println("encodedphoto: " + encodedPhoto);
@@ -116,6 +119,12 @@ public class CreateEvents extends AsyncTask<String, String, String > {
             CreateEventActivity activity = (CreateEventActivity) context;
             activity.createEventsCallBack(lat, lon);
         }
+        Toast.makeText(context, "Success", Toast.LENGTH_LONG).show(); //currently prints success regardless of outcomes
+        Intent i = new Intent(context,MapsActivity.class);
+        CreateEventActivity current = (CreateEventActivity)context;
+        i.putExtra("latitude",current.getCoordinates().split(",")[0]);
+        i.putExtra("longitude",current.getCoordinates().split(",")[1]);
+        context.startActivity(i);
 
     }
 }

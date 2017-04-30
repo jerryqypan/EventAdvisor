@@ -22,7 +22,7 @@
   	}else{
   		$binary=base64_decode($photo);
   		$time = time();
-  		$filedir = "images/".$uid.$time.".png";
+  		$filedir = "images/".$uid.$time.".jpeg";
   		header('Content-Type: bitmap; charset=utf-8');
   		$file = fopen($filedir, "wb");
   		fwrite($file, $binary);
