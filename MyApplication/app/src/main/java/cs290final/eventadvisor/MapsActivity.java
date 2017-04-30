@@ -196,6 +196,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
        // mGoogleApiClient.disconnect();
         super.onStop();
     }
+    @Override
+    public void onBackPressed() {
+    }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -252,7 +255,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onCameraIdle() {
                 Log.d(TAG, "CAMERA IDLE");
-                Toast.makeText(MapsActivity.this, "Camera Idle", Toast.LENGTH_SHORT).show();
 //                clearEventsFromMap();
                 CameraPosition place = mMap.getCameraPosition();
                 float distanceInMeters = calculateMaxMapDistanceOnScreen();
@@ -344,7 +346,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             return;
         }
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        Toast.makeText(this, "Centered LOCATION", Toast.LENGTH_LONG).show();
         if (mLastLocation != null) {  //default action does this
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 15));
         }
@@ -431,7 +432,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-                Toast.makeText(this, place.getName(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, place.getName(), Toast.LENGTH_SHORT).show();
                 //don't need this as it will be taken care of in the camera idle listener
 //                new RetrieveEvents(MapsActivity.this).execute(place.getLatLng().latitude,place.getLatLng().longitude);
 

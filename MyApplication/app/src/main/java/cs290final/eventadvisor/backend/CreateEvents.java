@@ -48,7 +48,6 @@ public class CreateEvents extends AsyncTask<String, String, String > {
             String uid=args[8];
             String photoPath =args[9];
             String encodedPhoto;
-            System.out.println("photoPath"+photoPath);
             if(photoPath==null){
                 encodedPhoto="";
             }else{
@@ -64,9 +63,6 @@ public class CreateEvents extends AsyncTask<String, String, String > {
                 byte[] byte_arr = stream.toByteArray();
                 encodedPhoto = Base64.encodeToString(byte_arr, 0);
             }
-
-            //System.out.println("this is the photo");
-            //System.out.print(encodedPhoto);
             String link="https://users.cs.duke.edu/~qp7/createEvent.php";
             String data =URLEncoder.encode("title", "UTF-8") + "=" +
                     URLEncoder.encode(title, "UTF-8");
@@ -104,7 +100,6 @@ public class CreateEvents extends AsyncTask<String, String, String > {
                 sb.append(line);
                 break;
             }
-            //System.out.println(sb.toString());
             return sb.toString();
         } catch(Exception e){
             return new String("Exception: " + e.getMessage());

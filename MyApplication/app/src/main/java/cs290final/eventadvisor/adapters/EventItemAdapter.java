@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import java.util.List;
 
@@ -95,8 +97,9 @@ public class EventItemAdapter extends RecyclerView.Adapter<EventItemAdapter.View
             shareImageButton.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    Snackbar.make(v, "Share article",
-                            Snackbar.LENGTH_LONG).show();
+                    TweetComposer.Builder builder = new TweetComposer.Builder(mContext)
+                            .text("Come to " + eventTitle.getText().toString() +  "on "+ eventDate.getText().toString()+"! This is so cool!!!");
+                    builder.show();
                 }
             });
         }

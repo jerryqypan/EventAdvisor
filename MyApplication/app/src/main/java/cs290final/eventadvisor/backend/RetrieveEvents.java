@@ -27,9 +27,7 @@ public class RetrieveEvents extends AsyncTask<String,String,String> {
     }
     @Override
     protected String doInBackground(String... args){
-        System.out.println("doinbackgrougn" + Thread.currentThread());
         try{
-            System.out.println("testing");
             String lat=args[0];
             String lon=args[1];
             String uid=args[2];
@@ -49,7 +47,6 @@ public class RetrieveEvents extends AsyncTask<String,String,String> {
             OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
             wr.write( data );
             wr.flush();
-            System.out.println("after read");
             BufferedReader reader = new BufferedReader(new
                     InputStreamReader(conn.getInputStream()));
 
@@ -61,7 +58,6 @@ public class RetrieveEvents extends AsyncTask<String,String,String> {
                 sb.append(line);
                 break;
             }
-            System.out.println(sb.toString());
             return sb.toString();
         } catch(Exception e){
             return new String("Exception: " + e.getMessage());
@@ -72,7 +68,6 @@ public class RetrieveEvents extends AsyncTask<String,String,String> {
         if (context instanceof MapsActivity) {
             MapsActivity mapsActivity = (MapsActivity) context;
             mapsActivity.retrieveAndParseJSON(result);
-            System.out.println("onpostexecute" + Thread.currentThread());
         }
     }
 }

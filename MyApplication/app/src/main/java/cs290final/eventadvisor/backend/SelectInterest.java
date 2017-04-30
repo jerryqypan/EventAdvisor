@@ -52,7 +52,6 @@ public class SelectInterest extends AsyncTask<String, String, String> {
                 sb.append(line);
                 break;
             }
-            System.out.println("Server Response" + sb.toString());
             return sb.toString();
         }catch(Exception e){
             return e.getMessage();

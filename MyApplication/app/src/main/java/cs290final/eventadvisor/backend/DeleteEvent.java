@@ -15,9 +15,6 @@ import java.net.URLEncoder;
 
 public class DeleteEvent extends AsyncTask<String,String,String> {
 
-    public DeleteEvent(){
-
-    }
     protected void onPreExecute(){
     }
     @Override

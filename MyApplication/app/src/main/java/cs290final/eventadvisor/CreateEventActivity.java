@@ -226,10 +226,10 @@ public class CreateEventActivity extends AppCompatActivity {
                 fMinute=Integer.toString(minute);
             }
             if(startOrEnd.equals("start")){
-                createEventActivity.mStartTime.setText(""+hourOfDay+":"+fMinute+":00");
+                createEventActivity.mStartTime.setText(""+hourOfDay+":"+fMinute);
             }
             if(startOrEnd.equals("end")){
-                createEventActivity.mEndTime.setText(""+hourOfDay+":"+fMinute+":00");
+                createEventActivity.mEndTime.setText(""+hourOfDay+":"+fMinute);
             }else{
                 Log.d(TAG,startOrEnd);
             }

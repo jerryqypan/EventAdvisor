@@ -49,7 +49,6 @@ public class CheckUser extends AsyncTask<String,String,String> {
                 sb.append(line);
                 break;
             }
-            System.out.println(sb.toString());
             return sb.toString();
         }
         catch(Exception e){
@@ -58,7 +57,6 @@ public class CheckUser extends AsyncTask<String,String,String> {
     }
     @Override
     protected void onPostExecute(String r){
-        System.out.println("RETURNED"+r);
 
     }
 
