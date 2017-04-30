@@ -56,10 +56,10 @@ public class CreateEvents extends AsyncTask<String, String, String > {
                 options.inSampleSize = 3;
                 Bitmap bitmap = BitmapFactory.decodeFile(photoPath,
                         options);
-                float ratio= 400/(float)bitmap.getWidth();
-                Bitmap recent = Bitmap.createScaledBitmap(bitmap,400,(int)(bitmap.getHeight()*ratio),true);
+                float ratio= 800/(float)bitmap.getWidth();
+                Bitmap recent = Bitmap.createScaledBitmap(bitmap,800,(int)(bitmap.getHeight()*ratio),true);
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                recent.compress(Bitmap.CompressFormat.PNG, 50, stream);
+                recent.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                 byte[] byte_arr = stream.toByteArray();
                 encodedPhoto = Base64.encodeToString(byte_arr, 0);
                 System.out.println("encodedphoto: " + encodedPhoto);
