@@ -40,8 +40,9 @@
             android:layout_alignParentEnd="true"
             android:layout_below="@id/textview"
             android:layout_margin="15dp"
-            android:onClick="startCameraButtonAction"
-            android:text="Camera" />
+            android:onClick="showSelectPictureDialog"
+            android:text="Select Picture" />
+
 
         <EditText
             android:id="@+id/editStartTime"

@@ -1,14 +1,18 @@
 package cs290final.eventadvisor;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.net.Uri;
@@ -65,6 +69,7 @@ public class CreateEventActivity extends AppCompatActivity {
     private static final int REQUEST_SELECT_PLACE = 1234;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_STORAGE_PERMISSION = 2;
+    private static final int REQUEST_OPEN_GALLERY = 3;
     private static Calendar myCalendar = Calendar.getInstance();
     private static final String TAG = "CreateEventActivity";
     private String mCurrentPhotoPath;
@@ -111,7 +116,27 @@ public class CreateEventActivity extends AppCompatActivity {
         return true;
     }
 
-    public void startCameraButtonAction(View view) {
+    public void showSelectPictureDialog(View v) {
+        final String[] items = {"Take Photo", "Choose from Gallery",
+                "Cancel" };
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add Photo!");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (items[item].equals("Take Photo")) {
+                    startCameraButton();
+                } else if (items[item].equals("Choose from Gallery")) {
+                    selectPictureFromGallery();
+                } else if (items[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    private void startCameraButton() {
         boolean hasPermission = checkIfWriteToStorageAllowed();
         if (!hasPermission) {
             return;
@@ -162,6 +187,15 @@ public class CreateEventActivity extends AppCompatActivity {
         values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
         values.put(MediaStore.MediaColumns.DATA, mCurrentPhotoPath);
         this.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+    }
+
+    private void selectPictureFromGallery() {
+        Intent intent = new Intent();
+        // Show only images, no videos or anything else
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        // Always show the chooser (if there are multiple options available)
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_OPEN_GALLERY);
     }
 
 
@@ -324,8 +358,23 @@ public class CreateEventActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        if (requestCode == REQUEST_OPEN_GALLERY && resultCode == RESULT_OK) {
+            if (data == null) {
+                Toast.makeText(this, "Can't use this image!", Toast.LENGTH_SHORT).show();
+            }
+            if (data != null) {
+                Uri uri = data.getData();
+                String[] projection = { MediaStore.Images.Media.DATA };
 
-
+                Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+                cursor.moveToFirst();
+                int columnIndex = cursor.getColumnIndex(projection[0]);
+                String picturePath = cursor.getString(columnIndex);
+                System.out.println("cursor picture path " + picturePath);
+                cursor.close();
+                mCurrentPhotoPath = picturePath;
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -334,7 +383,7 @@ public class CreateEventActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == REQUEST_STORAGE_PERMISSION) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                startCameraButtonAction(null);
+                startCameraButton();
             }
         }
     }
