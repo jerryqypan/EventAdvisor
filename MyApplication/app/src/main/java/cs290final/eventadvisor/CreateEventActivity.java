@@ -49,6 +49,7 @@ import cs290final.eventadvisor.backend.CreateEvents;
  */
 
 public class CreateEventActivity extends AppCompatActivity {
+    private static final String TAG = "CREATE_EVENT_ACTIVITY";
     protected static final String STATE_SELECTED_LATITUDE = "state_selected_latitude";
     protected static final String STATE_SELECTED_LONGITUDE = "state_selected_longitude";
     private static EditText mStartTime;
@@ -60,20 +61,13 @@ public class CreateEventActivity extends AppCompatActivity {
     private Button cameraButton;
     private String mUser;
     private String mCoordinates;
-
-
-    public String getCoordinates() {
-        return mCoordinates;
-    }
-
-
     private static final int REQUEST_SELECT_PLACE = 1234;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_STORAGE_PERMISSION = 2;
     private static final int REQUEST_OPEN_GALLERY = 3;
     private static Calendar myCalendar = Calendar.getInstance();
-    private static final String TAG = "CreateEventActivity";
     private String mCurrentPhotoPath;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,7 +149,7 @@ public class CreateEventActivity extends AppCompatActivity {
                 photoFile = createImageFile();
             } catch (IOException ex) {
                 // Error occurred while creating the File
-                System.out.println("Error occurred while creating the File for camera");
+                Log.d(TAG, "Error occurred while creating the File for camera");
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
@@ -215,8 +209,6 @@ public class CreateEventActivity extends AppCompatActivity {
             int hour = c.get(Calendar.HOUR_OF_DAY);
             int minute = c.get(Calendar.MINUTE);
             this.startOrEnd = getArguments().getString("startOrEnd");
-            System.out.println("STARTOREND"+startOrEnd);
-            System.out.println("TEST"+ getArguments().getString("startorEnd"));
             // Create a new instance of TimePickerDialog and return it
             return new TimePickerDialog(getActivity(),android.R.style.Theme_DeviceDefault_Dialog_NoActionBar, this, hour, minute,
                     DateFormat.is24HourFormat(getActivity()));
@@ -269,27 +261,6 @@ public class CreateEventActivity extends AppCompatActivity {
         }
     }
 
-
-
-//        private void setupSearchBar() {
-//        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
-//                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
-//        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-//            @Override
-//            public void onPlaceSelected(Place place) {
-//                // TODO: Get info about the selected place.
-//                //place.getLatLng().longitude;
-//
-//            }
-//
-//            @Override
-//            public void onError(Status status) {
-//                // TODO: Handle the error.
-//                System.out.println("searchbar error");
-//            }
-//        });
-//    }
-
     public void showDatePickerDialog(View v) {
         DialogFragment newFragment = new DatePickerFragment();
         newFragment.show(getFragmentManager(), "datePicker");
@@ -313,7 +284,7 @@ public class CreateEventActivity extends AppCompatActivity {
             Toast.makeText(this,"Please fill all of the form!",Toast.LENGTH_SHORT).show();
             return;
         }
-        System.out.println("Create Event Activity");
+        Log.d(TAG, "Create Event Activity");
         String date = mDate.getText().toString();
         String title = mTitle.getText().toString();
         String description = mDescription.getText().toString();
@@ -340,6 +311,10 @@ public class CreateEventActivity extends AppCompatActivity {
         intent.putExtra(STATE_SELECTED_LONGITUDE, Double.parseDouble(longitude));
         setResult(RESULT_OK, intent);
         this.finish();
+    }
+
+    public String getCoordinates() {
+        return mCoordinates;
     }
 
     @Override
@@ -370,16 +345,13 @@ public class CreateEventActivity extends AppCompatActivity {
             if (data != null) {
                 Uri uri = data.getData();
                 String[] projection = { MediaStore.Images.Media.DATA };
-
                 Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
                 cursor.moveToFirst();
                 int columnIndex = cursor.getColumnIndex(projection[0]);
                 String picturePath = cursor.getString(columnIndex);
-                System.out.println("cursor picture path " + picturePath);
                 cursor.close();
                 mCurrentPhotoPath = picturePath;
-                System.out.println("INTENT PIC PATH: " + uri);
-                System.out.println("Gallery Click Photo: " + mCurrentPhotoPath);
+                Log.d(TAG, "cursor picture path " + picturePath);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);

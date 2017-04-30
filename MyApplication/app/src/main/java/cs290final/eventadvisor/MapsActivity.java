@@ -22,6 +22,7 @@ import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -76,7 +77,7 @@ import cs290final.eventadvisor.backend.SelectInterest;
 // API Key: AIzaSyCJm1es7DqRc1zqyW7AKQFQpeXcD1kNFm0
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMyLocationButtonClickListener {
-
+    private static final String TAG = "MAPS_ACTIVITY";
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
 
@@ -216,13 +217,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
-                System.out.println("camera idle");
+                Log.d(TAG, "CAMERA IDLE");
                 Toast.makeText(MapsActivity.this, "Camera Idle", Toast.LENGTH_SHORT).show();
 //                clearEventsFromMap();
                 CameraPosition place = mMap.getCameraPosition();
                 float distanceInMeters = calculateMaxMapDistanceOnScreen();
-                System.out.println("Distance: " + distanceInMeters);
-
                 new RetrieveEvents(MapsActivity.this).execute(Double.toString(place.target.latitude), Double.toString(place.target.longitude),currentUser.getUid(),Float.toString(calculateMaxMapDistanceOnScreen()));
             }
         });
@@ -417,8 +416,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             double lon = data.getDoubleExtra(CreateEventActivity.STATE_SELECTED_LONGITUDE, -100000);
             if (!(lat == -100000 || lon == -100000)) {
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(lat,lon)));
-                System.out.println("lat"+lat);
-                System.out.println("lon"+lon);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
