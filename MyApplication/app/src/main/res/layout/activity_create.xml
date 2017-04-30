@@ -33,9 +33,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
+            android:textColor="@color/spot_primary_dark"
             android:inputType="text"
             android:layout_below="@id/hintName"/>
-        
+
         <LinearLayout
             android:id="@+id/timesImage"
             android:layout_width="match_parent"
@@ -91,8 +92,7 @@
                 android:layout_gravity="right|center_vertical"
                 android:layout_marginRight="5dp"
                 android:onClick="showSelectPictureDialog"
-                android:text="Add Image"
-                android:textColor= "@color/colorAccent" />
+                android:text="Add Image"/>
 
         </LinearLayout>
 
@@ -145,6 +145,7 @@
             android:id="@+id/editDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/spot_primary_dark"
             android:layout_marginBottom="15dp"
             android:inputType="textMultiLine"
             android:layout_below="@id/hintDesc"/>
