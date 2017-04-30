@@ -89,7 +89,7 @@ import cs290final.eventadvisor.utils.CircleTransform;
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMyLocationButtonClickListener {
 
-    private static final String TAG = "MapActivity";
+    private static final String TAG = "MAPS_ACTIVITY";
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
 
@@ -251,14 +251,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
             @Override
             public void onCameraIdle() {
-                System.out.println("camera idle");
+                Log.d(TAG, "CAMERA IDLE");
                 Toast.makeText(MapsActivity.this, "Camera Idle", Toast.LENGTH_SHORT).show();
 //                clearEventsFromMap();
                 CameraPosition place = mMap.getCameraPosition();
                 float distanceInMeters = calculateMaxMapDistanceOnScreen();
-                System.out.println("Distance: " + distanceInMeters);
-
-                new RetrieveEvents(MapsActivity.this).execute(Double.toString(place.target.latitude), Double.toString(place.target.longitude),currentUser.getUid());
+                new RetrieveEvents(MapsActivity.this).execute(Double.toString(place.target.latitude), Double.toString(place.target.longitude),currentUser.getUid(),Float.toString(calculateMaxMapDistanceOnScreen()));
             }
         });
     }
@@ -321,11 +319,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (eventInterest.isChecked()) {
                     eventInterest.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.spottheme_btn_rating_star_on_normal_holo_light));
                     new SelectInterest(eventInterest).execute(currentUser.getUid(), Integer.toString(event.getIdEvent()), "add");
-                    event.setisInterested(eventInterest.isSelected());
+                    event.setisInterested(eventInterest.isChecked());
                 } else {
                     eventInterest.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.spottheme_btn_rating_star_off_normal_holo_light));
                     new SelectInterest(eventInterest).execute(currentUser.getUid(), Integer.toString(event.getIdEvent()), "delete");
-                    event.setisInterested(eventInterest.isSelected());
+                    event.setisInterested(eventInterest.isChecked());
                 }
 
             }
@@ -373,10 +371,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         eventsJSON = json;
         eventsMap = new HashMap<>();
         List<Event> events = JSONToEventGenerator.unmarshallJSONString(eventsJSON);
-        events.add(new Event("dupl1", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "", "", false));      //need to remove
-        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "", "", true));      //need to remove
-        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "", "", false));      //need to remove
-        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "", "", true));      //need to remove
+        events.add(new Event("dupl1", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "","",false));      //need to remove
+        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "","",true));      //need to remove
+        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "","",false));      //need to remove
+        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "","",true));      //need to remove
         for (Event event : events) {
             String mapKey = normalizeKeyForMap(event);
             if (!eventsMap.containsKey(mapKey)) {
@@ -451,8 +449,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             double lon = data.getDoubleExtra(CreateEventActivity.STATE_SELECTED_LONGITUDE, -100000);
             if (!(lat == -100000 || lon == -100000)) {
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(lat,lon)));
-                System.out.println("lat"+lat);
-                System.out.println("lon"+lon);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -460,8 +456,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void createActivityAction(View v){
         Intent intent = new Intent(this,CreateEventActivity.class);
-        intent.putExtra("latitude", Double.toString(mMap.getCameraPosition().target.latitude));
-        intent.putExtra("longitude",Double.toString(mMap.getCameraPosition().target.longitude));
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            return;
+        }
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        intent.putExtra("latitude", Double.toString(mLastLocation.getLatitude()));
+        intent.putExtra("longitude",Double.toString(mLastLocation.getLongitude()));
         intent.putExtra("uid",currentUser.getUid());
         startActivityForResult(intent, CREATE_EVENTS);
     }

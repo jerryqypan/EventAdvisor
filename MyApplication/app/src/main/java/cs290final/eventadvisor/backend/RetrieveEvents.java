@@ -33,9 +33,7 @@ public class RetrieveEvents extends AsyncTask<String,String,String> {
             String lat=args[0];
             String lon=args[1];
             String uid=args[2];
-            System.out.println("Lat: " + lat);
-            System.out.println("Lon: " + lon);
-            System.out.println("uid: " + uid);
+            String distance=args[3];
             String link="https://users.cs.duke.edu/~qp7/retrieveEvents.php";
             String data  = URLEncoder.encode("latitude", "UTF-8") + "=" +
                     URLEncoder.encode(lat, "UTF-8");
@@ -43,6 +41,8 @@ public class RetrieveEvents extends AsyncTask<String,String,String> {
                     URLEncoder.encode(lon, "UTF-8");
             data+="&" + URLEncoder.encode("uid","UTF-8") + "=" +
                     URLEncoder.encode(uid,"UTF-8");
+            data+="&" + URLEncoder.encode("diameter","UTF-8") + "=" +
+                    URLEncoder.encode(distance,"UTF-8");
             URL url = new URL(link);
             URLConnection conn = url.openConnection();
             conn.setDoOutput(true);

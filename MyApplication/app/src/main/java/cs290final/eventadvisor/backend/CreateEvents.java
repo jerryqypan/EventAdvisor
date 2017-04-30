@@ -46,15 +46,27 @@ public class CreateEvents extends AsyncTask<String, String, String > {
             lon=args[6];
             String uid=args[7];
             String photoPath =args[8];
-            BitmapFactory.Options options = null;
-            options = new BitmapFactory.Options();
-            options.inSampleSize = 3;
-            Bitmap bitmap = BitmapFactory.decodeFile(photoPath,
-                    options);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
-            byte[] byte_arr = stream.toByteArray();
-            String encodedPhoto = Base64.encodeToString(byte_arr, 0);
+            String encodedPhoto;
+            System.out.println("photoPath"+photoPath);
+            if(photoPath==null){
+                encodedPhoto="";
+            }else{
+                BitmapFactory.Options options = null;
+                options = new BitmapFactory.Options();
+                options.inSampleSize = 3;
+                Bitmap bitmap = BitmapFactory.decodeFile(photoPath,
+                        options);
+                float ratio= 800/(float)bitmap.getWidth();
+                Bitmap recent = Bitmap.createScaledBitmap(bitmap,800,(int)(bitmap.getHeight()*ratio),true);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                recent.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                byte[] byte_arr = stream.toByteArray();
+                encodedPhoto = Base64.encodeToString(byte_arr, 0);
+                System.out.println("encodedphoto: " + encodedPhoto);
+            }
+
+            //System.out.println("this is the photo");
+            //System.out.print(encodedPhoto);
             String link="https://users.cs.duke.edu/~qp7/createEvent.php";
             String data =URLEncoder.encode("title", "UTF-8") + "=" +
                     URLEncoder.encode(title, "UTF-8");

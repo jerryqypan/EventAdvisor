@@ -17,11 +17,18 @@
   $latitude = floatval($_POST['latitude']);
   $uid = $_POST['uid'];
   $photo = $_POST['photo'];
-  $binary=base64_decode($base);
-  header('Content-Type: bitmap; charset=utf-8');
-  $file = fopen('uploadedimages/test.png', 'wb');
-  fwrite($file, $binary);
-  fclose($file);
+  if($photo==""){
+  		$url=$photo;
+  	}else{
+  		$binary=base64_decode($photo);
+  		$time = time();
+  		$filedir = "images/".$uid.$time.".png";
+  		header('Content-Type: bitmap; charset=utf-8');
+  		$file = fopen($filedir, "wb");
+  		fwrite($file, $binary);
+  		fclose($file);
+  		$url="https://users.cs.duke.edu/~qp7/".$filedir;
+	}
   // $title = "Wannamaker";
   // $date = "7-4-17";
   // $startTime = "14:00";
@@ -29,7 +36,7 @@
   // $description = "Test wannamaker";
   // $longitude = 35.9990892;
   // $latitude = -78.9391148;
-  $sthandler = $db->prepare("INSERT INTO Event(title,date,starttime,endtime,description,longitude,latitude,uid) values(:title,:date,:startTime,:endTime,:description,:longitude,:latitude,:uid)"); //this prevents sql injections by parameterizing the inputs
+  $sthandler = $db->prepare("INSERT INTO Event(title,date,starttime,endtime,description,longitude,latitude,uid,url) values(:title,:date,:startTime,:endTime,:description,:longitude,:latitude,:uid,:url)"); //this prevents sql injections by parameterizing the inputs
   #$sthandler = $db->prepare("SELECT * FROM Event");
   $sthandler->execute(array(
     ':title' => $title,
@@ -39,14 +46,15 @@
     ':description' => $description,
     ':longitude' => $longitude,
     ':latitude' => $latitude,
-    ':uid' => $uid
+    ':uid' => $uid,
+    ':url' => $url
     ));
     if($sthandler->errorCode() == 0) {
-    while(($row = $sthandler->fetch()) != false) {
+      while(($row = $sthandler->fetch()) != false) {
         echo $row . "\n";
     	}
-	} else {
-    $errors = $sthandler->errorInfo();
-    echo($errors[2]);
-}
+	  } else {
+      $errors = $sthandler->errorInfo();
+      echo($errors[2]);
+    }
 ?>

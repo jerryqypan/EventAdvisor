@@ -2,11 +2,12 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:layout_margin="15dp">
+
     <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="cs290final.eventadvisor.CreateEventActivity">
@@ -14,21 +15,27 @@
         <TextView
             android:id="@+id/textview"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
             android:text="Please enter your Spot's description below:"
             android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/hintName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Event Name:"
+            android:textSize="18sp"
+            android:layout_below="@id/textview"
+            android:layout_toLeftOf="@+id/cameraButton"/>
 
         <EditText
             android:id="@+id/editEventName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:hint="Event name"
+            android:layout_marginBottom="15dp"
             android:inputType="text"
-            android:layout_below="@id/textview"
+            android:layout_below="@id/hintName"
             android:layout_alignParentStart="true"
             android:layout_toLeftOf="@+id/cameraButton"
             />
@@ -37,69 +44,108 @@
             android:id="@+id/cameraButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="showSelectPictureDialog"
+            android:text=" Add Image "
+            android:textColor= "@color/colorAccent"
+            android:layout_marginLeft="10dp"
             android:layout_alignParentEnd="true"
-            android:layout_below="@id/textview"
-            android:layout_margin="15dp"
-            android:onClick="startCameraButtonAction"
-            android:text="Camera" />
+            android:layout_below="@+id/textview"
+            android:layout_alignBottom="@+id/editEventName" />
+
+        <TextView
+            android:id="@+id/hintStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Start Time:"
+            android:textSize="18sp"
+            android:layout_below="@id/editEventName"/>
 
         <EditText
             android:id="@+id/editStartTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
+            android:layout_marginBottom="15dp"
             android:focusable="false"
-            android:hint="Start Time"
             android:onClick="showStartTimePickerDialog"
-            android:layout_below="@id/editEventName"/>
+            android:layout_below="@id/hintStart"/>
+
+        <TextView
+            android:id="@+id/hintEnd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="End Time:"
+            android:textSize="18sp"
+            android:layout_below="@id/editStartTime"/>
 
         <EditText
             android:id="@+id/editEndTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:hint="End Time"
+            android:layout_marginBottom="15dp"
             android:onClick="showEndTimePickerDialog"
             android:focusable="false"
-            android:layout_below="@id/editStartTime"
+            android:layout_below="@id/hintEnd"
             />
+
+        <TextView
+            android:id="@+id/hintDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Date:"
+            android:textSize="18sp"
+            android:layout_below="@id/editEndTime"/>
+
         <EditText
             android:id="@+id/editDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:hint="Date"
+            android:layout_marginBottom="15dp"
             android:onClick="showDatePickerDialog"
             android:focusable="false"
-            android:layout_below="@id/editEndTime"
+            android:layout_below="@id/hintDate"
             />
+
+        <TextView
+            android:id="@+id/hintLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Location:"
+            android:textSize="18sp"
+            android:layout_below="@id/editDate"/>
+
         <EditText
             android:id="@+id/editLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:hint="Location"
+            android:layout_marginBottom="15dp"
             android:onClick="showLocationSearch"
             android:focusable="false"
-            android:layout_below="@id/editDate"
+            android:layout_below="@id/hintLocation"
             />
+
+        <TextView
+            android:id="@+id/hintDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Description:"
+            android:textSize="18sp"
+            android:layout_below="@id/editLocation"/>
 
         <EditText
             android:id="@+id/editDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:hint="Description (optional)"
+            android:layout_marginBottom="15dp"
             android:inputType="textMultiLine"
-            android:layout_below="@id/editLocation"/>
+            android:layout_below="@id/hintDesc"/>
 
         <Button
             android:id="@+id/createEvent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp"
             android:onClick="createEventAction"
-            android:text="create spot"
+            android:textColor= "@color/colorAccent"
+            android:text="Create Spot"
             android:layout_below="@id/editDescription"/>
     </RelativeLayout>
 </ScrollView>

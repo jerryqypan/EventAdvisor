@@ -1,14 +1,18 @@
 package cs290final.eventadvisor;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.net.Uri;
@@ -45,6 +49,7 @@ import cs290final.eventadvisor.backend.CreateEvents;
  */
 
 public class CreateEventActivity extends AppCompatActivity {
+    private static final String TAG = "CREATE_EVENT_ACTIVITY";
     protected static final String STATE_SELECTED_LATITUDE = "state_selected_latitude";
     protected static final String STATE_SELECTED_LONGITUDE = "state_selected_longitude";
     private Button cameraButton;
@@ -56,19 +61,14 @@ public class CreateEventActivity extends AppCompatActivity {
     static EditText mDescription;
     static EditText mLocation;
     private String mUser;
-
-    public String getCoordinates() {
-        return mCoordinates;
-    }
-
     private String mCoordinates;
-
     private static final int REQUEST_SELECT_PLACE = 1234;
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_STORAGE_PERMISSION = 2;
+    private static final int REQUEST_OPEN_GALLERY = 3;
     private static Calendar myCalendar = Calendar.getInstance();
-    private static final String TAG = "CreateEventActivity";
     private String mCurrentPhotoPath;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +84,7 @@ public class CreateEventActivity extends AppCompatActivity {
         cameraButton = (Button) findViewById(R.id.cameraButton);
         mCoordinates = i.getExtras().getString("latitude")+","+i.getExtras().getString("longitude");
         mUser = i.getExtras().getString("uid");
-        mLocation.setText(mCoordinates);
+        mLocation.setText("Current Location");
         checkIfCameraSupported();
     }
 
@@ -112,7 +112,31 @@ public class CreateEventActivity extends AppCompatActivity {
         return true;
     }
 
-    public void startCameraButtonAction(View view) {
+    public void showSelectPictureDialog(View v) {
+        boolean canWriteStorage = checkIfWriteToStorageAllowed();
+        if (!canWriteStorage) {
+            return;
+        }
+        final String[] items = {"Take Photo", "Choose from Gallery",
+                "Cancel" };
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add Photo!");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (items[item].equals("Take Photo")) {
+                    startCameraButton();
+                } else if (items[item].equals("Choose from Gallery")) {
+                    selectPictureFromGallery();
+                } else if (items[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    private void startCameraButton() {
         boolean hasPermission = checkIfWriteToStorageAllowed();
         if (!hasPermission) {
             return;
@@ -126,7 +150,7 @@ public class CreateEventActivity extends AppCompatActivity {
                 photoFile = createImageFile();
             } catch (IOException ex) {
                 // Error occurred while creating the File
-                System.out.println("Error occurred while creating the File for camera");
+                Log.d(TAG, "Error occurred while creating the File for camera");
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
@@ -165,6 +189,15 @@ public class CreateEventActivity extends AppCompatActivity {
         this.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
     }
 
+    private void selectPictureFromGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        // Show only images, no videos or anything else
+        intent.setType("image/*");
+//        intent.setAction(Intent.ACTION_GET_CONTENT);
+        // Always show the chooser (if there are multiple options available)
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_OPEN_GALLERY);
+    }
+
 
     public static class TimePickerFragment extends DialogFragment
             implements TimePickerDialog.OnTimeSetListener {
@@ -177,8 +210,6 @@ public class CreateEventActivity extends AppCompatActivity {
             int hour = c.get(Calendar.HOUR_OF_DAY);
             int minute = c.get(Calendar.MINUTE);
             this.startOrEnd = getArguments().getString("startOrEnd");
-            System.out.println("STARTOREND"+startOrEnd);
-            System.out.println("TEST"+ getArguments().getString("startorEnd"));
             // Create a new instance of TimePickerDialog and return it
             return new TimePickerDialog(getActivity(),android.R.style.Theme_DeviceDefault_Dialog_NoActionBar, this, hour, minute,
                     DateFormat.is24HourFormat(getActivity()));
@@ -254,15 +285,14 @@ public class CreateEventActivity extends AppCompatActivity {
             Toast.makeText(this,"Please fill all of the form!",Toast.LENGTH_SHORT).show();
             return;
         }
-        System.out.println("Create Event Activity");
+        Log.d(TAG, "Create Event Activity");
         String date = mDate.getText().toString();
         String title = mTitle.getText().toString();
         String description = mDescription.getText().toString();
         String startTime = mStartTime.getText().toString();
         String endTime = mEndTime.getText().toString();
-        String location = mLocation.getText().toString();
-        String lat = location.split(",")[0];
-        String lon = location.split(",")[1];
+        String lat = mCoordinates.split(",")[0];
+        String lon = mCoordinates.split(",")[1];
         new CreateEvents(CreateEventActivity.this).execute(title,date,description,startTime,endTime,lat,lon,mUser,mCurrentPhotoPath);
     }
     public void showLocationSearch(View view){
@@ -284,13 +314,17 @@ public class CreateEventActivity extends AppCompatActivity {
         this.finish();
     }
 
+    public String getCoordinates() {
+        return mCoordinates;
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SELECT_PLACE) {  //search bar place result
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
-                String coordinates = ""+place.getLatLng().latitude+","+place.getLatLng().longitude;
-                mLocation.setText(coordinates);
+                mCoordinates = ""+place.getLatLng().latitude+","+place.getLatLng().longitude;
+                mLocation.setText(place.getName());
             }
             else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
@@ -304,8 +338,22 @@ public class CreateEventActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-
+        }
+        if (requestCode == REQUEST_OPEN_GALLERY && resultCode == RESULT_OK) {
+            if (data == null) {
+                Toast.makeText(this, "Can't use this image!", Toast.LENGTH_SHORT).show();
+            }
+            if (data != null) {
+                Uri uri = data.getData();
+                String[] projection = { MediaStore.Images.Media.DATA };
+                Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+                cursor.moveToFirst();
+                int columnIndex = cursor.getColumnIndex(projection[0]);
+                String picturePath = cursor.getString(columnIndex);
+                cursor.close();
+                mCurrentPhotoPath = picturePath;
+                Log.d(TAG, "cursor picture path " + picturePath);
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -314,7 +362,7 @@ public class CreateEventActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == REQUEST_STORAGE_PERMISSION) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                startCameraButtonAction(null);
+                showSelectPictureDialog(null);
             }
         }
     }
