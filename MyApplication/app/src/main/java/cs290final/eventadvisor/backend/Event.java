@@ -21,6 +21,7 @@ public class Event implements Parcelable {
     private double latitude;
     private double longitude;
     private int idEvent;
+    private String place;
     private String uid;
     private String url;
     private boolean isInterested;
@@ -29,7 +30,7 @@ public class Event implements Parcelable {
     public Event() {
     }
 
-    public Event(String title, String date, String startTime, String endTime, String description, double longitude, double latitude, String uid, String url, boolean isInterested){
+    public Event(String title, String date, String startTime, String endTime, String description, double longitude, double latitude,String place, String uid, String url, boolean isInterested){
         this.title=title;
         this.date=date;
         this.startTime=startTime;
@@ -37,6 +38,7 @@ public class Event implements Parcelable {
         this.description=description;
         this.latitude=latitude;
         this.longitude=longitude;
+        this.place = place;
         this.uid = uid;
         this.url = url;
         this.isInterested=isInterested;
@@ -107,6 +109,11 @@ public class Event implements Parcelable {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
+
+    public String getPlace(){return place;}
+
+    public void setPlace(String place){this.place=place;}
+
     public boolean getisInterested(){return isInterested;}
     public void setisInterested(boolean isInterested){this.isInterested=isInterested;}
     public int getIdEvent() {
@@ -132,6 +139,7 @@ public class Event implements Parcelable {
         description = in.readString();
         latitude = in.readDouble();
         longitude = in.readDouble();
+        place = in.readString();
         idEvent = in.readInt();
         uid = in.readString();
         isInterested = in.readByte() != 0x00;
@@ -151,6 +159,7 @@ public class Event implements Parcelable {
         dest.writeString(description);
         dest.writeDouble(latitude);
         dest.writeDouble(longitude);
+        dest.writeString(place);
         dest.writeInt(idEvent);
         dest.writeString(uid);
         dest.writeByte((byte) (isInterested ? 0x01 : 0x00));

@@ -293,7 +293,8 @@ public class CreateEventActivity extends AppCompatActivity {
         String endTime = mEndTime.getText().toString();
         String lat = mCoordinates.split(",")[0];
         String lon = mCoordinates.split(",")[1];
-        new CreateEvents(CreateEventActivity.this).execute(title,date,description,startTime,endTime,lat,lon,mUser,mCurrentPhotoPath);
+        String place = mLocation.getText().toString();
+        new CreateEvents(CreateEventActivity.this).execute(title,date,description,startTime,endTime,lat,lon,place,mUser,mCurrentPhotoPath);
     }
     public void showLocationSearch(View view){
         try {       //opens google api search bar

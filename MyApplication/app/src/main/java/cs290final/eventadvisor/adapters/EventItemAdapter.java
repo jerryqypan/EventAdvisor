@@ -11,6 +11,9 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 import cs290final.eventadvisor.R;
@@ -58,6 +61,7 @@ public class EventItemAdapter extends RecyclerView.Adapter<EventItemAdapter.View
         public TextView eventLocation;
         public TextView eventTime;
         public TextView eventDescription;
+        public ImageView eventImage;
 
         public Event mEvent;
 
@@ -69,6 +73,7 @@ public class EventItemAdapter extends RecyclerView.Adapter<EventItemAdapter.View
             eventDate = (TextView) itemView.findViewById(R.id.card_date);
             eventLocation = (TextView) itemView.findViewById(R.id.card_location);
             eventTime = (TextView) itemView.findViewById(R.id.card_time);
+            eventImage = (ImageView) itemView.findViewById(R.id.card_avatar);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -100,9 +105,13 @@ public class EventItemAdapter extends RecyclerView.Adapter<EventItemAdapter.View
             this.mEvent = event;
             eventTitle.setText(event.getTitle());
             eventDescription.setText(event.getDescription());
-            eventAvatar.setImageResource(R.drawable.anon_user_48dp);
+            if(!event.getUrl().equals("") && event.getUrl()!=null){
+                Picasso.with(mContext).load(event.getUrl()).into(eventAvatar);
+            }else{
+                eventAvatar.setImageResource(R.drawable.launch_logo);
+            }
             eventDate.setText(event.getDate());
-            eventLocation.setText("Durham, NC");
+            eventLocation.setText(event.getPlace());
             eventTime.setText(event.getStartTime());
         }
 

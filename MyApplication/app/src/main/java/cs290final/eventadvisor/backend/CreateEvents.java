@@ -44,8 +44,9 @@ public class CreateEvents extends AsyncTask<String, String, String > {
             String endTime=args[4];
             lat=args[5];
             lon=args[6];
-            String uid=args[7];
-            String photoPath =args[8];
+            String place = args[7];
+            String uid=args[8];
+            String photoPath =args[9];
             String encodedPhoto;
             System.out.println("photoPath"+photoPath);
             if(photoPath==null){
@@ -62,7 +63,6 @@ public class CreateEvents extends AsyncTask<String, String, String > {
                 recent.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                 byte[] byte_arr = stream.toByteArray();
                 encodedPhoto = Base64.encodeToString(byte_arr, 0);
-                System.out.println("encodedphoto: " + encodedPhoto);
             }
 
             //System.out.println("this is the photo");
@@ -82,6 +82,8 @@ public class CreateEvents extends AsyncTask<String, String, String > {
                     URLEncoder.encode(lon, "UTF-8");
             data+="&" + URLEncoder.encode("latitude", "UTF-8") + "=" +
                     URLEncoder.encode(lat, "UTF-8");
+            data+="&" + URLEncoder.encode("place", "UTF-8") + "=" +
+                    URLEncoder.encode(place, "UTF-8");
             data+="&" + URLEncoder.encode("uid", "UTF-8") + "=" +
                     URLEncoder.encode(uid, "UTF-8");
             data+="&" + URLEncoder.encode("photo","UTF-8") + "=" + URLEncoder.encode(encodedPhoto,"UTF-8");
@@ -119,12 +121,5 @@ public class CreateEvents extends AsyncTask<String, String, String > {
             CreateEventActivity activity = (CreateEventActivity) context;
             activity.createEventsCallBack(lat, lon);
         }
-        Toast.makeText(context, "Success", Toast.LENGTH_LONG).show(); //currently prints success regardless of outcomes
-        Intent i = new Intent(context,MapsActivity.class);
-        CreateEventActivity current = (CreateEventActivity)context;
-        i.putExtra("latitude",current.getCoordinates().split(",")[0]);
-        i.putExtra("longitude",current.getCoordinates().split(",")[1]);
-        context.startActivity(i);
-
     }
 }
