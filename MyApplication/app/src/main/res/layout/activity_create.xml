@@ -127,7 +127,7 @@
             android:id="@+id/hintDesc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Description (optional):"
+            android:text="Description:"
             android:textSize="18sp"
             android:layout_below="@id/editLocation"/>
 
