@@ -62,16 +62,34 @@
                     <!--android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"-->
                     <!--tools:layout="@layout/place_autocomplete_fragment" />-->
                 </fragment>
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|end">
+                        <android.support.design.widget.FloatingActionButton
+                            android:id="@+id/fab_center_on_location"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:elevation="10dp"
+                            android:src="@drawable/ic_center_on_location"
+                            android:onClick="centerOnDeviceLocationAction"
+                            />
 
-                <android.support.design.widget.FloatingActionButton
-                    android:id="@+id/fab_create_event"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_gravity="bottom|end"
-                    android:layout_margin="16dp"
-                    android:elevation="10dp"
-                    android:src="@drawable/ic_plus_sign"
-                     />
+                        <android.support.design.widget.FloatingActionButton
+                            android:id="@+id/fab_create_event"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:layout_margin="16dp"
+                            android:elevation="10dp"
+                            android:layout_below="@id/fab_center_on_location"
+                            android:src="@drawable/ic_plus_sign"
+                             />
+
+
+                    </RelativeLayout>
+
 
 
 
