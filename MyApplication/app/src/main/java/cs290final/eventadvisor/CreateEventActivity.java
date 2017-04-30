@@ -194,10 +194,10 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     private void selectPictureFromGallery() {
-        Intent intent = new Intent();
+        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         // Show only images, no videos or anything else
         intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
+//        intent.setAction(Intent.ACTION_GET_CONTENT);
         // Always show the chooser (if there are multiple options available)
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_OPEN_GALLERY);
     }
@@ -379,6 +379,8 @@ public class CreateEventActivity extends AppCompatActivity {
                 System.out.println("cursor picture path " + picturePath);
                 cursor.close();
                 mCurrentPhotoPath = picturePath;
+                System.out.println("INTENT PIC PATH: " + uri);
+                System.out.println("Gallery Click Photo: " + mCurrentPhotoPath);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
