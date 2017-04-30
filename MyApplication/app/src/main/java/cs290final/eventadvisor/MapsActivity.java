@@ -223,7 +223,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 float distanceInMeters = calculateMaxMapDistanceOnScreen();
                 System.out.println("Distance: " + distanceInMeters);
 
-                new RetrieveEvents(MapsActivity.this).execute(Double.toString(place.target.latitude), Double.toString(place.target.longitude),currentUser.getUid());
+                new RetrieveEvents(MapsActivity.this).execute(Double.toString(place.target.latitude), Double.toString(place.target.longitude),currentUser.getUid(),Float.toString(calculateMaxMapDistanceOnScreen()));
             }
         });
     }
@@ -338,10 +338,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         eventsJSON = json;
         eventsMap = new HashMap<>();
         List<Event> events = JSONToEventGenerator.unmarshallJSONString(eventsJSON);
-//        events.add(new Event("dupl1", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "",false));      //need to remove
-//        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "",true));      //need to remove
-//        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "",false));      //need to remove
-//        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "",true));      //need to remove
+        events.add(new Event("dupl1", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "","",false));      //need to remove
+        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "","",true));      //need to remove
+        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "","",false));      //need to remove
+        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "","",true));      //need to remove
+
         for (Event event : events) {
             String mapKey = normalizeKeyForMap(event);
             if (!eventsMap.containsKey(mapKey)) {
