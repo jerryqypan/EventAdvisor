@@ -54,12 +54,12 @@ public class CreateEventActivity extends AppCompatActivity {
     protected static final String STATE_SELECTED_LONGITUDE = "state_selected_longitude";
     private Button cameraButton;
 
-    static EditText mStartTime;
-    static EditText mEndTime;
-    static EditText mDate;
-    static EditText mTitle;
-    static EditText mDescription;
-    static EditText mLocation;
+    private EditText mStartTime;
+    private EditText mEndTime;
+    private EditText mDate;
+    private EditText mTitle;
+    private EditText mDescription;
+    private EditText mLocation;
     private String mUser;
     private String mCoordinates;
     private static final int REQUEST_SELECT_PLACE = 1234;
@@ -216,6 +216,7 @@ public class CreateEventActivity extends AppCompatActivity {
         }
 
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            CreateEventActivity createEventActivity = (CreateEventActivity) getActivity();
             String fMinute = "";
             if(minute<10){
                 fMinute="0"+minute;
@@ -223,10 +224,10 @@ public class CreateEventActivity extends AppCompatActivity {
                 fMinute=Integer.toString(minute);
             }
             if(startOrEnd.equals("start")){
-                mStartTime.setText(""+hourOfDay+":"+fMinute+":00");
+                createEventActivity.mStartTime.setText(""+hourOfDay+":"+fMinute+":00");
             }
             if(startOrEnd.equals("end")){
-                mEndTime.setText(""+hourOfDay+":"+fMinute+":00");
+                createEventActivity.mEndTime.setText(""+hourOfDay+":"+fMinute+":00");
             }else{
                 Log.d(TAG,startOrEnd);
             }
@@ -251,13 +252,14 @@ public class CreateEventActivity extends AppCompatActivity {
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
             // Do something with the date chosen by the user
+            CreateEventActivity createEventActivity = (CreateEventActivity) getActivity();
             myCalendar.set(Calendar.YEAR,year);
             myCalendar.set(Calendar.MONTH,month);
             myCalendar.set(Calendar.DAY_OF_MONTH,day);
             String myFormat = "yyyy/MM/dd"; //In which you need put here
             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
-            mDate.setText(sdf.format(myCalendar.getTime()));
+            createEventActivity.mDate.setText(sdf.format(myCalendar.getTime()));
 
         }
     }
