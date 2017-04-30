@@ -52,13 +52,14 @@ public class CreateEventActivity extends AppCompatActivity {
     private static final String TAG = "CREATE_EVENT_ACTIVITY";
     protected static final String STATE_SELECTED_LATITUDE = "state_selected_latitude";
     protected static final String STATE_SELECTED_LONGITUDE = "state_selected_longitude";
-    private static EditText mStartTime;
-    private static EditText mEndTime;
-    private static EditText mDate;
-    private static EditText mTitle;
-    private static EditText mDescription;
-    private static EditText mLocation;
     private Button cameraButton;
+
+    static EditText mStartTime;
+    static EditText mEndTime;
+    static EditText mDate;
+    static EditText mTitle;
+    static EditText mDescription;
+    static EditText mLocation;
     private String mUser;
     private String mCoordinates;
     private static final int REQUEST_SELECT_PLACE = 1234;

@@ -4,4 +4,25 @@
     <dimen name="auth_method_button_marginBottom">8dp</dimen>
     <dimen name="auth_method_button_drawablePadding">12dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="md_keylines">16dp</dimen>
+    <dimen name="app_bar_height">256dp</dimen>
+    <dimen name="navheader_height">222dp</dimen>
+
+    <dimen name="avator_size">48dp</dimen>
+
+    <dimen name="card_avatar_size">40dp</dimen>
+    <dimen name="card_title_height">26dp</dimen>
+    <dimen name="cards_button_width">48dp</dimen>
+    <dimen name="cards_button_height">48dp</dimen>
+    <dimen name="card_body_text">14sp</dimen>
+    <dimen name="md_card_headline">16sp</dimen>
+    <dimen name="card_height">120dp</dimen>
+
+    <dimen name="md_card_padding_above">8dp</dimen>
+    <dimen name="md_card_left_padding_avatar">16dp</dimen>
+    <dimen name="md_card_left_text_padding">72dp</dimen>
+    <dimen name="md_card_right_text_padding">16dp</dimen>
+
 </resources>

@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.firebase.ui.auth.AuthUI;
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initiateSignIn() {
         // Get the previously invisity logo view
-        mInitView = (RelativeLayout) findViewById(R.id.init_view);
+        mInitView = (LinearLayout) findViewById(R.id.init_view);
         // make the view visible and start the animation
 
         mInitView.post(revealLogoAnimation);

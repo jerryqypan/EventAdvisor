@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_view"
-    android:background="@color/colorPrimary"
     android:layout_width="match_parent"
+    android:background="?attr/colorPrimaryDark"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/init_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="invisible">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical" >
+        <!--android:visibility="invisible"-->
+
 
         <ImageView
             android:id="@+id/main_logo"
@@ -22,20 +23,23 @@
             android:src="@drawable/launch_logo"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true" />
+            android:layout_gravity="center_horizontal"
+            android:padding="10dp"
+            android:elevation="5dp"
+            android:src="@drawable/launch_logo" />
 
         <Button
             android:id="@+id/get_started_button"
-            style="@style/Widget.AppCompat.Button.Borderless"
+            style="@style/BorderlessButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/main_logo"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
+            android:layout_gravity="center_horizontal"
+            android:padding="10dp"
+            android:elevation="5dp"
             android:onClick="onStartClick"
             android:text="Get Started"
-            android:textColor="#ffffff"
             android:textSize="30sp" />
-    </RelativeLayout>
+    </LinearLayout>
 
 
     <!--<Button-->
