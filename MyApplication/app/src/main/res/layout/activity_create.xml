@@ -65,6 +65,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
+                    android:textColor="@color/spot_primary_dark"
                     android:focusable="false"
                     android:onClick="showStartTimePickerDialog"/>
 
@@ -80,6 +81,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
+
+                    android:textColor="@color/spot_primary_dark"
                     android:onClick="showEndTimePickerDialog"
                     android:focusable="false"/>
 

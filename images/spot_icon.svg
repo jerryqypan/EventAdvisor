@@ -1,11 +1,1 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 1080 1920" style="enable-background:new 0 0 1080 1920;" xml:space="preserve">
-<style type="text/css">
-	.st0{fill:#D31515;}
-</style>
-<rect x="276.1" y="577" class="st0" width="568.7" height="568.7"/>
-<image style="overflow:visible;enable-background:new    ;" width="260" height="260" xlink:href="../MyApplication/app/src/main/res/drawable/launch_logo.png"  transform="matrix(2.525 0 0 2.525 233.5933 546.5739)">
-</image>
-</svg>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1080 1920"><defs><style>.cls-1{fill:#00838e;}.cls-2{isolation:isolate;}</style></defs><title>spot_icon</title><rect class="cls-1" x="276.1" y="577" width="568.7" height="568.7" rx="41.41" ry="41.41"/><image class="cls-2" width="260" height="260" transform="translate(232.13 548.16) scale(2.53)" xlink:href="../MyApplication/app/src/main/res/drawable/launch_logo.png"/></svg>
