@@ -46,6 +46,11 @@
         <activity
             android:name=".MapsActivity"
             android:label="Spot" />
+
+        <activity
+            android:name=".TabbedActivity"
+            android:label="Tabs" />
+
         <activity
             android:name=".CreateEventActivity"
             android:label="CreateEvent"></activity>

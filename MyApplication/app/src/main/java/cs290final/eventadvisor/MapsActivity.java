@@ -530,16 +530,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      * @param v View that was clicked
      */
     public void createActivityAction(View v){
-        Intent intent = new Intent(this,CreateEventActivity.class);
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-            return;
-        }
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        intent.putExtra("latitude", Double.toString(mLastLocation.getLatitude()));
-        intent.putExtra("longitude",Double.toString(mLastLocation.getLongitude()));
-        intent.putExtra("uid",currentUser.getUid());
-        startActivityForResult(intent, CREATE_EVENTS);
+        Intent intent = new Intent(this, TabbedActivity.class);
+        startActivity(intent);
+//        Intent intent = new Intent(this,CreateEventActivity.class);
+//        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+//            return;
+//        }
+//        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+//        intent.putExtra("latitude", Double.toString(mLastLocation.getLatitude()));
+//        intent.putExtra("longitude",Double.toString(mLastLocation.getLongitude()));
+//        intent.putExtra("uid",currentUser.getUid());
+//        startActivityForResult(intent, CREATE_EVENTS);
     }
 
     @Override

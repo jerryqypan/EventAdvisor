@@ -11,10 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.Collection;
 import java.util.List;
 
 import cs290final.eventadvisor.MapsActivity;
 import cs290final.eventadvisor.R;
+import cs290final.eventadvisor.TabbedActivity;
 import cs290final.eventadvisor.adapters.EventItemAdapter;
 import cs290final.eventadvisor.backend.Event;
 import cs290final.eventadvisor.backend.ShowInterest;
@@ -24,13 +26,28 @@ import cs290final.eventadvisor.backend.ShowInterest;
  */
 public class FavoritesFragment extends Fragment {
 
-    private static final String dTAG = "FavoritesFragment";
+    private static final String TAG = "FavoritesFragment";
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
+    private EventItemAdapter mEventItemAdapter;
 
     public FavoritesFragment() {
 
     }
+
+    public static FavoritesFragment newInstance() {
+        FavoritesFragment fragment = new FavoritesFragment();
+        return fragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Log.d(TAG, "onAttach: Context: " + context);
+        new ShowInterest(context).execute(TabbedActivity.mCurrentUser.getUid());
+    }
+    
+
 
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container,
@@ -46,12 +63,40 @@ public class FavoritesFragment extends Fragment {
         mLayoutManager.setReverseLayout(true);
         mLayoutManager.setStackFromEnd(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        Log.d("dTAG", "Inside .onCreateView()");
+        Log.d(TAG, "Inside .onCreateView()");
         // Get Fav events for current user
-        EventItemAdapter mAdapter = new EventItemAdapter(MapsActivity.mUserFavs, null, rootView.getContext());
+        mEventItemAdapter = new EventItemAdapter(rootView.getContext());
 
-        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(mEventItemAdapter);
         return rootView;
     }
 
+    public void updateAdapter() {
+        Log.d(TAG, "updateAdapter: UPDATEEEEEEEEEEEEEEE");
+        mRecyclerView.getAdapter().notifyDataSetChanged();
+    }
+
+
+    public void setData(List<Event> values) {
+        mEventItemAdapter.addEvents(values);
+        this.updateAdapter();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mRecyclerView.getAdapter().notifyDataSetChanged();
+        Log.d(TAG, "onResume: RESUMED!");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: paused!");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+    }
 }

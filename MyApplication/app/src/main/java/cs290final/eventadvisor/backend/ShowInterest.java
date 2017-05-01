@@ -11,6 +11,8 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 
 import cs290final.eventadvisor.MapsActivity;
+import cs290final.eventadvisor.TabbedActivity;
+import cs290final.eventadvisor.fragments.FavoritesFragment;
 
 /**
  * @author Jerry Pan
@@ -61,10 +63,16 @@ public class ShowInterest extends AsyncTask<String, String, String> {
     }
 
     protected void onPostExecute(String result){
-        if (context instanceof MapsActivity) {
-            MapsActivity mapsActivity = (MapsActivity) context;
-            mapsActivity.retrieveFavEvents(result);
+        System.out.println("onPostExecute: " + result);
+        System.out.println("onPostExecute: " + (context instanceof TabbedActivity));
+        if (context instanceof TabbedActivity) {
+            TabbedActivity activity = (TabbedActivity) context;
+            activity.retrieveAndParseJSON(result, 1);
         }
+//        if (context instanceof MapsActivity) {
+//            MapsActivity mapsActivity = (MapsActivity) context;
+//            mapsActivity.retrieveFavEvents(result);
+//        }
     }
 
 

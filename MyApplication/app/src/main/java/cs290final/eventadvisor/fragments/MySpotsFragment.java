@@ -11,25 +11,31 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import cs290final.eventadvisor.MapsActivity;
 import cs290final.eventadvisor.R;
+import cs290final.eventadvisor.TabbedActivity;
 import cs290final.eventadvisor.adapters.EventItemAdapter;
+import cs290final.eventadvisor.backend.Event;
+import cs290final.eventadvisor.backend.RetrieveUserEvents;
+import cs290final.eventadvisor.backend.ShowInterest;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MySpotsFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link MySpotsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class MySpotsFragment extends Fragment {
-    private static final String dTAG = "MySpotsFragment";
+    private static final String TAG = "MySpotsFragment";
     private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
+    private EventItemAdapter mItemAdapter;
 
     public MySpotsFragment() {
 
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Log.d(TAG, "onAttach: Context: " + context);
+        new RetrieveUserEvents(context).execute(TabbedActivity.mCurrentUser.getUid());
     }
 
     @Override
@@ -46,12 +52,27 @@ public class MySpotsFragment extends Fragment {
         mLayoutManager.setReverseLayout(true);
         mLayoutManager.setStackFromEnd(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        Log.d("dTAG", "Inside .onCreateView()");
+        Log.d("TAG", "Inside .onCreateView()");
         // Get Fav events for current user
-        EventItemAdapter mAdapter = new EventItemAdapter(MapsActivity.mUserEvents, null, rootView.getContext());
+        mItemAdapter = new EventItemAdapter(rootView.getContext());
 
-        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(mItemAdapter);
         return rootView;
+    }
+
+    public void setData(List<Event> events) {
+        mItemAdapter.addEvents(events);
+        this.updateAdapter();
+    }
+
+    public void updateAdapter() {
+        mItemAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: paused!");
     }
 
 }

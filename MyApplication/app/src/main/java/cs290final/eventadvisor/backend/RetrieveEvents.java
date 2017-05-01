@@ -11,6 +11,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 
 import cs290final.eventadvisor.MapsActivity;
+import cs290final.eventadvisor.TabbedActivity;
 
 /**
  * @author Jerry Pan
@@ -77,9 +78,13 @@ public class RetrieveEvents extends AsyncTask<String,String,String> {
      * @params result json returned from retrieveEvents.php
      */
     protected void onPostExecute(String result){
-        if (context instanceof MapsActivity) {
-            MapsActivity mapsActivity = (MapsActivity) context;
-            mapsActivity.retrieveAndParseJSON(result);
+        if (context instanceof TabbedActivity) {
+            TabbedActivity tabbedActivity = (TabbedActivity) context;
+            tabbedActivity.retrieveAndParseJSON(result, 0);
         }
+//        if (context instanceof MapsActivity) {
+//            MapsActivity mapsActivity = (MapsActivity) context;
+//            mapsActivity.retrieveAndParseJSON(result);
+//        }
     }
 }

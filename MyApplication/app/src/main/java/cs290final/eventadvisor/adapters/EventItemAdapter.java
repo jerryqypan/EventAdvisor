@@ -24,8 +24,11 @@ import java.util.List;
 
 import cs290final.eventadvisor.MapsActivity;
 import cs290final.eventadvisor.R;
+import cs290final.eventadvisor.TabbedActivity;
 import cs290final.eventadvisor.backend.Event;
 import cs290final.eventadvisor.backend.SelectInterest;
+import cs290final.eventadvisor.backend.ShowInterest;
+import cs290final.eventadvisor.fragments.FavoritesFragment;
 
 /**
  * Created by Asim Hasan on 4/30/2017.
@@ -33,7 +36,7 @@ import cs290final.eventadvisor.backend.SelectInterest;
 
 public class EventItemAdapter extends RecyclerView.Adapter<EventItemAdapter.ViewHolder> {
 
-    private final List<Event> mEvents;
+    private List<Event> mEvents;
     private Context mContext;
     private EventItemListener mEventItemListener;
 
@@ -46,6 +49,12 @@ public class EventItemAdapter extends RecyclerView.Adapter<EventItemAdapter.View
         mEventItemListener = listener;
     }
 
+    public EventItemAdapter(Context context) {
+        mContext = context;
+        mEvents = null;
+        mEventItemListener = null;
+    }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater.from(parent.getContext()), parent);
@@ -55,6 +64,10 @@ public class EventItemAdapter extends RecyclerView.Adapter<EventItemAdapter.View
     public void onBindViewHolder(ViewHolder holder, int position) {
         Event e = mEvents.get(position % mEvents.size());
         holder.setData(e);
+    }
+
+    public void addEvents(List<Event> events) {
+        mEvents = events;
     }
 
     @Override
@@ -95,16 +108,17 @@ public class EventItemAdapter extends RecyclerView.Adapter<EventItemAdapter.View
             favoriteImageButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    MapsActivity mapsActivity = (MapsActivity) mContext;
+                    Log.d(TAG, "onClick: " + v);
+                    TabbedActivity tabActivity = (TabbedActivity) mContext;
                     if (isFavoriteClicked) {
                         isFavoriteClicked = false;
                         favoriteImageButton.setImageResource(R.drawable.ic_favorite_off);
-                        new SelectInterest(favoriteImageButton).execute(mapsActivity.currentUser.getUid(), Integer.toString(mEvent.getIdEvent()), "delete");
+                        new SelectInterest(favoriteImageButton).execute(tabActivity.mCurrentUser.getUid(), Integer.toString(mEvent.getIdEvent()), "delete");
                         mEvent.setisInterested(isFavoriteClicked);
                     } else {
                         isFavoriteClicked = true;
                         favoriteImageButton.setImageResource(R.drawable.ic_favorite_on);
-                        new SelectInterest(favoriteImageButton).execute(mapsActivity.currentUser.getUid(), Integer.toString(mEvent.getIdEvent()), "add");
+                        new SelectInterest(favoriteImageButton).execute(tabActivity.mCurrentUser.getUid(), Integer.toString(mEvent.getIdEvent()), "add");
                         mEvent.setisInterested(isFavoriteClicked);
                     }
                 }
