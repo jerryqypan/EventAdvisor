@@ -48,6 +48,9 @@ dependencies {
     compile files('jackson-annotations-2.8.0.jar')
     compile files('jackson-core-2.8.1.jar')
     compile files('jackson-databind-2.8.1.jar')
+    compile files('jackson-annotations-2.8.0.jar')
+    compile files('jackson-core-2.8.1.jar')
+    compile files('jackson-databind-2.8.1.jar')
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.google.android.gms:play-services-maps:10.2.1'
@@ -60,6 +63,7 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.android.support:support-v4:19.1.0'
+    compile 'com.mikepenz:iconics-core:2.8.3@aar'
     testCompile 'junit:junit:4.12'
     compile files('jackson-annotations-2.8.0.jar')
     compile files('jackson-core-2.8.1.jar')
@@ -72,6 +76,5 @@ dependencies {
         transitive = true;
     }
 }
-
 
 apply plugin: 'com.google.gms.google-services'

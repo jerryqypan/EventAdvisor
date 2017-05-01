@@ -55,6 +55,9 @@ public class RetrieveUserEvents extends AsyncTask<String,String,String>{
     }
     @Override
     protected void onPostExecute(String result){
-
+        if (context instanceof MapsActivity) {
+            MapsActivity mapsActivity = (MapsActivity) context;
+            mapsActivity.retrieveUserEvents(result);
+        }
     }
 }

@@ -59,7 +59,7 @@ public class EventItemAdapter extends RecyclerView.Adapter<EventItemAdapter.View
 
     @Override
     public int getItemCount() {
-        return mEvents.size();
+        return (mEvents == null ? 0 : mEvents.size());
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -126,7 +126,7 @@ public class EventItemAdapter extends RecyclerView.Adapter<EventItemAdapter.View
             this.mEvent = event;
             eventTitle.setText(event.getTitle());
             eventDescription.setText(event.getDescription());
-            if(!event.getUrl().equals("") && event.getUrl()!=null){
+            if(event.getUrl()!=null && !event.getUrl().equals("")){
                 Picasso.with(mContext).load(event.getUrl()).into(eventAvatar);
             }else{
                 eventAvatar.setImageResource(R.drawable.launch_logo);
