@@ -13,19 +13,26 @@ import java.net.URLEncoder;
 import cs290final.eventadvisor.MapsActivity;
 
 /**
- * Created by Jerry on 4/16/2017.
+ * @author Jerry Pan
  */
 
 public class RetrieveEvents extends AsyncTask<String,String,String> {
+    /**
+     * MapActivity context
+     */
     private Context context;
 
     public RetrieveEvents(Context context) {
         this.context = context;
     }
 
-    protected void onPreExecute(){
-    }
+
     @Override
+    /**
+     * Sends event information to retrieveEvents.php asynchronously
+     *
+     * @param args arguments passed to post to retrieveEvents.php
+     */
     protected String doInBackground(String... args){
         try{
             String lat=args[0];
@@ -64,6 +71,11 @@ public class RetrieveEvents extends AsyncTask<String,String,String> {
         }
     }
     @Override
+    /**
+     * Calls MapActivity to parse the json into Events
+     *
+     * @params result json returned from retrieveEvents.php
+     */
     protected void onPostExecute(String result){
         if (context instanceof MapsActivity) {
             MapsActivity mapsActivity = (MapsActivity) context;

@@ -23,16 +23,13 @@
         android:roundIcon="@mipmap/spot_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".SplashActivity"
-            android:theme="@style/SplashTheme">
+        <activity android:name=".MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"></activity>
+
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

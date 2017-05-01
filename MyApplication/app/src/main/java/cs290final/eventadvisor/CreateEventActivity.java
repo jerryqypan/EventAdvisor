@@ -47,32 +47,88 @@ import java.util.Locale;
 import cs290final.eventadvisor.backend.CreateEvents;
 
 /**
- * Created by emilymeng on 4/16/17.
+ * @author Jerry Pan
  */
 
 public class CreateEventActivity extends AppCompatActivity {
+    /**
+     * Log output
+     */
     private static final String TAG = "CREATE_EVENT_ACTIVITY";
+    /**
+     *
+     */
     protected static final String STATE_SELECTED_LATITUDE = "state_selected_latitude";
+    /**
+     *
+     */
     protected static final String STATE_SELECTED_LONGITUDE = "state_selected_longitude";
+    /**
+     * Button that adds images to the event
+     */
     private Button cameraButton;
-
+    /**
+     * Input field for start time
+     */
     private EditText mStartTime;
+    /**
+     * Input field for end time
+     */
     private EditText mEndTime;
+    /**
+     * Input field for date
+     */
     private EditText mDate;
+    /**
+     * Input field for title
+     */
     private EditText mTitle;
+    /**
+     * Input field for description
+     */
     private EditText mDescription;
+    /**
+     * Input field for location
+     */
     private EditText mLocation;
+    /**
+     * The current Firebase User
+     */
     private String mUser;
+    /**
+     * The coordinates of the place selected
+     */
     private String mCoordinates;
+    /**
+     * Request code for selecting location
+     */
     private static final int REQUEST_SELECT_PLACE = 1234;
+    /**
+     * Request code for camera
+     */
     private static final int REQUEST_IMAGE_CAPTURE = 1;
+    /**
+     * Request code for accessing files
+     */
     private static final int REQUEST_STORAGE_PERMISSION = 2;
+    /**
+     * Request code for opening gallery
+     */
     private static final int REQUEST_OPEN_GALLERY = 3;
+    /**
+     * Calendar object for Datepicker dialog fragment
+     */
     private static Calendar myCalendar = Calendar.getInstance();
+    /**
+     * File path of photo selected by user
+     */
     private String mCurrentPhotoPath;
 
 
     @Override
+    /**
+     * Initializes the buttons and input fields as well as app permissions
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent i = getIntent();
@@ -90,6 +146,9 @@ public class CreateEventActivity extends AppCompatActivity {
         checkIfCameraSupported();
     }
 
+    /**
+     * Checks camera permissions
+     */
     private void checkIfCameraSupported() {
         boolean hasCamera = getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
         if (hasCamera) {
@@ -98,7 +157,10 @@ public class CreateEventActivity extends AppCompatActivity {
             cameraButton.setEnabled(false);
         }
     }
-
+    /**
+     * Checks if writing to storage is allowed
+     * @return true if writing to storage is allowed, false ow
+     */
     private boolean checkIfWriteToStorageAllowed() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -114,6 +176,10 @@ public class CreateEventActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Dialog for choosing to select photo from gallery or take a photo from camera
+     * @param v the add image button
+     */
     public void showSelectPictureDialog(View v) {
         boolean canWriteStorage = checkIfWriteToStorageAllowed();
         if (!canWriteStorage) {
@@ -138,6 +204,9 @@ public class CreateEventActivity extends AppCompatActivity {
         builder.show();
     }
 
+    /**
+     *  Starts the camera to take a photo
+     */
     private void startCameraButton() {
         boolean hasPermission = checkIfWriteToStorageAllowed();
         if (!hasPermission) {
@@ -167,6 +236,11 @@ public class CreateEventActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Saves the image file created by the camera to the system
+     * @return returns the image file
+     * @throws IOException throws exception if writing to system fails
+     */
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -183,6 +257,9 @@ public class CreateEventActivity extends AppCompatActivity {
         return image;
     }
 
+    /**
+     * Adds all the images into the gallery displayed
+     */
     private void addPicToGallery() {
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
@@ -191,6 +268,9 @@ public class CreateEventActivity extends AppCompatActivity {
         this.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
     }
 
+    /**
+     * Allows user to select the image from the gallery
+     */
     private void selectPictureFromGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         // Show only images, no videos or anything else
@@ -200,12 +280,21 @@ public class CreateEventActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_OPEN_GALLERY);
     }
 
-
+    /**
+     * @author Jerry
+     * Copied from https://developer.android.com/guide/topics/ui/controls/pickers.html
+     */
     public static class TimePickerFragment extends DialogFragment
             implements TimePickerDialog.OnTimeSetListener {
+        /**
+         * Denoting if fragment is for either start or end time
+         */
         private String startOrEnd="";
 
         @Override
+        /**
+         * Initializes the time picker dialog inside the fragment
+         */
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the current time as the default values for the picker
             final Calendar c = Calendar.getInstance();
@@ -217,7 +306,14 @@ public class CreateEventActivity extends AppCompatActivity {
                     DateFormat.is24HourFormat(getActivity()));
         }
 
+        /**
+         *  Actions after user selects the time
+         * @param view The TimePicker that is displayed
+         * @param hourOfDay Hour selected
+         * @param minute Minute selected
+         */
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            // Do something with the time chosen by the user
             CreateEventActivity createEventActivity = (CreateEventActivity) getActivity();
             String fMinute = "";
             if(minute<10){
@@ -233,13 +329,18 @@ public class CreateEventActivity extends AppCompatActivity {
             }else{
                 Log.d(TAG,startOrEnd);
             }
-            // Do something with the time chosen by the user
         }
     }
-
+    /**
+     * @author Jerry
+     * Copied from https://developer.android.com/guide/topics/ui/controls/pickers.html
+     */
     public static class DatePickerFragment extends DialogFragment
             implements DatePickerDialog.OnDateSetListener {
         @Override
+        /**
+         * Initializes the date picker dialog inside the fragment
+         */
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the current date as the default date in the picker
             final Calendar c = Calendar.getInstance();
@@ -251,7 +352,13 @@ public class CreateEventActivity extends AppCompatActivity {
             picker.getDatePicker().setMinDate(c.getTime().getTime());
             return picker;
         }
-
+        /**
+         *  Actions after user selects the time
+         * @param view The TimePicker that is displayed
+         * @param day The day selected
+         * @param year The year selected
+         * @param month The month selected
+         */
         public void onDateSet(DatePicker view, int year, int month, int day) {
             // Do something with the date chosen by the user
             CreateEventActivity createEventActivity = (CreateEventActivity) getActivity();
@@ -260,16 +367,23 @@ public class CreateEventActivity extends AppCompatActivity {
             myCalendar.set(Calendar.DAY_OF_MONTH,day);
             String myFormat = "yyyy/MM/dd"; //In which you need put here
             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-
             createEventActivity.mDate.setText(sdf.format(myCalendar.getTime()));
-
         }
     }
 
+    /**
+     * Starts the date picker fragment
+     * @param v The date input field
+     */
     public void showDatePickerDialog(View v) {
         DialogFragment newFragment = new DatePickerFragment();
         newFragment.show(getFragmentManager(), "datePicker");
     }
+
+    /**
+     * Starts the end time fragment
+     * @param v The end time input field
+     */
     public void showEndTimePickerDialog(View v) {
         Bundle args = new Bundle();
         args.putString("startOrEnd", "end");
@@ -277,6 +391,11 @@ public class CreateEventActivity extends AppCompatActivity {
         newFragment.setArguments(args);
         newFragment.show(getFragmentManager(), "timePicker");
     }
+
+    /**
+     * Starts the start time fragment
+     * @param v The start time input field
+     */
     public void showStartTimePickerDialog(View v) {
         Bundle args = new Bundle();
         args.putString("startOrEnd", "start");
@@ -284,6 +403,11 @@ public class CreateEventActivity extends AppCompatActivity {
         newFragment.setArguments(args);
         newFragment.show(getFragmentManager(), "timePicker");
     }
+
+    /**
+     * Starts another thread to post information to server
+     * @param view Create event button
+     */
     public void createEventAction(View view) {
         if (mDate.getText().toString().length() == 0 || mStartTime.getText().toString().length() == 0 || mEndTime.getText().toString().length() == 0 || mTitle.getText().toString().length()==0 || mDescription.getText().toString().length()==0){
             Toast.makeText(this,"Please fill all of the form!",Toast.LENGTH_SHORT).show();
@@ -300,6 +424,11 @@ public class CreateEventActivity extends AppCompatActivity {
         String place = mLocation.getText().toString();
         new CreateEvents(CreateEventActivity.this).execute(title,date,description,startTime,endTime,lat,lon,place,mUser,mCurrentPhotoPath);
     }
+
+    /**
+     * Starts the location selector fragment
+     * @param view The location input field
+     */
     public void showLocationSearch(View view){
         try {       //opens google api search bar
             Intent intent = new PlaceAutocomplete.IntentBuilder
@@ -311,6 +440,11 @@ public class CreateEventActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Callback for CreateEvent to use after executing to go back to MapActivity
+     * @param latitude latitude to send back to MapActivity
+     * @param longitude longitude to send back to MapActivity
+     */
     public void createEventsCallBack(String latitude, String longitude) {
         Intent intent = new Intent();
         intent.putExtra(STATE_SELECTED_LATITUDE, Double.parseDouble(latitude));
@@ -319,11 +453,10 @@ public class CreateEventActivity extends AppCompatActivity {
         this.finish();
     }
 
-    public String getCoordinates() {
-        return mCoordinates;
-    }
-
     @Override
+    /**
+     * Processes location, camera actvities
+     */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SELECT_PLACE) {  //search bar place result
             if (resultCode == RESULT_OK) {
@@ -338,7 +471,6 @@ public class CreateEventActivity extends AppCompatActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             try {
                 Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.fromFile(new File(mCurrentPhotoPath)));
-//                MediaStore.Images.Media.insertImage(getContentResolver(), imageBitmap, "tes" , "sdf");
                 addPicToGallery();
                 final ImageView imgView = new ImageView(this);
                 Picasso.with(this).load(new File(mCurrentPhotoPath)).into(imgView, new com.squareup.picasso.Callback() { //need to find a better solution
@@ -390,6 +522,9 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     @Override
+    /**
+     * Executes showSelectPictureDialog if permissions were granted
+     */
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == REQUEST_STORAGE_PERMISSION) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {

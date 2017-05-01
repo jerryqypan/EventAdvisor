@@ -14,10 +14,12 @@ import java.net.URLEncoder;
  */
 
 public class DeleteEvent extends AsyncTask<String,String,String> {
-
-    protected void onPreExecute(){
-    }
     @Override
+    /**
+     * Sends event information to deleteEvent.php asynchronously
+     *
+     * @param args arguments passed to post to deleteEvent.php
+     */
     protected String doInBackground(String... args){
         try{
             String idEvent=args[0];
@@ -47,8 +49,5 @@ public class DeleteEvent extends AsyncTask<String,String,String> {
             return new String("Exception: " + e.getMessage());
         }
     }
-    @Override
-    protected void onPostExecute(String result){
 
-    }
 }
