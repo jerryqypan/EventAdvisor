@@ -106,7 +106,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final int CREATE_EVENTS = 12345;
     private SearchView searchView;
     private MenuItem searchBarMenuItem;
-    private FirebaseUser currentUser;
+    public FirebaseUser currentUser;
     View mRootView;         //can these be private? -Chirag
     ImageView mUserProfilePicture;
     TextView mUserEmail;
