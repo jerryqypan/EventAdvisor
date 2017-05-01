@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -63,6 +62,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
+
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -71,10 +71,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import cs290final.eventadvisor.adapters.EventItemAdapter;
+import cs290final.eventadvisor.adapters.RegisteredFragmentStatePagerAdapter;
 import cs290final.eventadvisor.backend.Event;
 import cs290final.eventadvisor.backend.JSONToEventGenerator;
 import cs290final.eventadvisor.backend.RetrieveEvents;
+import cs290final.eventadvisor.backend.RetrieveUserEvents;
 import cs290final.eventadvisor.backend.SelectInterest;
+import cs290final.eventadvisor.backend.ShowInterest;
 import cs290final.eventadvisor.fragments.CustomBottomSheetDialogFragment;
 import cs290final.eventadvisor.utils.CircleTransform;
 
@@ -120,15 +123,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     private String eventsJSON;
 
+
+    public static List<Event> mUserFavs;
+    public static List<Event> mUserEvents;
+
+
     /**
      * The DrawerLayout of this application.
      */
+
     private DrawerLayout mDrawerLayout;
 
     /**
      * The NagivationView of this application.
      */
     private NavigationView mNavigationView;
+    private RegisteredFragmentStatePagerAdapter mPagerAdapter;
+
 
     /**
      * The Request code to obtain results from the google maps searchbar
@@ -152,10 +163,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     private MenuItem searchBarMenuItem;
 
+    public static FirebaseUser currentUser;
+    View mRootView;         //can these be private? -Chirag
+    ImageView mUserProfilePicture;
+    TextView mUserEmail;
+    TextView mUserDisplayName;
+
+
     /**
      * The current user of the application.
      */
-    public FirebaseUser currentUser;
+
 
     /**
      * The root view of the application
@@ -224,9 +242,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     // This method will trigger on item Click of navigation menu
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
-                        // Set item in checked state
-                        menuItem.setChecked(true);
-                        // TODO: handle navigation
+                        // Get the id of the current selected MenuItem
+                        int id = menuItem.getGroupId();
+                        if (id == 0) {
+                            Log.d(TAG, "onNavigationItemSelected: Clicked on Favorites");
+                        } else if (id == 1){
+                            Log.d(TAG, "onNavigationItemSelected: Clicked on MySpots");
+                        }
+                        Log.d(TAG, "onNavigationItemSelected: Item " + menuItem.getItemId());
+                        selectItem(menuItem.getGroupId());
                         // Closing drawer on item click
                         mDrawerLayout.closeDrawers();
                         return true;
@@ -237,11 +261,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mUserProfilePicture = (ImageView) headerLayout.findViewById(R.id.user_profile_picture);
         mUserEmail = (TextView) headerLayout.findViewById(R.id.user_email);
         mUserDisplayName = (TextView) headerLayout.findViewById(R.id.user_display_name);
-
+        new ShowInterest(MapsActivity.this).execute(currentUser.getUid());
+        new RetrieveUserEvents(MapsActivity.this).execute(currentUser.getUid());
         populateProfile();
 
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+//         Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -254,6 +279,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         mGoogleApiClient.connect();
 
+    }
+
+    public void selectItem(int pos) {
+        Intent intent = null;
+        switch (pos) {
+            case 0:
+                intent = new Intent(this, FavoriteEventsActivity.class);
+                intent.putExtra("fragment", 0);
+                break;
+            case 1:
+                intent = new Intent(this, FavoriteEventsActivity.class);
+                intent.putExtra("fragment", 1);
+                break;
+        }
+        startActivity(intent);
     }
 
     protected void onStart() {
@@ -327,6 +367,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Log.d(TAG, "CAMERA IDLE");
                 CameraPosition place = mMap.getCameraPosition();
                 new RetrieveEvents(MapsActivity.this).execute(Double.toString(place.target.latitude), Double.toString(place.target.longitude),currentUser.getUid(),Float.toString(calculateMaxMapDistanceOnScreen()));
+
             }
         });
     }
@@ -375,10 +416,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.clear();
     }
 
+
+    public void retrieveFavEvents(String json) {
+        List<Event> favs = JSONToEventGenerator.unmarshallJSONString(json);
+        System.out.println("FAVORITES: " + favs.toString());
+        this.mUserFavs = favs;
+    }
+
+    public void retrieveUserEvents(String json) {
+        this.mUserEvents = JSONToEventGenerator.unmarshallJSONString(json);
+        System.out.println("USER EVENTS: " + mUserEvents.toString());
+    }
+
+
     /**
      * Parses a JSON String into a list of Event Objects.
      * @param json  JSON string containing information about the events in the area.
      */
+
     public void retrieveAndParseJSON(String json) {
         eventsJSON = json;
         eventsMap = new HashMap<>();
@@ -617,6 +672,50 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return in;
     }
 
+
+    private static class EventsAdapter extends BaseAdapter {
+        private List<Event> eventsList;
+        private Context context;
+        private List<TextView> eventsViews;
+
+        public EventsAdapter(List<Event> eventsList, Context context) {
+            this.eventsList = eventsList;
+            this.context = context;
+            createViews();
+        }
+
+        private void createViews() {
+            eventsViews = new ArrayList<TextView>();
+            for (int i = 0; i < eventsList.size(); i++) {
+                Event event = eventsList.get(i);
+                View v = LayoutInflater.from(context).inflate(android.R.layout.simple_list_item_1, null);
+                TextView textView = (TextView) v;
+                textView.setText(event.getTitle() + " " + event.getDate());
+                eventsViews.add(textView);
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return eventsList.size();
+        }
+
+        @Override
+        public Event getItem(int position) {
+            return eventsList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return eventsList.get(position).getIdEvent();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            return eventsViews.get(position);
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -625,6 +724,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         onMapReady(mMap);
         centerOnLocation();
     }
+
 
 }
 

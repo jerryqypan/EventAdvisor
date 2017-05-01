@@ -11,7 +11,10 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -42,10 +45,16 @@
 
         <activity
             android:name=".MapsActivity"
-            android:label="Spot"></activity>
+            android:label="Spot" />
         <activity
             android:name=".CreateEventActivity"
             android:label="CreateEvent"></activity>
+
+        <activity
+            android:name=".FavoriteEventsActivity"
+            android:parentActivityName=".MapsActivity"
+            android:label="FavoriteEventsActivity" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.cs290final.eventadvisor.android.fileprovider"
@@ -53,7 +62,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
 
         <meta-data

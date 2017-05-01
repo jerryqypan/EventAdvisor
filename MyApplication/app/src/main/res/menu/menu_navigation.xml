@@ -1,8 +1,17 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:style="http://schemas.android.com/apk/res-auto">
     <group android:checkableBehavior="single">
+
         <item
+            android:id="@+id/favorites"
+            android:icon="@drawable/ic_favorite_off"
+            android:title="Favorites" />
+
+        <item
+            android:id="@+id/my_spots"
             android:icon="@drawable/ic_android_black_24dp"
-            android:title="One" />
+            android:title="My Spots" />
 
     </group>
 </menu>

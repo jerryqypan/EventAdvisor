@@ -73,4 +73,8 @@
         <item name="android:textSize">@dimen/md_text_headline</item>
     </style>
 
+    <style name="NavHeadings">
+        <item name="android:textColor">@color/spot_primary_dark</item>
+    </style>
+
 </resources>
