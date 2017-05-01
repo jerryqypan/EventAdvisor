@@ -81,7 +81,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
-
                     android:textColor="@color/spot_primary_dark"
                     android:onClick="showEndTimePickerDialog"
                     android:focusable="false"/>
@@ -96,6 +95,7 @@
                 android:layout_marginRight="5dp"
                 android:onClick="showSelectPictureDialog"
                 android:text="Add Image"/>
+
 
         </LinearLayout>
 
@@ -115,6 +115,7 @@
             android:layout_marginBottom="15dp"
             android:onClick="showDatePickerDialog"
             android:focusable="false"
+            android:textColor="@color/spot_primary_dark"
             android:layout_below="@id/hintDate"
             />
 
@@ -133,6 +134,7 @@
             android:layout_marginBottom="15dp"
             android:onClick="showLocationSearch"
             android:focusable="false"
+            android:textColor="@color/spot_primary_dark"
             android:layout_below="@id/hintLocation"
             />
 

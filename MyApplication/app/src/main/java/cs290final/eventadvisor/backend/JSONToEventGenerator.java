@@ -8,15 +8,24 @@ import java.util.List;
 
 /**
  * Created by Titan on 4/16/2017.
+ * Contains methods to parse JSON strings into custom objects
  */
 
 public class JSONToEventGenerator {
 
+    /**
+     * Jackson JSON to Object Parser
+     */
     private static ObjectMapper mapper = new ObjectMapper();
 
     private JSONToEventGenerator() {
     }
 
+    /**
+     *
+     * @param jsonInput The JSON String to parse
+     * @return  A List of Event objects, parsed from the input string
+     */
     public static List<Event> unmarshallJSONString(String jsonInput) {
         List<Event> events = new ArrayList<Event>();
         try {

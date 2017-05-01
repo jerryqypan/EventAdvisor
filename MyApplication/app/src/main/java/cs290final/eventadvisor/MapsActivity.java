@@ -37,9 +37,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
-
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
@@ -64,11 +62,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
-
-import java.io.Serializable;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -76,7 +70,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import cs290final.eventadvisor.adapters.EventItemAdapter;
 import cs290final.eventadvisor.backend.Event;
 import cs290final.eventadvisor.backend.JSONToEventGenerator;
@@ -85,36 +78,114 @@ import cs290final.eventadvisor.backend.SelectInterest;
 import cs290final.eventadvisor.fragments.CustomBottomSheetDialogFragment;
 import cs290final.eventadvisor.utils.CircleTransform;
 
-// API Key: AIzaSyCJm1es7DqRc1zqyW7AKQFQpeXcD1kNFm0
+/**
+ * Activity that displays events on the map.
+ */
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMyLocationButtonClickListener {
-
+        GoogleApiClient.OnConnectionFailedListener {
+    /**
+     * Tag identifying this activity for debugging and logging.
+     */
     private static final String TAG = "MAPS_ACTIVITY";
+
+    /**
+     * The GoogleMap instance for this application
+     */
     private GoogleMap mMap;
+
+    /**
+     * The GoogleMapAPI connection client.
+     * Used for location services.
+     */
     private GoogleApiClient mGoogleApiClient;
 
+    /**
+     * The device's last known location.
+     */
     private Location mLastLocation;
-//    private List<Event> eventsList;
+
+
+    /**
+     * Map containing a location to a list of events near that location.
+     */
     private Map<String, List<Event>> eventsMap = new HashMap<String,List<Event>>();
+
+    /**
+     * Map containing a location to the visible map marker representing that location.
+     */
     private Map<String, Marker> markersMap = new HashMap<String, Marker>();
+
+    /**
+     * The JSON String containing information about the events in the surrounding area.
+     */
     private String eventsJSON;
 
+    /**
+     * The DrawerLayout of this application.
+     */
     private DrawerLayout mDrawerLayout;
+
+    /**
+     * The NagivationView of this application.
+     */
     private NavigationView mNavigationView;
 
+    /**
+     * The Request code to obtain results from the google maps searchbar
+     * Used to center the map location on the searched location.
+     */
     private static final int REQUEST_SELECT_PLACE = 1234;
-    private static final int CREATE_EVENTS = 12345;
-    private SearchView searchView;
-    private MenuItem searchBarMenuItem;
-    private FirebaseUser currentUser;
-    View mRootView;         //can these be private? -Chirag
-    ImageView mUserProfilePicture;
-    TextView mUserEmail;
-    TextView mUserDisplayName;
 
+    /**
+     * The Request Code to obtain results from the Create Events Activity.
+     * Used to center the map location to the location of the new user created event.
+     */
+    private static final int CREATE_EVENTS = 12345;
+
+    /**
+     * The search bar icon. Clicking this will open the searchbar.
+     */
+    private SearchView searchView;
+
+    /**
+     * The default searchbar.
+     */
+    private MenuItem searchBarMenuItem;
+
+    /**
+     * The current user of the application.
+     */
+    public FirebaseUser currentUser;
+
+    /**
+     * The root view of the application
+     */
+    private View mRootView;
+
+    /**
+     * The image view displaying the user's profile picture
+     */
+    private ImageView mUserProfilePicture;
+
+    /**
+     * The text view displaying the user's email
+     */
+    private TextView mUserEmail;
+
+    /**
+     * The text view displaying the user's name.
+     */
+    private TextView mUserDisplayName;
+
+    /**
+     * The listener associated with listening to user clicks of an event.
+     */
     private EventItemAdapter.EventItemListener mEventClickListener;
 
     @Override
+    /**
+     * Create the view hierarachy for this application.
+     */
     protected void onCreate(Bundle savedInstanceState) {
         LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
         super.onCreate(savedInstanceState);
@@ -125,8 +196,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else {
             startActivity(new Intent(this, MainActivity.class));
         }
-
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_create_event);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -196,8 +265,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
        // mGoogleApiClient.disconnect();
         super.onStop();
     }
+    @Override
+    public void onBackPressed() {
+    }
 
     @Override
+    /**
+     * Centers the map when Location services is ready.
+     */
     public void onConnected(@Nullable Bundle bundle) {
         centerOnLocation();
     }
@@ -224,12 +299,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.setOnMyLocationButtonClickListener(this);
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             return;
         }
-        mMap.setMyLocationEnabled(true);
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(final Marker marker) {
@@ -252,106 +325,38 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onCameraIdle() {
                 Log.d(TAG, "CAMERA IDLE");
-                Toast.makeText(MapsActivity.this, "Camera Idle", Toast.LENGTH_SHORT).show();
-//                clearEventsFromMap();
                 CameraPosition place = mMap.getCameraPosition();
-                float distanceInMeters = calculateMaxMapDistanceOnScreen();
                 new RetrieveEvents(MapsActivity.this).execute(Double.toString(place.target.latitude), Double.toString(place.target.longitude),currentUser.getUid(),Float.toString(calculateMaxMapDistanceOnScreen()));
             }
         });
     }
 
-    @Override
-    public boolean onMyLocationButtonClick() {
+    /**
+     * Centers on the device's current location.
+     * @param v View that was clicked.
+     */
+    public void centerOnDeviceLocationAction(View v) {
         centerOnLocation();
-        return false;
     }
 
-    private void createAndShowEventsPopupWindow(List<Event> events) {
-        if (events == null || events.size() == 0) {
-            return;
-        }
-        final ListPopupWindow listPopupWindow = new ListPopupWindow(MapsActivity.this);
-        final EventsAdapter eventsAdapter = new EventsAdapter(events, MapsActivity.this);
-        listPopupWindow.setAdapter(eventsAdapter);
-        listPopupWindow.setAnchorView(findViewById(R.id.map));
-        listPopupWindow.setContentWidth(ListPopupWindow.WRAP_CONTENT);
-        listPopupWindow.setHeight(mDrawerLayout.getHeight()/3);
-        listPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                createAndShowEventDialogBox(parent, view, position, id);
-            }
-        });
-        listPopupWindow.show();
-    }
-
-    private void createAndShowEventDialogBox(AdapterView<?> parent, View view, int position, long id) {
-        AlertDialog.Builder builderInner = new AlertDialog.Builder(MapsActivity.this);
-        Event event = (Event) parent.getItemAtPosition(position);
-        builderInner.setView(inflateAndPopulateEventDialog(event));
-//      builderInner.setMessage(event.getTitle() + " " + event.getDate() + " " + event.getDescription());
-//                        builderInner.setTitle(event.getTitle() + " " + event.getStartTime()+ " - " + event.getEndTime());
-        builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog,int which) {
-                dialog.dismiss();
-            }
-        });
-        AlertDialog dialog = builderInner.create();
-        dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        dialog.show();
-    }
-
-    private View inflateAndPopulateEventDialog(final Event event) {
-        View view = getLayoutInflater().inflate(R.layout.select_event, null);
-        TextView eventName = (TextView) view.findViewById(R.id.eventName);
-        TextView eventDate = (TextView) view.findViewById(R.id.eventDate);
-        TextView eventTime = (TextView) view.findViewById(R.id.eventTime);
-        TextView eventLocation = (TextView) view.findViewById(R.id.eventLocation);
-        TextView eventDescription = (TextView) view.findViewById(R.id.eventDescription);
-        ImageView eventImage = (ImageView) view.findViewById(R.id.eventImage);
-        final ToggleButton eventInterest = (ToggleButton) view.findViewById(R.id.toggleButtonInterest);
-        eventInterest.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.spottheme_btn_rating_star_off_normal_holo_light));
-        eventInterest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (eventInterest.isChecked()) {
-                    eventInterest.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.spottheme_btn_rating_star_on_normal_holo_light));
-                    new SelectInterest(eventInterest).execute(currentUser.getUid(), Integer.toString(event.getIdEvent()), "add");
-                    event.setisInterested(eventInterest.isChecked());
-                } else {
-                    eventInterest.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.spottheme_btn_rating_star_off_normal_holo_light));
-                    new SelectInterest(eventInterest).execute(currentUser.getUid(), Integer.toString(event.getIdEvent()), "delete");
-                    event.setisInterested(eventInterest.isChecked());
-                }
-
-            }
-        });
-        eventName.setText(event.getTitle());
-        eventDate.setText(event.getDate());
-        eventTime.setText(event.getStartTime() + " - " + event.getEndTime());
-        eventLocation.setText(event.getLatitude() + " , " + event.getLongitude());
-        eventDescription.setText(event.getDescription());
-        eventInterest.setChecked(event.getisInterested());
-        if (event.getisInterested()) {
-            eventInterest.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.spottheme_btn_rating_star_on_normal_holo_light));
-        }
-        return view;
-    }
-
+    /**
+     * Centers the map on the device's current location.
+     */
     private void centerOnLocation() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             return;
         }
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        Toast.makeText(this, "Centered LOCATION", Toast.LENGTH_LONG).show();
         if (mLastLocation != null) {  //default action does this
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()), 15));
         }
     }
 
+    /**
+     * Calculates the maximum diameter of the visible portion of the map on screen.
+     * @return  The diameter of the maximum distance of the visible portion of the map in meters
+     */
     private float calculateMaxMapDistanceOnScreen() {
         VisibleRegion visibleRegion = mMap.getProjection().getVisibleRegion();
         Location northEastCorner = new Location("");
@@ -363,18 +368,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return southWestCorner.distanceTo(northEastCorner);     //distance in meters
     }
 
+    /**
+     * Removes all the markers from the map.
+     */
     private void clearEventsFromMap() {
         mMap.clear();
     }
 
+    /**
+     * Parses a JSON String into a list of Event Objects.
+     * @param json  JSON string containing information about the events in the area.
+     */
     public void retrieveAndParseJSON(String json) {
         eventsJSON = json;
         eventsMap = new HashMap<>();
         List<Event> events = JSONToEventGenerator.unmarshallJSONString(eventsJSON);
-        events.add(new Event("dupl1", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "","",false));      //need to remove
-        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "","",true));      //need to remove
-        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "","",false));      //need to remove
-        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357, "","",true));      //need to remove
         for (Event event : events) {
             String mapKey = normalizeKeyForMap(event);
             if (!eventsMap.containsKey(mapKey)) {
@@ -385,6 +393,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         addEventsToGoogleMap();
     }
 
+    /**
+     * Adds all the events in the area to the map.
+     */
     private void addEventsToGoogleMap() {
         for (String key : eventsMap.keySet()) {
             addEventToGoogleMap(key, eventsMap.get(key));
@@ -392,17 +403,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         removeUnusedMarkersFromGoogleMap();
     }
 
+    /**
+     * Adds a marker representing the list of events at that location on the map.
+     * @param key   Normalized location of the list of events.
+     * @param events    The list of events at the location.
+     */
     private void addEventToGoogleMap(String key, List<Event> events) {
         if (markersMap.containsKey(key)) {
             markersMap.get(key).setTag(events);
         } else {
             if (events.size() > 0) {
                 MarkerOptions markerOptions = new MarkerOptions();
-//            markerOptions.title(event.getTitle());
                 String latitude = key.split(" ")[0];
                 String longitude = key.split(" ")[1];
                 markerOptions.position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
-//            markerOptions.snippet(event.getDescription());
                 Marker eventMarker = mMap.addMarker(markerOptions);
                 eventMarker.setTag(events);
                 markersMap.put(key, eventMarker);
@@ -410,6 +424,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    /**
+     * Removes event markers that are no longer valid from the map.
+     */
     private void removeUnusedMarkersFromGoogleMap() {
         Iterator iterator = markersMap.keySet().iterator();
         while (iterator.hasNext()) {
@@ -421,6 +438,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    /**
+     * Normalizes the location of the event to 11.1 meters.
+     * Effectively rounds latitude and longitude values to the fourth decimal place to group events at similar locations.
+     * @param event
+     * @return
+     */
     private String normalizeKeyForMap(Event event) {
         DecimalFormat decimalFormat = new DecimalFormat("##.####");	//four decimal places corresponds to 11.1 meters
         decimalFormat.setRoundingMode(RoundingMode.UP);
@@ -433,10 +456,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-                Toast.makeText(this, place.getName(), Toast.LENGTH_SHORT).show();
-                //don't need this as it will be taken care of in the camera idle listener
-//                new RetrieveEvents(MapsActivity.this).execute(place.getLatLng().latitude,place.getLatLng().longitude);
-
             }
             else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(this, data);
@@ -454,6 +473,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    /**
+     * Starts the Create Events Activity
+     * @param v View that was clicked
+     */
     public void createActivityAction(View v){
         Intent intent = new Intent(this,CreateEventActivity.class);
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -500,6 +523,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Deletes an user account
+     * @param v The view that was clicked
+     */
     public void onDeleteAccountClick(View v) {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage("Are you sure you want to delete this account?")
@@ -514,6 +541,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         dialog.show();
     }
 
+    /**
+     * Updates the profile information for the current user on the display
+     */
     private void populateProfile() {
         if (currentUser.getPhotoUrl() != null) {
             Glide.with(this)
@@ -533,6 +563,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+    /**
+     * Deletes the user account and relaunches the main activity.
+     */
     private void deleteAccount() {
         AuthUI.getInstance()
                 .delete(this)
@@ -549,6 +582,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
     }
 
+    /**
+     * Signs out of the current user account.
+     * @param v The view that was clicked
+     */
     public void onSignOutClick(View v) {
         AuthUI.getInstance()
                 .signOut(this)
@@ -565,6 +602,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
     }
 
+    /**
+     * Shows the Snackbar for this app
+     * @param errorMessageRes
+     */
     private void showSnackbar(@StringRes int errorMessageRes) {
         Snackbar.make(mRootView, errorMessageRes, Snackbar.LENGTH_LONG)
                 .show();
@@ -583,54 +624,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         onMapReady(mMap);
         centerOnLocation();
-//        mMap.setMyLocationEnabled(true);
     }
-
-    private static class EventsAdapter extends BaseAdapter {
-        private List<Event> eventsList;
-        private Context context;
-        private List<TextView> eventsViews;
-
-        public EventsAdapter(List<Event> eventsList, Context context) {
-            this.eventsList = eventsList;
-            this.context = context;
-            createViews();
-        }
-
-        private void createViews() {
-            eventsViews = new ArrayList<TextView>();
-            for (int i = 0; i < eventsList.size(); i++) {
-                Event event = eventsList.get(i);
-                View v = LayoutInflater.from(context).inflate(android.R.layout.simple_list_item_1, null);
-                TextView textView = (TextView) v;
-                textView.setText(event.getTitle() + " " + event.getDate());
-                eventsViews.add(textView);
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return eventsList.size();
-        }
-
-        @Override
-        public Event getItem(int position) {
-            return eventsList.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return eventsList.get(position).getIdEvent();
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            return eventsViews.get(position);
-        }
-    }
-
-
-
 
 }
 

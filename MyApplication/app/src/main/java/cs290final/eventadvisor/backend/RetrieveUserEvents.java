@@ -13,7 +13,7 @@ import java.net.URLEncoder;
 import cs290final.eventadvisor.MapsActivity;
 
 /**
- * Created by jerry on 4/29/2017.
+ * @author Jerry Pan
  */
 
 public class RetrieveUserEvents extends AsyncTask<String,String,String>{
@@ -22,8 +22,7 @@ public class RetrieveUserEvents extends AsyncTask<String,String,String>{
     public RetrieveUserEvents(Context context) {
         this.context = context;
     }
-    protected void onPreExecute(){
-    }
+
     @Override
     protected String doInBackground(String... args){
         try{
@@ -48,7 +47,6 @@ public class RetrieveUserEvents extends AsyncTask<String,String,String>{
                 sb.append(line);
                 break;
             }
-            System.out.println(sb.toString());
             return sb.toString();
         } catch(Exception e){
             return new String("Exception: " + e.getMessage());
@@ -56,10 +54,6 @@ public class RetrieveUserEvents extends AsyncTask<String,String,String>{
     }
     @Override
     protected void onPostExecute(String result){
-//        if (context instanceof MapsActivity) {
-//            MapsActivity mapsActivity = (MapsActivity) context;
-//            mapsActivity.retrieveAndParseJSON(result);
-//            System.out.println("onpostexecute" + Thread.currentThread());
-//        }
+
     }
 }

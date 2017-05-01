@@ -1,13 +1,11 @@
 package cs290final.eventadvisor.backend;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Base64;
 import android.widget.Toast;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
@@ -20,9 +18,8 @@ import cs290final.eventadvisor.CreateEventActivity;
 import cs290final.eventadvisor.MapsActivity;
 
 /**
- * Created by jerry on 4/20/2017.
+ * @author Jerry Pan
  */
-
 public class CreateEvents extends AsyncTask<String, String, String > {
     private Context context;
     private String lat;
@@ -30,11 +27,13 @@ public class CreateEvents extends AsyncTask<String, String, String > {
 
     public CreateEvents(Context context){
         this.context=context;
-
-    }
-    protected void onPreExecute(){
     }
     @Override
+    /**
+     * Sends event information to createEvent.php asynchronously
+     *
+     * @param args arguments passed to post to createEvent.php
+     */
     protected String doInBackground(String... args){
         try{
             String title=args[0];
@@ -44,10 +43,10 @@ public class CreateEvents extends AsyncTask<String, String, String > {
             String endTime=args[4];
             lat=args[5];
             lon=args[6];
-            String uid=args[7];
-            String photoPath =args[8];
+            String place = args[7];
+            String uid=args[8];
+            String photoPath =args[9];
             String encodedPhoto;
-            System.out.println("photoPath"+photoPath);
             if(photoPath==null){
                 encodedPhoto="";
             }else{
@@ -62,11 +61,7 @@ public class CreateEvents extends AsyncTask<String, String, String > {
                 recent.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                 byte[] byte_arr = stream.toByteArray();
                 encodedPhoto = Base64.encodeToString(byte_arr, 0);
-                System.out.println("encodedphoto: " + encodedPhoto);
             }
-
-            //System.out.println("this is the photo");
-            //System.out.print(encodedPhoto);
             String link="https://users.cs.duke.edu/~qp7/createEvent.php";
             String data =URLEncoder.encode("title", "UTF-8") + "=" +
                     URLEncoder.encode(title, "UTF-8");
@@ -82,6 +77,8 @@ public class CreateEvents extends AsyncTask<String, String, String > {
                     URLEncoder.encode(lon, "UTF-8");
             data+="&" + URLEncoder.encode("latitude", "UTF-8") + "=" +
                     URLEncoder.encode(lat, "UTF-8");
+            data+="&" + URLEncoder.encode("place", "UTF-8") + "=" +
+                    URLEncoder.encode(place, "UTF-8");
             data+="&" + URLEncoder.encode("uid", "UTF-8") + "=" +
                     URLEncoder.encode(uid, "UTF-8");
             data+="&" + URLEncoder.encode("photo","UTF-8") + "=" + URLEncoder.encode(encodedPhoto,"UTF-8");
@@ -102,12 +99,16 @@ public class CreateEvents extends AsyncTask<String, String, String > {
                 sb.append(line);
                 break;
             }
-            //System.out.println(sb.toString());
             return sb.toString();
         } catch(Exception e){
             return new String("Exception: " + e.getMessage());
         }
     }
+    /**
+     * Handles error messages and returns to MapActivity to the coordinates of the event created.
+     *
+     * @param result Error message from the server is displayed if there is one.
+     */
     @Override
     protected void onPostExecute(String result){
         if(result.equals("")){
@@ -119,12 +120,5 @@ public class CreateEvents extends AsyncTask<String, String, String > {
             CreateEventActivity activity = (CreateEventActivity) context;
             activity.createEventsCallBack(lat, lon);
         }
-        Toast.makeText(context, "Success", Toast.LENGTH_LONG).show(); //currently prints success regardless of outcomes
-        Intent i = new Intent(context,MapsActivity.class);
-        CreateEventActivity current = (CreateEventActivity)context;
-        i.putExtra("latitude",current.getCoordinates().split(",")[0]);
-        i.putExtra("longitude",current.getCoordinates().split(",")[1]);
-        context.startActivity(i);
-
     }
 }

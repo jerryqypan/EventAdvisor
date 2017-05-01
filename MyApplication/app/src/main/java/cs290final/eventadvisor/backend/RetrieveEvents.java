@@ -13,23 +13,28 @@ import java.net.URLEncoder;
 import cs290final.eventadvisor.MapsActivity;
 
 /**
- * Created by Jerry on 4/16/2017.
+ * @author Jerry Pan
  */
 
 public class RetrieveEvents extends AsyncTask<String,String,String> {
+    /**
+     * MapActivity context
+     */
     private Context context;
 
     public RetrieveEvents(Context context) {
         this.context = context;
     }
 
-    protected void onPreExecute(){
-    }
+
     @Override
+    /**
+     * Sends event information to retrieveEvents.php asynchronously
+     *
+     * @param args arguments passed to post to retrieveEvents.php
+     */
     protected String doInBackground(String... args){
-        System.out.println("doinbackgrougn" + Thread.currentThread());
         try{
-            System.out.println("testing");
             String lat=args[0];
             String lon=args[1];
             String uid=args[2];
@@ -49,7 +54,6 @@ public class RetrieveEvents extends AsyncTask<String,String,String> {
             OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
             wr.write( data );
             wr.flush();
-            System.out.println("after read");
             BufferedReader reader = new BufferedReader(new
                     InputStreamReader(conn.getInputStream()));
 
@@ -61,18 +65,21 @@ public class RetrieveEvents extends AsyncTask<String,String,String> {
                 sb.append(line);
                 break;
             }
-            System.out.println(sb.toString());
             return sb.toString();
         } catch(Exception e){
             return new String("Exception: " + e.getMessage());
         }
     }
     @Override
+    /**
+     * Calls MapActivity to parse the json into Events
+     *
+     * @params result json returned from retrieveEvents.php
+     */
     protected void onPostExecute(String result){
         if (context instanceof MapsActivity) {
             MapsActivity mapsActivity = (MapsActivity) context;
             mapsActivity.retrieveAndParseJSON(result);
-            System.out.println("onpostexecute" + Thread.currentThread());
         }
     }
 }

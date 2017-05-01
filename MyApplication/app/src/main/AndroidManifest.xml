@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="cs290final.eventadvisor">
 
     <!--
@@ -19,17 +20,11 @@
         android:roundIcon="@mipmap/spot_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name="cs290final.eventadvisor.SplashActivity"
-            android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity android:name=".MainActivity">
-
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
 
 
@@ -51,10 +46,6 @@
         <activity
             android:name=".CreateEventActivity"
             android:label="CreateEvent"></activity>
-
-        <activity
-            android:name=".SignupActivity"
-            android:label="Signup"></activity>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.cs290final.eventadvisor.android.fileprovider"
@@ -65,6 +56,10 @@
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="3443e48bbfd4ba684b844d215a018f93fe0f7124"
+            tools:replace="android:value"/>
     </application>
 
 </manifest>

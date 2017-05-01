@@ -15,6 +15,7 @@
   $description = $_POST['description'];
   $longitude = floatval($_POST['longitude']);
   $latitude = floatval($_POST['latitude']);
+  $place = $_POST['place'];
   $uid = $_POST['uid'];
   $photo = $_POST['photo'];
   if($photo==""){
@@ -36,7 +37,7 @@
   // $description = "Test wannamaker";
   // $longitude = 35.9990892;
   // $latitude = -78.9391148;
-  $sthandler = $db->prepare("INSERT INTO Event(title,date,starttime,endtime,description,longitude,latitude,uid,url) values(:title,:date,:startTime,:endTime,:description,:longitude,:latitude,:uid,:url)"); //this prevents sql injections by parameterizing the inputs
+  $sthandler = $db->prepare("INSERT INTO Event(title,date,starttime,endtime,description,longitude,latitude,place,uid,url) values(:title,:date,:startTime,:endTime,:description,:longitude,:latitude,:place,:uid,:url)"); //this prevents sql injections by parameterizing the inputs
   #$sthandler = $db->prepare("SELECT * FROM Event");
   $sthandler->execute(array(
     ':title' => $title,
@@ -46,6 +47,7 @@
     ':description' => $description,
     ':longitude' => $longitude,
     ':latitude' => $latitude,
+    ':place' => $place,
     ':uid' => $uid,
     ':url' => $url
     ));

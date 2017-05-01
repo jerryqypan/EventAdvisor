@@ -11,15 +11,17 @@ import java.net.URLEncoder;
 
 
 /**
- * Created by Jerry on 4/23/2017.
+ * @author Jerry Pan
  */
 
 public class CheckUser extends AsyncTask<String,String,String> {
 
-    protected void onPreExecute(){
-
-    }
     @Override
+    /**
+     * Sends event information to checkUser.php asynchronously
+     *
+     * @param args arguments passed to post to checkUser.php
+     */
     protected String doInBackground(String... arg0){
         try {
             String uid = arg0[0];
@@ -49,17 +51,12 @@ public class CheckUser extends AsyncTask<String,String,String> {
                 sb.append(line);
                 break;
             }
-            System.out.println(sb.toString());
             return sb.toString();
         }
         catch(Exception e){
             return "";
         }
     }
-    @Override
-    protected void onPostExecute(String r){
-        System.out.println("RETURNED"+r);
 
-    }
 
 }
