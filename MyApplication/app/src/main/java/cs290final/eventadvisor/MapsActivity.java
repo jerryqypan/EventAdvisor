@@ -164,10 +164,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private MenuItem searchBarMenuItem;
 
     public static FirebaseUser currentUser;
-    View mRootView;         //can these be private? -Chirag
-    ImageView mUserProfilePicture;
-    TextView mUserEmail;
-    TextView mUserDisplayName;
+
 
 
     /**
