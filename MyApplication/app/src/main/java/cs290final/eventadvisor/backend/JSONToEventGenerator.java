@@ -13,6 +13,9 @@ import java.util.List;
 
 public class JSONToEventGenerator {
 
+    /**
+     * Jackson JSON to Object Parser
+     */
     private static ObjectMapper mapper = new ObjectMapper();
 
     private JSONToEventGenerator() {

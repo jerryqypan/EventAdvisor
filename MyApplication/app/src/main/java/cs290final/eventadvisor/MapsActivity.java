@@ -85,33 +85,107 @@ import cs290final.eventadvisor.backend.SelectInterest;
 import cs290final.eventadvisor.fragments.CustomBottomSheetDialogFragment;
 import cs290final.eventadvisor.utils.CircleTransform;
 
-// API Key: AIzaSyCJm1es7DqRc1zqyW7AKQFQpeXcD1kNFm0
+/**
+ * Activity that displays events on the map.
+ */
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
-
+    /**
+     * Tag identifying this activity for debugging and logging.
+     */
     private static final String TAG = "MAPS_ACTIVITY";
+
+    /**
+     * The GoogleMap instance for this application
+     */
     private GoogleMap mMap;
+
+    /**
+     * The GoogleMapAPI connection client.
+     * Used for location services.
+     */
     private GoogleApiClient mGoogleApiClient;
 
+    /**
+     * The device's last known location.
+     */
     private Location mLastLocation;
-//    private List<Event> eventsList;
+
+    /**
+     * Map containing a location to a list of events near that location.
+     */
     private Map<String, List<Event>> eventsMap = new HashMap<String,List<Event>>();
+
+    /**
+     * Map containing a location to the visible map marker representing that location.
+     */
     private Map<String, Marker> markersMap = new HashMap<String, Marker>();
+
+    /**
+     * The JSON String containing information about the events in the surrounding area.
+     */
     private String eventsJSON;
 
+    /**
+     * The DrawerLayout of this application.
+     */
     private DrawerLayout mDrawerLayout;
+
+    /**
+     * The NagivationView of this application.
+     */
     private NavigationView mNavigationView;
 
+    /**
+     * The Request code to obtain results from the google maps searchbar
+     * Used to center the map location on the searched location.
+     */
     private static final int REQUEST_SELECT_PLACE = 1234;
-    private static final int CREATE_EVENTS = 12345;
-    private SearchView searchView;
-    private MenuItem searchBarMenuItem;
-    public FirebaseUser currentUser;
-    View mRootView;         //can these be private? -Chirag
-    ImageView mUserProfilePicture;
-    TextView mUserEmail;
-    TextView mUserDisplayName;
 
+    /**
+     * The Request Code to obtain results from the Create Events Activity.
+     * Used to center the map location to the location of the new user created event.
+     */
+    private static final int CREATE_EVENTS = 12345;
+
+    /**
+     * The search bar icon. Clicking this will open the searchbar.
+     */
+    private SearchView searchView;
+
+    /**
+     * The default searchbar.
+     */
+    private MenuItem searchBarMenuItem;
+
+    /**
+     * The current user of the application.
+     */
+    public FirebaseUser currentUser;
+
+    /**
+     * The root view of the application
+     */
+    private View mRootView;
+
+    /**
+     * The image view displaying the user's profile picture
+     */
+    private ImageView mUserProfilePicture;
+
+    /**
+     * The text view displaying the user's email
+     */
+    private TextView mUserEmail;
+
+    /**
+     * The text view displaying the user's name.
+     */
+    private TextView mUserDisplayName;
+
+    /**
+     * The listener associated with listening to user clicks of an event.
+     */
     private EventItemAdapter.EventItemListener mEventClickListener;
 
     @Override
@@ -125,8 +199,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else {
             startActivity(new Intent(this, MainActivity.class));
         }
-
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_create_event);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -263,6 +335,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
+    /**
+     * Centers on the device's current location.
+     * @param v View that was clicked.
+     */
     public void centerOnDeviceLocationAction(View v) {
         centerOnLocation();
     }
@@ -340,6 +416,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return view;
     }
 
+    /**
+     * Centers the map on the device's current location.
+     */
     private void centerOnLocation() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
@@ -351,6 +430,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    /**
+     * Calculates the maximum diameter of the visible portion of the map on screen.
+     * @return  The diameter of the maximum distance of the visible portion of the map in meters
+     */
     private float calculateMaxMapDistanceOnScreen() {
         VisibleRegion visibleRegion = mMap.getProjection().getVisibleRegion();
         Location northEastCorner = new Location("");
@@ -362,18 +445,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return southWestCorner.distanceTo(northEastCorner);     //distance in meters
     }
 
+    /**
+     * Removes all the markers from the map.
+     */
     private void clearEventsFromMap() {
         mMap.clear();
     }
 
+    /**
+     * Parses a JSON String into a list of Event Objects.
+     * @param json  JSON string containing information about the events in the area.
+     */
     public void retrieveAndParseJSON(String json) {
         eventsJSON = json;
         eventsMap = new HashMap<>();
         List<Event> events = JSONToEventGenerator.unmarshallJSONString(eventsJSON);
-        events.add(new Event("dupl1", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357,"", "","",false));      //need to remove
-        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357,"", "","",true));      //need to remove
-        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357,"", "","",false));      //need to remove
-        events.add(new Event("dupl2", "Date", "StartTime", "EndTime", "Description", -78.939348, 36.001357,"", "","",true));      //need to remove
         for (Event event : events) {
             String mapKey = normalizeKeyForMap(event);
             if (!eventsMap.containsKey(mapKey)) {
@@ -384,6 +470,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         addEventsToGoogleMap();
     }
 
+    /**
+     * Adds all the events in the area to the map.
+     */
     private void addEventsToGoogleMap() {
         for (String key : eventsMap.keySet()) {
             addEventToGoogleMap(key, eventsMap.get(key));
@@ -391,17 +480,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         removeUnusedMarkersFromGoogleMap();
     }
 
+    /**
+     * Adds a marker representing the list of events at that location on the map.
+     * @param key   Normalized location of the list of events.
+     * @param events    The list of events at the location.
+     */
     private void addEventToGoogleMap(String key, List<Event> events) {
         if (markersMap.containsKey(key)) {
             markersMap.get(key).setTag(events);
         } else {
             if (events.size() > 0) {
                 MarkerOptions markerOptions = new MarkerOptions();
-//            markerOptions.title(event.getTitle());
                 String latitude = key.split(" ")[0];
                 String longitude = key.split(" ")[1];
                 markerOptions.position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)));
-//            markerOptions.snippet(event.getDescription());
                 Marker eventMarker = mMap.addMarker(markerOptions);
                 eventMarker.setTag(events);
                 markersMap.put(key, eventMarker);
@@ -409,6 +501,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    /**
+     * Removes event markers that are no longer valid from the map.
+     */
     private void removeUnusedMarkersFromGoogleMap() {
         Iterator iterator = markersMap.keySet().iterator();
         while (iterator.hasNext()) {
@@ -420,6 +515,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    /**
+     * Normalizes the location of the event to 11.1 meters.
+     * Effectively rounds latitude and longitude values to the fourth decimal place to group events at similar locations.
+     * @param event
+     * @return
+     */
     private String normalizeKeyForMap(Event event) {
         DecimalFormat decimalFormat = new DecimalFormat("##.####");	//four decimal places corresponds to 11.1 meters
         decimalFormat.setRoundingMode(RoundingMode.UP);
@@ -453,6 +554,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    /**
+     * Starts the Create Events Activity
+     * @param v View that was clicked
+     */
     public void createActivityAction(View v){
         Intent intent = new Intent(this,CreateEventActivity.class);
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -499,6 +604,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Deletes an user account
+     * @param v The view that was clicked
+     */
     public void onDeleteAccountClick(View v) {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setMessage("Are you sure you want to delete this account?")
@@ -513,6 +622,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         dialog.show();
     }
 
+    /**
+     * Updates the profile information for the current user on the display
+     */
     private void populateProfile() {
         if (currentUser.getPhotoUrl() != null) {
             Glide.with(this)
@@ -532,6 +644,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+    /**
+     * Deletes the user account and relaunches the main activity.
+     */
     private void deleteAccount() {
         AuthUI.getInstance()
                 .delete(this)
@@ -548,6 +663,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
     }
 
+    /**
+     * Signs out of the current user account.
+     * @param v The view that was clicked
+     */
     public void onSignOutClick(View v) {
         AuthUI.getInstance()
                 .signOut(this)
@@ -564,6 +683,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
     }
 
+    /**
+     * Shows the Snackbar for this app
+     * @param errorMessageRes
+     */
     private void showSnackbar(@StringRes int errorMessageRes) {
         Snackbar.make(mRootView, errorMessageRes, Snackbar.LENGTH_LONG)
                 .show();
