@@ -183,6 +183,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private EventItemAdapter.EventItemListener mEventClickListener;
 
     @Override
+    /**
+     * Create the view hierarachy for this application.
+     */
     protected void onCreate(Bundle savedInstanceState) {
         LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
         super.onCreate(savedInstanceState);
@@ -267,6 +270,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     @Override
+    /**
+     * Centers the map when Location services is ready.
+     */
     public void onConnected(@Nullable Bundle bundle) {
         centerOnLocation();
     }
@@ -335,79 +341,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     public void centerOnDeviceLocationAction(View v) {
         centerOnLocation();
-    }
-
-    private void createAndShowEventsPopupWindow(List<Event> events) {
-        if (events == null || events.size() == 0) {
-            return;
-        }
-        final ListPopupWindow listPopupWindow = new ListPopupWindow(MapsActivity.this);
-        final EventsAdapter eventsAdapter = new EventsAdapter(events, MapsActivity.this);
-        listPopupWindow.setAdapter(eventsAdapter);
-        listPopupWindow.setAnchorView(findViewById(R.id.map));
-        listPopupWindow.setContentWidth(ListPopupWindow.WRAP_CONTENT);
-        listPopupWindow.setHeight(mDrawerLayout.getHeight()/3);
-        listPopupWindow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                createAndShowEventDialogBox(parent, view, position, id);
-            }
-        });
-        listPopupWindow.show();
-    }
-
-    private void createAndShowEventDialogBox(AdapterView<?> parent, View view, int position, long id) {
-        AlertDialog.Builder builderInner = new AlertDialog.Builder(MapsActivity.this);
-        Event event = (Event) parent.getItemAtPosition(position);
-        builderInner.setView(inflateAndPopulateEventDialog(event));
-//      builderInner.setMessage(event.getTitle() + " " + event.getDate() + " " + event.getDescription());
-//                        builderInner.setTitle(event.getTitle() + " " + event.getStartTime()+ " - " + event.getEndTime());
-        builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog,int which) {
-                dialog.dismiss();
-            }
-        });
-        AlertDialog dialog = builderInner.create();
-        dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        dialog.show();
-    }
-
-    private View inflateAndPopulateEventDialog(final Event event) {
-        View view = getLayoutInflater().inflate(R.layout.select_event, null);
-        TextView eventName = (TextView) view.findViewById(R.id.eventName);
-        TextView eventDate = (TextView) view.findViewById(R.id.eventDate);
-        TextView eventTime = (TextView) view.findViewById(R.id.eventTime);
-        TextView eventLocation = (TextView) view.findViewById(R.id.eventLocation);
-        TextView eventDescription = (TextView) view.findViewById(R.id.eventDescription);
-        ImageView eventImage = (ImageView) view.findViewById(R.id.eventImage);
-        final ToggleButton eventInterest = (ToggleButton) view.findViewById(R.id.toggleButtonInterest);
-        eventInterest.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.spottheme_btn_rating_star_off_normal_holo_light));
-        eventInterest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (eventInterest.isChecked()) {
-                    eventInterest.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.spottheme_btn_rating_star_on_normal_holo_light));
-                    new SelectInterest(eventInterest).execute(currentUser.getUid(), Integer.toString(event.getIdEvent()), "add");
-                    event.setisInterested(eventInterest.isChecked());
-                } else {
-                    eventInterest.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.spottheme_btn_rating_star_off_normal_holo_light));
-                    new SelectInterest(eventInterest).execute(currentUser.getUid(), Integer.toString(event.getIdEvent()), "delete");
-                    event.setisInterested(eventInterest.isChecked());
-                }
-
-            }
-        });
-        eventName.setText(event.getTitle());
-        eventDate.setText(event.getDate());
-        eventTime.setText(event.getStartTime() + " - " + event.getEndTime());
-        eventLocation.setText(event.getLatitude() + " , " + event.getLongitude());
-        eventDescription.setText(event.getDescription());
-        eventInterest.setChecked(event.getisInterested());
-        if (event.getisInterested()) {
-            eventInterest.setBackground(ContextCompat.getDrawable(getApplicationContext(),R.drawable.spottheme_btn_rating_star_on_normal_holo_light));
-        }
-        return view;
     }
 
     /**
@@ -701,52 +634,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         centerOnLocation();
 //        mMap.setMyLocationEnabled(true);
     }
-
-    private static class EventsAdapter extends BaseAdapter {
-        private List<Event> eventsList;
-        private Context context;
-        private List<TextView> eventsViews;
-
-        public EventsAdapter(List<Event> eventsList, Context context) {
-            this.eventsList = eventsList;
-            this.context = context;
-            createViews();
-        }
-
-        private void createViews() {
-            eventsViews = new ArrayList<TextView>();
-            for (int i = 0; i < eventsList.size(); i++) {
-                Event event = eventsList.get(i);
-                View v = LayoutInflater.from(context).inflate(android.R.layout.simple_list_item_1, null);
-                TextView textView = (TextView) v;
-                textView.setText(event.getTitle() + " " + event.getDate());
-                eventsViews.add(textView);
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return eventsList.size();
-        }
-
-        @Override
-        public Event getItem(int position) {
-            return eventsList.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return eventsList.get(position).getIdEvent();
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            return eventsViews.get(position);
-        }
-    }
-
-
-
-
+    
 }
 
