@@ -8,15 +8,17 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 
 /**
- * Created by Jerry on 4/29/2017.
+ * @author Jerry Pan
  */
 
 public class ShowInterest extends AsyncTask<String, String, String> {
 
-    protected void onPreExecute(){
-
-    }
     @Override
+    /**
+     * Sends event information to showInterest.php asynchronously
+     *
+     * @param args argument passed to post to showInterest.php
+     */
     protected String doInBackground(String ... args){
         try{
             String uid = args[0];
@@ -32,10 +34,6 @@ public class ShowInterest extends AsyncTask<String, String, String> {
         }catch(Exception e){
             return e.getMessage();
         }
-    }
-
-    protected void onPostExecute(String result){
-
     }
 
 }

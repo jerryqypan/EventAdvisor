@@ -126,14 +126,14 @@ public class EventItemAdapter extends RecyclerView.Adapter<EventItemAdapter.View
             this.mEvent = event;
             eventTitle.setText(event.getTitle());
             eventDescription.setText(event.getDescription());
-            if(!event.getUrl().equals("") && event.getUrl()!=null){
+            if(event.getUrl()!=null && !event.getUrl().equals("")){
                 Picasso.with(mContext).load(event.getUrl()).into(eventAvatar);
             }else{
                 eventAvatar.setImageResource(R.drawable.launch_logo);
             }
             eventDate.setText(event.getDate());
             eventLocation.setText(event.getPlace());
-            eventTime.setText(event.getStartTime());
+            eventTime.setText(event.getStartTime().substring(0,5)+" - "+event.getEndTime().substring(0,5));
             isFavoriteClicked = event.getisInterested();
             if (event.getisInterested()) {
                 favoriteImageButton.setImageResource(R.drawable.ic_favorite_on);

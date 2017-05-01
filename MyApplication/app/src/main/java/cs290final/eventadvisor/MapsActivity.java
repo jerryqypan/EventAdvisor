@@ -37,9 +37,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
-
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
@@ -64,11 +62,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
-
-import java.io.Serializable;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -76,7 +70,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import cs290final.eventadvisor.adapters.EventItemAdapter;
 import cs290final.eventadvisor.backend.Event;
 import cs290final.eventadvisor.backend.JSONToEventGenerator;
@@ -94,7 +87,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleApiClient mGoogleApiClient;
 
     private Location mLastLocation;
-//    private List<Event> eventsList;
     private Map<String, List<Event>> eventsMap = new HashMap<String,List<Event>>();
     private Map<String, Marker> markersMap = new HashMap<String, Marker>();
     private String eventsJSON;

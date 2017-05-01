@@ -1,10 +1,7 @@
 package cs290final.eventadvisor.backend;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.view.View;
-import android.widget.ToggleButton;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -13,19 +10,30 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 
 /**
- * Created by Jerry on 4/29/2017.
+ * @author Jerry Pan
  */
 
 public class SelectInterest extends AsyncTask<String, String, String> {
+    /**
+     * The button that is pressed to favorite the event.
+     */
     private View view;
 
     public SelectInterest(View view){
         this.view = view;
     }
+    /**
+     * Disables the click of the interest button until the database has processed change
+     */
     protected void onPreExecute(){
         view.setClickable(false);
     }
     @Override
+    /**
+     * Sends event information to selectInterest.php asynchronously
+     *
+     * @param args arguments passed to post to selectInterest.php
+     */
     protected String doInBackground(String ... args){
         try{
             String uid = args[0];
@@ -57,7 +65,9 @@ public class SelectInterest extends AsyncTask<String, String, String> {
             return e.getMessage();
         }
     }
-
+    /**
+     * Reenables the click of the interest button after the database processed the change
+     */
     protected void onPostExecute(String result){
         view.setClickable(true);
     }
