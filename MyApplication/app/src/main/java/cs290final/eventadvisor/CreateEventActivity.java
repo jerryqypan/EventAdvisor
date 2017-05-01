@@ -471,7 +471,6 @@ public class CreateEventActivity extends AppCompatActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             try {
                 Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.fromFile(new File(mCurrentPhotoPath)));
-//                MediaStore.Images.Media.insertImage(getContentResolver(), imageBitmap, "tes" , "sdf");
                 addPicToGallery();
                 final ImageView imgView = new ImageView(this);
                 Picasso.with(this).load(new File(mCurrentPhotoPath)).into(imgView, new com.squareup.picasso.Callback() { //need to find a better solution
