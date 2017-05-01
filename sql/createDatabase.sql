@@ -7,8 +7,7 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 -- -----------------------------------------------------
 -- Schema qp7
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `qp7` DEFAULT CHARACTER SET latin1 ;
-USE `qp7` ;
+
 
 -- -----------------------------------------------------
 -- Table `qp7`.`Event`
@@ -19,13 +18,16 @@ CREATE TABLE IF NOT EXISTS `qp7`.`Event` (
   `date` DATE NOT NULL,
   `startTime` TIME NOT NULL,
   `endTime` TIME NOT NULL,
-  `description` TINYTEXT NULL DEFAULT NULL,
+  `description` TINYTEXT NOT NULL,
   `longitude` DOUBLE NOT NULL,
   `latitude` DOUBLE NOT NULL,
+  `place` VARCHAR(45) NOT NULL,
+  `uid` VARCHAR(45) NOT NULL,
+  `url` VARCHAR(100) NULL DEFAULT '',
   PRIMARY KEY (`idEvent`),
   UNIQUE INDEX `idEvent_UNIQUE` (`idEvent` ASC))
 ENGINE = InnoDB
-AUTO_INCREMENT = 54
+AUTO_INCREMENT = 129
 DEFAULT CHARACTER SET = latin1;
 
 
@@ -33,12 +35,35 @@ DEFAULT CHARACTER SET = latin1;
 -- Table `qp7`.`EventUsers`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `qp7`.`EventUsers` (
-  `uid` INT(11) NOT NULL,
+  `uid` VARCHAR(45) NOT NULL,
   `name` VARCHAR(45) NULL DEFAULT NULL,
   `email` VARCHAR(45) NULL DEFAULT NULL,
   PRIMARY KEY (`uid`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `qp7`.`EventInterest`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `qp7`.`EventInterest` (
+  `idEvent` INT(11) NOT NULL,
+  `uid` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`idEvent`, `uid`),
+  INDEX `uid_idx` (`uid` ASC),
+  CONSTRAINT `idEvent`
+    FOREIGN KEY (`idEvent`)
+    REFERENCES `qp7`.`Event` (`idEvent`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `uid`
+    FOREIGN KEY (`uid`)
+    REFERENCES `qp7`.`EventUsers` (`uid`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
 
 
 
