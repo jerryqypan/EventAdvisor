@@ -219,6 +219,15 @@ public class Event implements Parcelable {
         return this.title;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(this instanceof Event)) {
+            return false;
+        }
+        Event b = (Event) o;
+        return this.idEvent == b.idEvent;
+    }
+
     protected Event(Parcel in) {
         title = in.readString();
         date = in.readString();

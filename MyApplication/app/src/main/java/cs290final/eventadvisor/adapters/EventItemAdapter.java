@@ -90,36 +90,43 @@ public class EventItemAdapter extends RecyclerView.Adapter<EventItemAdapter.View
                     onEventClick(v);
                 }
             });
-
             favoriteImageButton = (ImageButton) itemView.findViewById(R.id.favorite_button);
-            favoriteImageButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    MapsActivity mapsActivity = (MapsActivity) mContext;
-                    if (isFavoriteClicked) {
-                        isFavoriteClicked = false;
-                        favoriteImageButton.setImageResource(R.drawable.ic_favorite_off);
-                        new SelectInterest(favoriteImageButton).execute(mapsActivity.currentUser.getUid(), Integer.toString(mEvent.getIdEvent()), "delete");
-                        mEvent.setisInterested(isFavoriteClicked);
-                    } else {
-                        isFavoriteClicked = true;
-                        favoriteImageButton.setImageResource(R.drawable.ic_favorite_on);
-                        new SelectInterest(favoriteImageButton).execute(mapsActivity.currentUser.getUid(), Integer.toString(mEvent.getIdEvent()), "add");
-                        mEvent.setisInterested(isFavoriteClicked);
-                    }
-                }
-            });
-
             ImageButton shareImageButton = (ImageButton) itemView.findViewById(R.id.share_button);
-            shareImageButton.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v) {
-                    TweetComposer.Builder builder = new TweetComposer.Builder(mContext)
-                            .text("Come to " + eventTitle.getText().toString() +  " on " + eventDate.getText().toString()+"! This is so cool!!!");
-                    builder.show();
-                }
-            });
+            favoriteImageButton.setVisibility(View.INVISIBLE);
+            shareImageButton.setVisibility(View.INVISIBLE);
+            if ((mContext instanceof MapsActivity)) {
+                favoriteImageButton.setVisibility(View.VISIBLE);
+                shareImageButton.setVisibility(View.VISIBLE);
+                favoriteImageButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        MapsActivity mapsActivity = (MapsActivity) mContext;
+                        if (isFavoriteClicked) {
+                            isFavoriteClicked = false;
+                            favoriteImageButton.setImageResource(R.drawable.ic_favorite_off);
+                            new SelectInterest(favoriteImageButton).execute(mapsActivity.currentUser.getUid(), Integer.toString(mEvent.getIdEvent()), "delete");
+                            mEvent.setisInterested(isFavoriteClicked);
+                            MapsActivity.mUserFavs.remove(mEvent);
+                        } else {
+                            isFavoriteClicked = true;
+                            favoriteImageButton.setImageResource(R.drawable.ic_favorite_on);
+                            new SelectInterest(favoriteImageButton).execute(mapsActivity.currentUser.getUid(), Integer.toString(mEvent.getIdEvent()), "add");
+                            mEvent.setisInterested(isFavoriteClicked);
+                            MapsActivity.mUserFavs.add(mEvent);
+                        }
+                    }
+                });
 
+
+                shareImageButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        TweetComposer.Builder builder = new TweetComposer.Builder(mContext)
+                                .text("Come to " + eventTitle.getText().toString() + " on " + eventDate.getText().toString() + "! This is so cool!!!");
+                        builder.show();
+                    }
+                });
+            }
         }
 
         public void setData(Event event) {
