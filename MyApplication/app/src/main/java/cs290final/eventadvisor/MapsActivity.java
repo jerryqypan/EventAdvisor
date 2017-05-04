@@ -364,7 +364,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Log.d(TAG, "CAMERA IDLE");
                 CameraPosition place = mMap.getCameraPosition();
                 new RetrieveEvents(MapsActivity.this).execute(Double.toString(place.target.latitude), Double.toString(place.target.longitude),currentUser.getUid(),Float.toString(calculateMaxMapDistanceOnScreen()));
-
+                new ShowInterest(MapsActivity.this).execute(currentUser.getUid());
+                new RetrieveUserEvents(MapsActivity.this).execute(currentUser.getUid());
             }
         });
     }

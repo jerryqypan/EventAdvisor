@@ -142,7 +142,7 @@ public class CreateEventActivity extends AppCompatActivity {
         cameraButton = (Button) findViewById(R.id.cameraButton);
         mCoordinates = i.getExtras().getString("latitude")+","+i.getExtras().getString("longitude");
         mUser = i.getExtras().getString("uid");
-        mLocation.setText("Current Location");
+        //mLocation.setText("Current Location");
         checkIfCameraSupported();
     }
 

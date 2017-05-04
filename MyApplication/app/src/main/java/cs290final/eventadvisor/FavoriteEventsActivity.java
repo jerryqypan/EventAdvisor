@@ -33,11 +33,12 @@ public class FavoriteEventsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_favorite_events);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         setSupportActionBar(toolbar);
 
         ActionBar supportActionBar = getSupportActionBar();
         if(supportActionBar != null) {
-            supportActionBar.setDisplayHomeAsUpEnabled(true);
+            supportActionBar.setTitle("Important Spots");
         }
 
         // Instantiate a PagerAdapter to Display the fragments in each individual tab
@@ -67,7 +68,7 @@ public class FavoriteEventsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        finish();
+        this.onDestroy();
     }
 
     /**
