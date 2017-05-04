@@ -68,7 +68,7 @@ public class FavoriteEventsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        this.onDestroy();
+        this.finish();
     }
 
     /**
