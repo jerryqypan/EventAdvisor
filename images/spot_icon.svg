@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 1080 1920" style="enable-background:new 0 0 1080 1920;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#00838E;}
+</style>
+<path class="st0" d="M317.5,577h485.9c22.9,0,41.4,18.5,41.4,41.4v485.9c0,22.9-18.5,41.4-41.4,41.4H317.5
+	c-22.9,0-41.4-18.5-41.4-41.4V618.4C276.1,595.5,294.6,577,317.5,577z"/>
+<image style="overflow:visible;enable-background:new    ;" width="260" height="260" xlink:href="../MyApplication/app/src/main/res/drawable/launch_logo.png"  transform="matrix(2.525 0 0 2.525 232.1312 548.1624)">
+</image>
+</svg>
